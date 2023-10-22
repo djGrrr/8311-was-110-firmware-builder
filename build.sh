@@ -1,6 +1,6 @@
 #!/bin/bash
 set -xe
-STOCK_IMAGE="WAS-110_v19.07.8_maxlinear_1.0.12"
+STOCK_IMAGE="${1:-"WAS-110_v19.07.8_maxlinear_1.0.12"}"
 ROOT_DIR="rootfs/"
 REAL_ROOT=$(realpath "$ROOT_DIR")
 
