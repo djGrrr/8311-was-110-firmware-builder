@@ -1,6 +1,6 @@
 # Bell WAS-110 Firmware Builder
 
-## fwenvs
+## custom fwenvs
 ```
 bell_internet_vlan=0
 bell_services_vlan=34
