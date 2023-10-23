@@ -7,6 +7,7 @@ bell_services_vlan=34
 console_en=1
 equipment_id=5690
 ethtool_speed=speed 2500 autoneg off duplex full
+failsafe_delay=30
 img_version=SGC830007C
 mib_file=/etc/mibs/prx300_1V.ini
 root_pwhash=$1$BghTQV7M$ZhWWiCgQptC1hpUdIfa0e.

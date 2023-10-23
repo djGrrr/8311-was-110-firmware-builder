@@ -169,7 +169,21 @@ boot() {
 BFW_SYSINIT
 
 RC_LOCAL="$ROOT_DIR/etc/rc.local"
-sed -r 's#(exit 0)#\# MOD: Failsafe, delay omcid start\nsleep 30 \&\& [ ! -f /root/.failsafe ] \&\& [ ! -f /tmp/.failsafe ] \&\& [ ! -f /ptconf/.failsafe ] \&\& /etc/init.d/omcid.sh start\n\n\1#g' -i "$RC_LOCAL"
+
+RC_LOCAL_HEAD=$(grep -P -B99999999 '^exit 0$' "$RC_LOCAL" | head -n -1)
+RC_LOCAL_FOOT=$(grep -P -A99999999 '^exit 0$' "$RC_LOCAL")
+
+echo "$RC_LOCAL_HEAD" > "$RC_LOCAL"
+cat >> "$RC_LOCAL" <<'FAILSAFE'
+
+# MOD: Failsafe, delay omcid start
+DELAY=$(fw_printenv -n failsafe_delay 2>/dev/null)
+[ "$DELAY" -ge 30 ] 2>/dev/null || DELAY=30
+[ "$DELAY" -le 300 ] || DELAY=300
+sleep "$DELAY" && [ ! -f /root/.failsafe ] && [ ! -f /tmp/.failsafe ] && [ ! -f /ptconf/.failsafe ] && /etc/init.d/omcid.sh start
+
+FAILSAFE
+echo "$RC_LOCAL_FOOT" >> "$RC_LOCAL"
 chmod +x "$RC_LOCAL"
 
 cat >> "$ROOT_DIR/etc/uci-defaults/30-ip-config" <<'UCI_IP_CONFIG'
