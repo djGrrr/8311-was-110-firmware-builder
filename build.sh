@@ -24,6 +24,10 @@ sudo chown -R "$USER:$GROUP" "$REAL_ROOT"
 
 BFW_START="$ROOT_DIR/etc/init.d/bfw_start.sh"
 
+
+# Push messages about changes to UART to the console
+sed -r 's#^(\s*echo \".+\!\!\")$#\1 | tee -a /dev/console#g' -i "$BFW_START"
+
 BFW_HEAD=$(grep -P -B99999999 '^#set FXM_TXFAULT_EN$' "$BFW_START" | head -n -1)
 BFW_CONSOLE=$(grep -P -A99999999 '^#set FXM_TXFAULT_EN$' "$BFW_START" | grep -P -B99999999 '^#set DYING GASP EN$' | head -n -1)
 BFW_CONSOLE_HEAD=$(echo "$BFW_CONSOLE" | grep -P -B99999999 '^/ptrom/bin/gpio_cmd set 30 0$')
@@ -46,23 +50,45 @@ if [ "$console_en" = "1" ]; then
 fi
 CONSOLE_FWENV
 echo "$BFW_CONSOLE_FOOT" >> "$BFW_START"
+
+# Don't set console GPIO til the setting is determined
+sed -r 's#/ptrom/bin/gpio_cmd set 30 (0|1)$#CONSOLE_EN=\1#g' -i "$BFW_START"
+
+cat >> "$BFW_START" <<'CONSOLE_SET'
+
+l# 8311 MOD: Enable or Disable UART TX
+if [ "$CONSOLE_EN" = "1" ]; then
+    /ptrom/bin/gpio_cmd set 30 1
+else
+	/ptrom/bin/gpio_cmd set 30 0
+fi
+CONSOLE_SET
 echo >> "$BFW_START"
 echo "$BFW_FOOT" >> "$BFW_START"
+cat >> "$BFW_START" <<'EQUIPMENTID_MOD'
 
-# Push messages about changes to UART to the console
-sed -r 's#^(\s*echo \".+\!\!\")$#\1 | tee -a /dev/console#g' -i "$BFW_START"
+# 8311 MOD: fwenv for Equipment ID
+(
+	while [ ! -f "/tmp/deviceinfo" ]; do
+		sleep 1
+	done
 
-#sed -r 's#(\#set FXM_TXFAULT_EN)$#\# 8311 MOD: fwenv for setting eth0_0 speed settings with ethtool\nETH_SPEED=$(fw_printenv -n ethtool_speed 2>/dev/null)\n[ -n "$ETH_SPEED" ] \&\& ethtool -s eth0_0 $ETH_SPEED\n\n\1#g' -i "$BFW_START"
-#sed -r 's#(\#set FXM_TXFAULT_EN)$#\# 8311 MODL fwenv for setting the root account password hash\nROOT_PWHASH=$(fw_printenv -n root_pwhash 2>/dev/null)\n[ -n \"$ROOT_PWHASH\" \] \&\& sed -r \"s/(root:)([^:]+)(:.+)/\\1${ROOT_PWHASH}\\3/g\" -i /etc/shadow\n\n\1#g' -i "$BFW_START"
-#sed -r 's/^(#set FXM_TXFAULT_EN)$/# 8311 MOD: Automatically bring up the lct interface\nifup lct\n\n\1/g' -i "$BFW_START"
+	EQUIPMENT_ID=$(fw_printenv -n equipment_id 2>/dev/null)
+	if [ -n "$EQUIPMENT_ID" ]; then
+		uci -qc /tmp set deviceinfo.devicetype.value="$EQUIPMENT_ID"
+		uci -qc /tmp commit deviceinfo
+	fi
+) &
+EQUIPMENTID_MOD
 
 
 DROPBEAR="$ROOT_DIR/etc/init.d/dropbear"
-DROPBEAR_HEAD=$(pcre2grep -B99999999 -M 'boot\(\)\s+\{$' "$DROPBEAR")
-DROPBEAR_FOOT=$(pcre2grep -A99999999 -M 'boot\(\)\s+\{$' "$DROPBEAR" | tail -n +3)
+DROPBEAR_HEAD=$(pcre2grep -B99999999 -M 'boot\(\)\s+\{\s+BOOT=1$' "$DROPBEAR")
+DROPBEAR_FOOT=$(pcre2grep -A99999999 -M 'boot\(\)\s+\{\s+BOOT=1$' "$DROPBEAR" | tail -n +4)
 
 echo "$DROPBEAR_HEAD" > "$DROPBEAR"
 cat >> "$DROPBEAR" <<'DROPBEAR_KEYS'
+
 	# 8311 MOD: persistent server and client key
 	mkdir -p /ptconf/8311
 	touch /ptconf/8311/dropbear
@@ -75,11 +101,13 @@ cat >> "$DROPBEAR" <<'DROPBEAR_KEYS'
 
 	DROPBEAR_PUBKEY=$(uci -qc /ptconf/8311 get dropbear.public_key.value)
 	if [ -n "$DROPBEAR_PUBKEY" ]; then
-        BASE64=$(uci -qc /ptconf/8311 get dropbear.public_key.encryflag)
-        if [ "$BASE64" = "1" ]; then
+		mkdir -p /root/.ssh
+		chmod 700 /root/.ssh
+		BASE64=$(uci -qc /ptconf/8311 get dropbear.public_key.encryflag)
+		if [ "$BASE64" = "1" ]; then
 			echo "$DROPBEAR_PUBKEY" | base64 -d > /root/.ssh/id_dropbear
-        else
-	        echo "$DROPBEAR_PUBKEY" > /root/.ssh/id_dropbear
+		else
+			echo "$DROPBEAR_PUBKEY" > /root/.ssh/id_dropbear
 		fi
 
 		chmod 600 /root/.ssh/id_dropbear
@@ -88,7 +116,6 @@ cat >> "$DROPBEAR" <<'DROPBEAR_KEYS'
 DROPBEAR_KEYS
 echo "$DROPBEAR_FOOT" >> "$DROPBEAR"
 
-#sed -r 's#^(\tBOOT=1)$#\1\n\n\t\# 8311 MOD: persistent server key\n\tmkdir -p /ptconf/8311\n\tDROPBEAR_RSA_KEY=$(uci -qc /ptconf/8311 get dropbear.rsa_key.value)\n\tif [ -n \"$DROPBEAR_RSA_KEY\" ]; then\n\t\techo \"$DROPBEAR_RSA_KEY\" | base64 -d > /etc/dropbear/dropbear_rsa_host_key\n\t\tchmod 600 /etc/dropbear/dropbear_rsa_host_key\n\tfi\n#g' -i "$DROPBEAR"
 
 cat >> "$ROOT_DIR/etc/init.d/bfw_sysinit" <<'BFW_SYSINIT'
 
@@ -128,20 +155,16 @@ boot() {
 
 	# fwenv to set software version (omci_pipe.sh meg 7 0)
 	SW_VERSION=$(fw_printenv -n img_version 2>/dev/null)
-    if [ -n "$SW_VERSION" ]; then
+	if [ -n "$SW_VERSION" ]; then
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.value="$SW_VERSION"
 	fi
 
-    CHANGES=$(uci -qc /ptrom/ptconf changes sysinfo_conf)
-    if [ -n "$CHANGES" ]; then
+	CHANGES=$(uci -qc /ptrom/ptconf changes sysinfo_conf)
+	if [ -n "$CHANGES" ]; then
 		uci -qc /ptrom/ptconf commit sysinfo_conf
-    fi
-
-	EQUIPMENT_ID=$(fw_printenv -n equipment_id 2>/dev/null)
-    if [ -n "$EQUIPMENT_ID" ]; then	
-		uci -qc /ptconf/device_info set WAS-110-XS.devicetype.value="$EQUIPMENT_ID"
-        uci -qc /ptconf/device_info commit WAS-110-XS
 	fi
+
+	start "$@"
 }
 BFW_SYSINIT
 
