@@ -1,7 +1,7 @@
 #!/bin/bash
 set -xe
 STOCK_IMAGE="${1:-"WAS-110_v19.07.8_maxlinear_1.0.12"}"
-ROOT_DIR="rootfs/"
+ROOT_DIR="rootfs"
 REAL_ROOT=$(realpath "$ROOT_DIR")
 
 
@@ -43,7 +43,7 @@ echo "$BFW_CONSOLE_HEAD" >> "$BFW_START"
 cat >> "$BFW_START" <<'CONSOLE_FWENV'
 
 # 8311 MOD: fwenv for enabling UART
-console_en=$(fw_printenv -n console_en 2>/dev/null)
+console_en=$(fw_printenv -n 8311_console_en 2>/dev/null || fw_printenv -n console_en 2>/dev/null)
 if [ "$console_en" = "1" ]; then
     echo "fwenv console_en set console enable!!" | tee -a /dev/console
     /ptrom/bin/gpio_cmd set 30 1
@@ -73,7 +73,7 @@ cat >> "$BFW_START" <<'EQUIPMENTID_MOD'
 		sleep 1
 	done
 
-	EQUIPMENT_ID=$(fw_printenv -n equipment_id 2>/dev/null)
+	EQUIPMENT_ID=$(fw_printenv -n 8311_equipment_id 2>/dev/null || fw_printenv -n equipment_id 2>/dev/null)
 	if [ -n "$EQUIPMENT_ID" ]; then
 		uci -qc /tmp set deviceinfo.devicetype.value="$EQUIPMENT_ID"
 		uci -qc /tmp commit deviceinfo
@@ -123,7 +123,7 @@ cat >> "$ROOT_DIR/etc/init.d/bfw_sysinit" <<'BFW_SYSINIT'
 # 8311 MOD
 boot() {
 	# set mib file from mib_file fwenv
-	MIB_FILE=$(fw_printenv -n mib_file 2>/dev/null)
+	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null || fw_printenv -n mib_file 2>/dev/null)
 	if [ -n "$MIB_FILE" ]; then
 		if [ -f "/etc/mibs/$MIB_FILE" ]; then
 			MIB_FILE="/etc/mibs/$MIB_FILE"
@@ -136,33 +136,51 @@ boot() {
 	fi
 
 	# fwenv for setting eth0_0 speed settings with ethtool
-	ETH_SPEED=$(fw_printenv -n ethtool_speed 2>/dev/null)
+	ETH_SPEED=$(fw_printenv -n 8311_ethtool_speed 2>/dev/null || fw_printenv -n ethtool_speed 2>/dev/null)
 	if [ -n "$ETH_SPEED" ]; then
 		ethtool -s eth0_0 $ETH_SPEED
 	fi
 
 	# fwenv for setting the root account password hash
-	ROOT_PWHASH=$(fw_printenv -n root_pwhash 2>/dev/null)
+	ROOT_PWHASH=$(fw_printenv -n 8311_root_pwhash 2>/dev/null || fw_printenv -n root_pwhash 2>/dev/null)
 	if [ -n "$ROOT_PWHASH" ]; then
 		sed -r "s/(root:)([^:]+)(:.+)/\1${ROOT_PWHASH}\3/g" -i /etc/shadow
 	fi
 
 	# fwenv to set hardware version (omci_pipe.sh meg 256 0)
-	HW_VERSION=$(fw_printenv -n version 2>/dev/null)
+	HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null || fw_printenv -n version 2>/dev/null)
 	if [ -n "$HW_VERSION" ]; then
+		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion=key
+		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.encryflag=0
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.value="$HW_VERSION"
 	fi
 
-	# fwenv to set software version (omci_pipe.sh meg 7 0)
-	SW_VERSION=$(fw_printenv -n img_version 2>/dev/null)
+	# fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
+	SW_VERSION_A=$(fw_printenv -n 9311_sw_verA 2>/dev/null)
+	if [ -n "$SW_VERSION_A" ]; then
+        uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A=key
+        uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.encryflag=0
+		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.value="$SW_VERSION_A"
+	fi
+
+	SW_VERSION_B=$(fw_printenv -n 9311_sw_verB 2>/dev/null)
+	if [ -n "$SW_VERSION_B" ]; then
+		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B=key
+		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.encryflag=0
+		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.value="$SW_VERSION_B"
+	fi
+
+	SW_VERSION=$(fw_printenv -n 9311_sw_ver 2>/dev/null || fw_printenv -n img_version 2>/dev/null)
 	if [ -n "$SW_VERSION" ]; then
+		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion=key
+		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.encryflag=0
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.value="$SW_VERSION"
 	fi
 
-	CHANGES=$(uci -qc /ptrom/ptconf changes sysinfo_conf)
-	if [ -n "$CHANGES" ]; then
-		uci -qc /ptrom/ptconf commit sysinfo_conf
-	fi
+	# commit uci changes
+	[ -n "$(uci -qc /ptrom/ptconf changes sysinfo_conf)" ] && uci -qc /ptrom/ptconf commit sysinfo_conf
+	[ -n "$(uci -qc /ptconf changes sysinfo_conf)" ] && uci -qc /ptconf commit sysinfo_conf
+
 
 	start "$@"
 }
@@ -177,7 +195,7 @@ echo "$RC_LOCAL_HEAD" > "$RC_LOCAL"
 cat >> "$RC_LOCAL" <<'FAILSAFE'
 
 # MOD: Failsafe, delay omcid start
-DELAY=$(fw_printenv -n failsafe_delay 2>/dev/null)
+DELAY=$(fw_printenv -n 8311_failsafe_delay 2>/dev/null || fw_printenv -n failsafe_delay 2>/dev/null)
 [ "$DELAY" -ge 30 ] 2>/dev/null || DELAY=30
 [ "$DELAY" -le 300 ] || DELAY=300
 sleep "$DELAY" && [ ! -f /root/.failsafe ] && [ ! -f /tmp/.failsafe ] && [ ! -f /ptconf/.failsafe ] && /etc/init.d/omcid.sh start
@@ -192,14 +210,31 @@ cat >> "$ROOT_DIR/etc/uci-defaults/30-ip-config" <<'UCI_IP_CONFIG'
 uci set network.$interface.auto=1
 UCI_IP_CONFIG
 
-cp -fv "bell-xgspon-bypass/detect-bell-config.sh" "bell-xgspon-bypass/fix-bell-vlans.sh" "$ROOT_DIR/root/"
+cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/root/"
 mkdir -p "$ROOT_DIR/etc/crontabs"
 
-cat > "${ROOT_DIR}etc/crontabs/root" <<'CRONTAB'
-* * * * * /root/fix-bell-vlans.sh
+cat > "$ROOT_DIR/etc/crontabs/root" <<'CRONTAB'
+* * * * * /root/8311-fix-vlans.sh
 CRONTAB
 
 rm -fv "$ROOT_DIR/etc/rc.d/S85omcid.sh"
+
+# libponhwal mod by rajkosto to fix Software and Hardware versions
+LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
+if [ -f "$LIBPONHWAL" ] && [ "$(sha256sum "$LIBPONHWAL" | awk '{print $1}')" = "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d5354bf1d34fdaf6" ]; then
+	echo "Patching '$LIBPONHWAL'..."
+
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=161995 bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=161735 bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=161827 bs=1 count=1 2>/dev/null
+
+	EXPECTED_HASH="0317af1e420f6e996946dbb8151a6616a10b76ea0640203aa4d80ed95c6f4299"
+	FINAL_HASH=$(sha256sum "$LIBPONHWAL" | awk '{print $1}')
+	if ! [ "$FINAL_HASH" = "$EXPECTED_HASH" ]; then
+		echo "Final '$LIBPONHWAL' SHA256 hash '$FINAL_HASH' != '$EXPECTED_HASH'" >&2
+		exit 1
+	fi
+fi
 
 rm -rfv "out"
 mkdir "out"

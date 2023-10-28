@@ -2,3 +2,6 @@
 	path = bell-xgspon-bypass
 	url = git@github.com:djGrrr/bell-xgspon-bypass.git
 	branch = master
+[submodule "8311-xgspon-bypass"]
+	path = 8311-xgspon-bypass
+	url = git@github.com:djGrrr/8311-xgspon-bypass.git
