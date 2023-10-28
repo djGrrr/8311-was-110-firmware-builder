@@ -1,4 +1,4 @@
-# Bell WAS-110 Firmware Builder
+# 8311 WAS-110 Firmware Builder
 
 ## custom fwenvs
 ```
