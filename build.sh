@@ -1,6 +1,6 @@
 #!/bin/bash
 _help() {
-	printf -- 'Tool for building new WAS-110 firmware images\n\n'
+	printf -- 'Tool for building new modded WAS-110 firmware images\n\n'
 	printf -- 'Usage: %s [options]\n\n' "$0"
 	printf -- 'Options:\n'
 	printf -- '-i --image <filename>\t\tSpecify stock local upgrade image file.\n'

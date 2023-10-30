@@ -23,3 +23,47 @@ dropbear.rsa_key.value='BASE64 of the RSA server key'
 dropbear.public_key=key
 dropbear.public_key.value='ssh-rsa public key' 
 ```
+
+## Scripts
+
+### build.sh
+Tool for building new modded WAS-110 firmware images
+```
+Usage: ./build.sh [options]
+
+Options:
+-i --image <filename>           Specify stock local upgrade image file.
+-I --image-dir <dir>            Specify stock image directory (must contain bootcore.bin, kernel.bin, and rootfs.img).
+-o --image-out <filename>       Specify local upgrade image to output.
+-h --help                       This help text
+```
+
+### create.sh
+Tool for creating new WAS-110 local upgrade images
+```
+Usage: ./create.sh [options]
+
+Options:
+-i --image <filename>           Specify local upgrade image file to create (required).
+-H --header <filename>          Specify filename of image header to base image off of (default: header.bin).
+-b --bootcore <filename>        Specify filename of bootcore image to place in created image (default: bootcore.bin).
+-k --kernel <filename>          Specify filename of kernel image to place in created image (default: kernel.bin).
+-r --rootfs <filename>          Specify filename of rootfs image to place in created image (default: rootfs.img).
+-V --image-version <version>    Specify version string to set on created image (14 characters max).
+-h --help                       This help text
+```
+
+
+### extract.sh
+Tool for extracting stock WAS-110 local upgrade images
+```
+Usage: ./extract.sh [options]
+
+Options:
+-i --image <filename>           Specify local upgrade image file to extract (required).
+-H --header <filename>          Specify filename to extract image header to (default: header.bin).
+-b --bootcore <filename>        Specify filename to extract bootcore image to (default: bootcore.bin).
+-k --kernel <filename>          Specify filename to extract kernel image to (default: kernel.bin).
+-r --rootfs <filename>          Specify filename to extract rootfs image to (default: rootfs.img).
+-h --help                       This help text
+```
