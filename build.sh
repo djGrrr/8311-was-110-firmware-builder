@@ -1,25 +1,96 @@
 #!/bin/bash
-set -xe
-STOCK_IMAGE="${1:-"WAS-110_v19.07.8_maxlinear_1.0.12"}"
-ROOT_DIR="rootfs"
-REAL_ROOT=$(realpath "$ROOT_DIR")
+_help() {
+	printf -- 'Tool for building new WAS-110 firmware images\n\n'
+	printf -- 'Usage: %s [options]\n\n' "$0"
+	printf -- 'Options:\n'
+	printf -- '-i --image <filename>\t\tSpecify stock local upgrade image file.\n'
+	printf -- '-I --image-dir <dir>\t\tSpecify stock image directory (must contain bootcore.bin, kernel.bin, and rootfs.img).\n'
+	printf -- '-o --image-out <filename>\tSpecify local upgrade image to output.\n'
+	printf -- '-h --help\t\t\tThis help text\n'
+}
 
+IMGFILE=
+IMGDIR=
+OUT_DIR=$(realpath "out")
+IMG_OUT="$OUT_DIR/local-upgrade.img"
 
-STOCK_IMG="stock/${STOCK_IMAGE}/rootfs.img"
+while [ $# -gt 0 ]; do
+	case "$1" in
+		-i|--image)
+			IMGFILE="$2"
+			shift
+		;;
+		-I|--image-dir)
+			IMGDIR="$2"
+			shift
+		;;
+		-o|--image-out)
+			IMG_OUT="$2"
+			shift
+		;;
+		--help|-h)
+			_help
+			exit 0
+		;;
+		*)
+			_help
+			exit 1
+		;;
+	esac
+	shift
+done
 
-if [ ! -f "$STOCK_IMG" ]; then
-	echo "Stock image '$STOCK_IMG' not found." >&2
-    exit 1
+_err() {
+	echo "$1" >&2
+	exit ${2:-1}
+}
+
+set -e
+
+HEADER=
+if [ -n "$IMGFILE" ]; then
+	[ -f "$IMGFILE" ] || _err "Image file '$IMGFILE' does not exist."
+
+	HEADER="$OUT_DIR/header.bin"
+	BOOTCORE="$OUT_DIR/bootcore.bin"
+	KERNEL="$OUT_DIR/kernel.bin"
+	ORIG_ROOTFS="$OUT_DIR/rootfs-orig.img"
+	rm -rfv "$OUT_DIR"
+	mkdir -pv "$OUT_DIR"
+
+	./extract.sh -i "$IMGFILE" -H "$HEADER" -b "$BOOTCORE" -k "$KERNEL" -r "$ORIG_ROOTFS" || _err "Error extracting image '$IMGFILE'"
+elif [ -n "$IMGDIR" ] && [ -d "$IMGDIR" ]; then
+	IMG_DIR=$(realpath "$IMGDIR")
+	[ -d "$IMG_DIR" ] || _err "Image directory '$IMG_DIR' does not exist."
+
+	HEADER="$IMG_DIR/header.bin"
+	BOOTCORE="$IMG_DIR/bootcore.bin"
+	KERNEL="$IMG_DIR/kernel.bin"
+	ORIG_ROOTFS="$IMG_DIR/rootfs.img"
+
+	rm -rfv "$OUT_DIR"
+    mkdir -pv "$OUT_DIR"
+else
+	_err "Muat specify one of --image or --image-dir"
 fi
 
+echo
+
+ROOTFS="$OUT_DIR/rootfs.img"
+
+[ -f "$BOOTCORE" ] || _err "Bootcore file '$BOOTCORE' does not exist."
+[ -f "$KERNEL" ] || _err "Kernel file '$KERNEL' does not exist."
+[ -f "$ORIG_ROOTFS" ] || _err "RootFS file '$ORIG_ROOTFS' does not exist."
+
+ROOT_DIR=$(realpath "rootfs")
 rm -rfv "$ROOT_DIR"
 
+sudo unsquashfs -d "$ROOT_DIR" "$ORIG_ROOTFS" || _err "Error unsquashifying RootFS image '$ORIG_ROOTFS'"
 
-sudo unsquashfs -d "$REAL_ROOT" "$STOCK_IMG"
 USER=$(id -un)
 GROUP=$(id -gn)
 
-sudo chown -R "$USER:$GROUP" "$REAL_ROOT"
+sudo chown -R "$USER:$GROUP" "$ROOT_DIR"
 
 
 BFW_START="$ROOT_DIR/etc/init.d/bfw_start.sh"
@@ -236,12 +307,10 @@ if [ -f "$LIBPONHWAL" ] && [ "$(sha256sum "$LIBPONHWAL" | awk '{print $1}')" = "
 	fi
 fi
 
-rm -rfv "out"
-mkdir "out"
+OUT_BOOTCORE=$(realpath "$OUT_DIR/bootcore.bin")
+[ "$BOOTCORE" = "$OUT_BOOTCORE" ] || cp -fv "$BOOTCORE" "$OUT_BOOTCORE"
+OUT_KERNEL=$(realpath "$OUT_DIR/kernel.bin")
+[ "$KERNEL" = "$OUT_KERNEL" ] || cp -fv "$KERNEL" "$OUT_KERNEL"
 
-cp -fv "stock/${STOCK_IMAGE}/kernel.img" "out/kernel.img"
-cp -fv "stock/${STOCK_IMAGE}/bootcore.img" "out/bootcore.img"
-
-IMG="out/rootfs.img"
-mksquashfs "$ROOT_DIR" "$IMG" -all-root -noappend -comp xz -b 256K
-
+mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -comp xz -b 256K || _err "Error creating new rootfs image"
+[ -n "$HEADER" ] && [ -f "$HEADER" ] && ./create.sh -i "$IMG_OUT" -H "$HEADER" -b "$BOOTCORE" -k "$KERNEL" -r "$ROOTFS"
