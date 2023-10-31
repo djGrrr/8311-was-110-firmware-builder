@@ -65,6 +65,8 @@ set -e
 [ -n "$KERNEL" ] || _err "Error: Invalid kernel file specified."
 [ -n "$ROOTFS" ] || _err "Error: Invalid rootfs file specified."
 
+[ "$(head -c 16 "$LOCAL")" = '~@$^*)+ATOS!#%&(' ] || _err "Invalid magic string"
+
 LEN_HDR=$((0xD00))
 
 echo "Extracting image header to '$HEADER' ($LEN_HDR bytes)"
