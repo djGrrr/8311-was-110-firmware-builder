@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 _help() {
     printf -- 'Tool for creating new WAS-110 local upgrade images\n\n'
     printf -- 'Usage: %s [options]\n\n' "$0"
@@ -80,6 +80,7 @@ LEN_HDR=$((0xD00))
 DATA_OFFSET=$LEN_HDR
 VERSION_OFFSET=$((0x30))
 
+FILES=()
 add_image() {
 	IMAGE="$1"
 	FILE="${2:-$1}"
@@ -90,6 +91,8 @@ add_image() {
 		echo "File '$FILE' for image '$IMAGE' does not exist" >&2
 		exit 1
 	fi
+
+	FILES+=("$FILE")
 
 	SIZE=$(stat -c "%s" "$FILE")
 
@@ -115,3 +118,9 @@ add_image "bootcore.bin" "$BOOTCORE"
 add_image "kernel.bin" "$KERNEL"
 add_image "rootfs.img" "$ROOTFS"
 
+CONTENT_CRC_OFFSET=$((0x66))
+HEADER_CRC_OFFSET=$((0x6A))
+
+echo "Updating CRCs"
+{ cat "${FILES[@]}" | ./bfw-crc.pl; cat /dev/zero; } | dd of="$OUT" seek="$CONTENT_CRC_OFFSET" bs=1 count=8 conv=notrunc 2>/dev/null
+head -c "$LEN_HDR" "$OUT" | ./bfw-crc.pl | dd of="$OUT" seek="$HEADER_CRC_OFFSET" bs=1 count=4 conv=notrunc 2>/dev/null
