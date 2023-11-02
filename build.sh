@@ -108,6 +108,47 @@ BFW_FOOT=$(grep -P -A99999999 '^pon 1pps_event_enable$' "$BFW_START")
 
 echo "$BFW_HEAD" > "$BFW_START"
 echo >> "$BFW_START"
+cat >> "$BFW_START" <<'BFW_START_MODS'
+
+
+# 8311 MOD: fwenvsfor GPON Serial Number and Vendor ID
+GPON_SN=$(fw_printenv -n 8311_gpon_sn 2>/dev/null)
+VENDOR_ID=$(fw_printenv -n 8311_vendor_id 2>/dev/null)
+if [ -n "$GPON_SN" ]; then
+	VENDOR_ID="${VENDOR_ID:-$(echo "$GPON_SN" | head -c 4)}"
+	uci -qc /ptdata set factory_conf.GponSN.value="$GPON_SN"
+fi
+
+if [ -n "$VENDOR_ID" ]; then
+	uci -qc /ptdata set factory_conf.VendorCode.value="$VENDOR_ID"
+fi
+
+# fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
+SW_VERSION_A=$(fw_printenv -n 8311_sw_verA 2>/dev/null)
+if [ -n "$SW_VERSION_A" ]; then
+	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A=key
+	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.encryflag=0
+	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.value="$SW_VERSION_A"
+fi
+
+SW_VERSION_B=$(fw_printenv -n 8311_sw_verB 2>/dev/null)
+if [ -n "$SW_VERSION_B" ]; then
+	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B=key
+	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.encryflag=0
+	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.value="$SW_VERSION_B"
+fi
+
+[ -n "$(uci -qc /ptconf changes sysinfo_conf)" ] && uci -qc /ptconf commit sysinfo_conf
+
+if [ -n "$(uci -qc /ptdata changes factory_conf)" ]; then
+	mount -o remount,rw /ptdata
+	uci -qc /ptdata commit factory_conf
+	[ -e "/ptdata/factorymodeflag" ] || mount -o remount,ro /ptdata
+fi
+
+
+BFW_START_MODS
+
 echo "$BFW_DYING_GASP" >> "$BFW_START"
 echo >> "$BFW_START"
 echo "$BFW_CONSOLE_HEAD" >> "$BFW_START"
@@ -127,7 +168,7 @@ sed -r 's#/ptrom/bin/gpio_cmd set 30 (0|1)$#CONSOLE_EN=\1#g' -i "$BFW_START"
 
 cat >> "$BFW_START" <<'CONSOLE_SET'
 
-l# 8311 MOD: Enable or Disable UART TX
+# 8311 MOD: Enable or Disable UART TX
 if [ "$CONSOLE_EN" = "1" ]; then
     /ptrom/bin/gpio_cmd set 30 1
 else
@@ -226,22 +267,7 @@ boot() {
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.value="$HW_VERSION"
 	fi
 
-	# fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
-	SW_VERSION_A=$(fw_printenv -n 9311_sw_verA 2>/dev/null)
-	if [ -n "$SW_VERSION_A" ]; then
-        uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A=key
-        uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.encryflag=0
-		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.value="$SW_VERSION_A"
-	fi
-
-	SW_VERSION_B=$(fw_printenv -n 9311_sw_verB 2>/dev/null)
-	if [ -n "$SW_VERSION_B" ]; then
-		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B=key
-		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.encryflag=0
-		uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.value="$SW_VERSION_B"
-	fi
-
-	SW_VERSION=$(fw_printenv -n 9311_sw_ver 2>/dev/null || fw_printenv -n img_version 2>/dev/null)
+	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null || fw_printenv -n img_version 2>/dev/null)
 	if [ -n "$SW_VERSION" ]; then
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion=key
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.encryflag=0
@@ -250,7 +276,6 @@ boot() {
 
 	# commit uci changes
 	[ -n "$(uci -qc /ptrom/ptconf changes sysinfo_conf)" ] && uci -qc /ptrom/ptconf commit sysinfo_conf
-	[ -n "$(uci -qc /ptconf changes sysinfo_conf)" ] && uci -qc /ptconf commit sysinfo_conf
 
 
 	start "$@"
@@ -275,11 +300,39 @@ FAILSAFE
 echo "$RC_LOCAL_FOOT" >> "$RC_LOCAL"
 chmod +x "$RC_LOCAL"
 
-cat >> "$ROOT_DIR/etc/uci-defaults/30-ip-config" <<'UCI_IP_CONFIG'
+IP_CONFIG="$ROOT_DIR/etc/uci-defaults/30-ip-config"
+IP_CONFIG_HEAD=$(grep -P -B99999999 '^local ip=\$\(.+/proc/cmdline\)$' "$IP_CONFIG" | head -n -1)
+IP_CONFIG_FOOT=$(grep -A99999999 'uci set network.$interface.ipaddr=' "$IP_CONFIG")
 
-# 8311 MOD: Make LCT interface come up automatically
+echo "$IP_CONFIG_HEAD" > "$IP_CONFIG"
+cat >> "$IP_CONFIG" <<'UCI_IP_CONFIG'
+
+# 8311 MOD: Configure management IP/subnet/gateway
+local ipaddr=$(fw_printenv -n 8311_ipaddr 2>/dev/null || echo "192.168.11.1")
+local netmask=$(fw_printenv -n 8311_netmask 2>/dev/null || echo "255.255.255.0")
+local gateway=$(fw_printenv -n 8311_gateway 2>/dev/null || echo "$ipaddr")
+
 uci set network.$interface.auto=1
 UCI_IP_CONFIG
+echo "$IP_CONFIG_FOOT" >> "$IP_CONFIG"
+
+
+cat >> "$ROOT_DIR/etc/init.d/network" <<'INITD_NETWORK'
+
+
+# 8311 MOD: Configure IP/subnet/gateway
+boot() {
+	local ipaddr=$(fw_printenv -n 8311_ipaddr 2>/dev/null || echo "192.168.11.1")
+	local netmask=$(fw_printenv -n 8311_netmask 2>/dev/null || echo "255.255.255.0")
+	local gateway=$(fw_printenv -n 8311_gateway 2>/dev/null || echo "$ipaddr")
+
+	sed -r 's#(<param name="Ipaddr" .+ value=)"\S+"(></param>)#\1"'"$ipaddr"'"\2#g' -i /ptrom/ptconf/param_ct.xml
+	sed -r 's#(<param name="SubnetMask" .+ value=)"\S+"(></param>)#\1"'"$netmask"'"\2#g' -i /ptrom/ptconf/param_ct.xml
+	sed -r 's#(<param name="Gateway" .+ value=)"\S+"(></param>)#\1"'"$gateway"'"\2#g' -i /ptrom/ptconf/param_ct.xml
+
+	start "$@"
+}
+INITD_NETWORK
 
 cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/root/"
 mkdir -p "$ROOT_DIR/etc/crontabs"
@@ -288,7 +341,7 @@ cat > "$ROOT_DIR/etc/crontabs/root" <<'CRONTAB'
 * * * * * /root/8311-fix-vlans.sh
 CRONTAB
 
-rm -fv "$ROOT_DIR/etc/rc.d/S85omcid.sh"
+sed -r 's#^(\s+)(start.+)$#\1\# 8311 MOD: Do not auto start omcid\n\1\# \2#g' -i "$ROOT_DIR/etc/init.d/omcid.sh"
 
 # libponhwal mod by rajkosto to fix Software and Hardware versions
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
