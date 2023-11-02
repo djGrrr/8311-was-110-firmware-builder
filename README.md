@@ -13,6 +13,7 @@
 8311_console_en=1
 8311_ethtool_speed=speed 2500 autoneg off duplex full
 8311_failsafe_delay=30
+8311_persist_root=0
 8311_root_pwhash=$1$BghTQV7M$ZhWWiCgQptC1hpUdIfa0e.
 
 8311_equipment_id=5690

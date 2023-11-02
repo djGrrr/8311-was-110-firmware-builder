@@ -99,7 +99,8 @@ BFW_START="$ROOT_DIR/etc/init.d/bfw_start.sh"
 # Push messages about changes to UART to the console
 sed -r 's#^(\s*echo \".+\!\!\")$#\1 | tee -a /dev/console#g' -i "$BFW_START"
 
-BFW_HEAD=$(grep -P -B99999999 '^#set FXM_TXFAULT_EN$' "$BFW_START" | head -n -1)
+BFW_HEAD=$(grep -P -B99999999 '^#read bootcmd, if not default, modify$' "$BFW_START" | head -n -2)
+BFW_HEAD2=$(grep -P -A99999999 '^./ptrom/bin/set_bootcmd_env$' "$BFW_START" | tail -n +2 | grep -P -B99999999 '^#set FXM_TXFAULT_EN$' | head -n -1)
 BFW_CONSOLE=$(grep -P -A99999999 '^#set FXM_TXFAULT_EN$' "$BFW_START" | grep -P -B99999999 '^#set DYING GASP EN$' | head -n -1)
 BFW_CONSOLE_HEAD=$(echo "$BFW_CONSOLE" | grep -P -B99999999 '^/ptrom/bin/gpio_cmd set 30 0$')
 BFW_CONSOLE_FOOT=$(echo "$BFW_CONSOLE" | grep -P -A99999999 '^/ptrom/bin/gpio_cmd set 30 0$' | tail -n +2)
@@ -108,6 +109,8 @@ BFW_FOOT=$(grep -P -A99999999 '^pon 1pps_event_enable$' "$BFW_START")
 
 echo "$BFW_HEAD" > "$BFW_START"
 echo >> "$BFW_START"
+echo "$BFW_HEAD2" >> "$BFW_START"
+echo >> "$BFW_START"
 cat >> "$BFW_START" <<'BFW_START_MODS'
 
 
@@ -115,17 +118,20 @@ cat >> "$BFW_START" <<'BFW_START_MODS'
 GPON_SN=$(fw_printenv -n 8311_gpon_sn 2>/dev/null)
 VENDOR_ID=$(fw_printenv -n 8311_vendor_id 2>/dev/null)
 if [ -n "$GPON_SN" ]; then
+	echo "Setting PON SN: $GPON_SN" | tee -a /dev/console
 	VENDOR_ID="${VENDOR_ID:-$(echo "$GPON_SN" | head -c 4)}"
 	uci -qc /ptdata set factory_conf.GponSN.value="$GPON_SN"
 fi
 
 if [ -n "$VENDOR_ID" ]; then
+	echo "Setting PON Vendor ID: $VENDOR_ID" | tee -a /dev/console
 	uci -qc /ptdata set factory_conf.VendorCode.value="$VENDOR_ID"
 fi
 
 # fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
 SW_VERSION_A=$(fw_printenv -n 8311_sw_verA 2>/dev/null)
 if [ -n "$SW_VERSION_A" ]; then
+	echo "Setting PON image A version: $SW_VERSION_A" | tee -a /dev/console
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A=key
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.encryflag=0
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.value="$SW_VERSION_A"
@@ -133,6 +139,7 @@ fi
 
 SW_VERSION_B=$(fw_printenv -n 8311_sw_verB 2>/dev/null)
 if [ -n "$SW_VERSION_B" ]; then
+	echo "Setting PON image B version: $SW_VERSION_B" | tee -a /dev/console
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B=key
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.encryflag=0
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.value="$SW_VERSION_B"
@@ -187,6 +194,7 @@ cat >> "$BFW_START" <<'EQUIPMENTID_MOD'
 
 	EQUIPMENT_ID=$(fw_printenv -n 8311_equipment_id 2>/dev/null || fw_printenv -n equipment_id 2>/dev/null)
 	if [ -n "$EQUIPMENT_ID" ]; then
+		echo "Setting PON Equipment ID: $EQUIPMENT_ID" | tee -a /dev/console
 		uci -qc /tmp set deviceinfo.devicetype.value="$EQUIPMENT_ID"
 		uci -qc /tmp commit deviceinfo
 	fi
@@ -234,6 +242,16 @@ cat >> "$ROOT_DIR/etc/init.d/bfw_sysinit" <<'BFW_SYSINIT'
 
 # 8311 MOD
 boot() {
+	# Remove persistent root
+	PERSIST_ROOT=$(fw_printenv -n 8311_persist_root 2>/dev/null)
+	if ! [ "$PERSIST_ROOT" -eq "1" ] 2>/dev/null; then
+		BOOTCMD=$(fw_printenv -n bootcmd 2>/dev/null)
+		if ! echo "$BOOTCMD" | grep -Eq '^\s*run\s+ubi_init\s*;\s*ubi\s+remove\s+rootfs_data\s*;\s*run\s+flash_flash\s*$'; then
+			echo "Resetting bootcmd to default value and rebooting, set fwenv 8311_persist_root=1 to avoid this" | tee -a /dev/console
+			/ptrom/bin/set_bootcmd_env
+		fi
+	fi
+
 	# set mib file from mib_file fwenv
 	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null || fw_printenv -n mib_file 2>/dev/null)
 	if [ -n "$MIB_FILE" ]; then
@@ -242,6 +260,7 @@ boot() {
 		fi
 
 		if [ -f "$MIB_FILE" ]; then
+			echo "Setting OMCI MIB file: $MIB_FILE" | tee -a /dev/console
 			uci set omci.default.mib_file="$MIB_FILE"
 			uci commit omci
 		fi
@@ -250,18 +269,21 @@ boot() {
 	# fwenv for setting eth0_0 speed settings with ethtool
 	ETH_SPEED=$(fw_printenv -n 8311_ethtool_speed 2>/dev/null || fw_printenv -n ethtool_speed 2>/dev/null)
 	if [ -n "$ETH_SPEED" ]; then
+		echo "Setting ethtool speed parameters: $ETH_SPEED" | tee -a /dev/console
 		ethtool -s eth0_0 $ETH_SPEED
 	fi
 
 	# fwenv for setting the root account password hash
 	ROOT_PWHASH=$(fw_printenv -n 8311_root_pwhash 2>/dev/null || fw_printenv -n root_pwhash 2>/dev/null)
 	if [ -n "$ROOT_PWHASH" ]; then
+		echo "Setting root password hash: $ROOT_PWHASH" | tee -a /dev/console
 		sed -r "s/(root:)([^:]+)(:.+)/\1${ROOT_PWHASH}\3/g" -i /etc/shadow
 	fi
 
 	# fwenv to set hardware version (omci_pipe.sh meg 256 0)
 	HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null || fw_printenv -n version 2>/dev/null)
 	if [ -n "$HW_VERSION" ]; then
+		echo "Setting PON hardware version: $HW_VERSION" | tee -a /dev/console
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion=key
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.encryflag=0
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.value="$HW_VERSION"
@@ -269,6 +291,7 @@ boot() {
 
 	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null || fw_printenv -n img_version 2>/dev/null)
 	if [ -n "$SW_VERSION" ]; then
+		echo "Setting PON software version: $SW_VERSION" | tee -a /dev/console
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion=key
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.encryflag=0
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.value="$SW_VERSION"
@@ -325,6 +348,8 @@ boot() {
 	local ipaddr=$(fw_printenv -n 8311_ipaddr 2>/dev/null || echo "192.168.11.1")
 	local netmask=$(fw_printenv -n 8311_netmask 2>/dev/null || echo "255.255.255.0")
 	local gateway=$(fw_printenv -n 8311_gateway 2>/dev/null || echo "$ipaddr")
+
+	echo "Setting IP: $ipaddr, Netmask: $netmask, Gateway: $gateway" | tee -a /dev/console
 
 	sed -r 's#(<param name="Ipaddr" .+ value=)"\S+"(></param>)#\1"'"$ipaddr"'"\2#g' -i /ptrom/ptconf/param_ct.xml
 	sed -r 's#(<param name="SubnetMask" .+ value=)"\S+"(></param>)#\1"'"$netmask"'"\2#g' -i /ptrom/ptconf/param_ct.xml
