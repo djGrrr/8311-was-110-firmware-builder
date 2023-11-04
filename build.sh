@@ -120,12 +120,24 @@ VENDOR_ID=$(fw_printenv -n 8311_vendor_id 2>/dev/null)
 if [ -n "$GPON_SN" ]; then
 	echo "Setting PON SN: $GPON_SN" | tee -a /dev/console
 	VENDOR_ID="${VENDOR_ID:-$(echo "$GPON_SN" | head -c 4)}"
+	uci -qc /ptdata set factory_conf.GponSN=key
+	uci -qc /ptdata set factory_conf.GponSN.encryflag=0
 	uci -qc /ptdata set factory_conf.GponSN.value="$GPON_SN"
 fi
 
 if [ -n "$VENDOR_ID" ]; then
 	echo "Setting PON Vendor ID: $VENDOR_ID" | tee -a /dev/console
+	uci -qc /ptdata set factory_conf.VendorCode=key
+	uci -qc /ptdata set factory_conf.VendorCode.encryflag=0
 	uci -qc /ptdata set factory_conf.VendorCode.value="$VENDOR_ID"
+fi
+
+DEVICE_SN=$(fw_printenv -n 8311_device_sn 2>/dev/null)
+if [ -n "$DEVICE_SN" ]; then
+	# this only really changes what's in load_cli and the webui, so no need to echo to console
+	uci -qc /ptdata set factory_conf.SerialNumber=key
+	uci -qc /ptdata set factory_conf.SerialNumber.encryflag=0
+	uci -qc /ptdata set factory_conf.SerialNumber.value="$DEVICE_SN"
 fi
 
 # fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
@@ -145,6 +157,15 @@ if [ -n "$SW_VERSION_B" ]; then
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.value="$SW_VERSION_B"
 fi
 
+HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null)
+if [ -n "$HW_VERSION" ]; then
+	# this only really changes what's in load_cli and the webui, so no need to echo to console
+	uci -qc /ptdata set factory_conf.HardwareVersion=key
+	uci -qc /ptdata set factory_conf.HardwareVersion.encryflag=0
+	uci -qc /ptdata set factory_conf.HardwareVersion.value="$HW_VERSION"
+fi
+
+
 [ -n "$(uci -qc /ptconf changes sysinfo_conf)" ] && uci -qc /ptconf commit sysinfo_conf
 
 if [ -n "$(uci -qc /ptdata changes factory_conf)" ]; then
@@ -162,7 +183,7 @@ echo "$BFW_CONSOLE_HEAD" >> "$BFW_START"
 cat >> "$BFW_START" <<'CONSOLE_FWENV'
 
 # 8311 MOD: fwenv for enabling UART
-console_en=$(fw_printenv -n 8311_console_en 2>/dev/null || fw_printenv -n console_en 2>/dev/null)
+console_en=$(fw_printenv -n 8311_console_en 2>/dev/null)
 if [ "$console_en" = "1" ]; then
     echo "fwenv console_en set console enable!!" | tee -a /dev/console
     /ptrom/bin/gpio_cmd set 30 1
@@ -192,7 +213,7 @@ cat >> "$BFW_START" <<'EQUIPMENTID_MOD'
 		sleep 1
 	done
 
-	EQUIPMENT_ID=$(fw_printenv -n 8311_equipment_id 2>/dev/null || fw_printenv -n equipment_id 2>/dev/null)
+	EQUIPMENT_ID=$(fw_printenv -n 8311_equipment_id 2>/dev/null)
 	if [ -n "$EQUIPMENT_ID" ]; then
 		echo "Setting PON Equipment ID: $EQUIPMENT_ID" | tee -a /dev/console
 		uci -qc /tmp set deviceinfo.devicetype.value="$EQUIPMENT_ID"
@@ -253,7 +274,7 @@ boot() {
 	fi
 
 	# set mib file from mib_file fwenv
-	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null || fw_printenv -n mib_file 2>/dev/null)
+	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null)
 	if [ -n "$MIB_FILE" ]; then
 		if [ -f "/etc/mibs/$MIB_FILE" ]; then
 			MIB_FILE="/etc/mibs/$MIB_FILE"
@@ -267,21 +288,21 @@ boot() {
 	fi
 
 	# fwenv for setting eth0_0 speed settings with ethtool
-	ETH_SPEED=$(fw_printenv -n 8311_ethtool_speed 2>/dev/null || fw_printenv -n ethtool_speed 2>/dev/null)
+	ETH_SPEED=$(fw_printenv -n 8311_ethtool_speed 2>/dev/null)
 	if [ -n "$ETH_SPEED" ]; then
 		echo "Setting ethtool speed parameters: $ETH_SPEED" | tee -a /dev/console
 		ethtool -s eth0_0 $ETH_SPEED
 	fi
 
 	# fwenv for setting the root account password hash
-	ROOT_PWHASH=$(fw_printenv -n 8311_root_pwhash 2>/dev/null || fw_printenv -n root_pwhash 2>/dev/null)
+	ROOT_PWHASH=$(fw_printenv -n 8311_root_pwhash 2>/dev/null)
 	if [ -n "$ROOT_PWHASH" ]; then
 		echo "Setting root password hash: $ROOT_PWHASH" | tee -a /dev/console
 		sed -r "s/(root:)([^:]+)(:.+)/\1${ROOT_PWHASH}\3/g" -i /etc/shadow
 	fi
 
 	# fwenv to set hardware version (omci_pipe.sh meg 256 0)
-	HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null || fw_printenv -n version 2>/dev/null)
+	HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null)
 	if [ -n "$HW_VERSION" ]; then
 		echo "Setting PON hardware version: $HW_VERSION" | tee -a /dev/console
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion=key
@@ -289,7 +310,7 @@ boot() {
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.value="$HW_VERSION"
 	fi
 
-	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null || fw_printenv -n img_version 2>/dev/null)
+	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null)
 	if [ -n "$SW_VERSION" ]; then
 		echo "Setting PON software version: $SW_VERSION" | tee -a /dev/console
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion=key
@@ -314,7 +335,7 @@ echo "$RC_LOCAL_HEAD" > "$RC_LOCAL"
 cat >> "$RC_LOCAL" <<'FAILSAFE'
 
 # MOD: Failsafe, delay omcid start
-DELAY=$(fw_printenv -n 8311_failsafe_delay 2>/dev/null || fw_printenv -n failsafe_delay 2>/dev/null)
+DELAY=$(fw_printenv -n 8311_failsafe_delay 2>/dev/null)
 [ "$DELAY" -ge 30 ] 2>/dev/null || DELAY=30
 [ "$DELAY" -le 300 ] || DELAY=300
 sleep "$DELAY" && [ ! -f /root/.failsafe ] && [ ! -f /tmp/.failsafe ] && [ ! -f /ptconf/.failsafe ] && /etc/init.d/omcid.sh start
@@ -367,6 +388,9 @@ cat > "$ROOT_DIR/etc/crontabs/root" <<'CRONTAB'
 CRONTAB
 
 sed -r 's#^(\s+)(start.+)$#\1\# 8311 MOD: Do not auto start omcid\n\1\# \2#g' -i "$ROOT_DIR/etc/init.d/omcid.sh"
+
+
+sed -r 's#^(\s+)(.+ )(\|\| ubimkvol /dev/ubi0 -N rootfs_data)( .+$)#\1\# 8311 MOD: Always try to create rootfs_data at ID 6 first\n\1\2\3 -n 6\4 \3\4#g' -i "$ROOT_DIR/lib/preinit/06_create_rootfs_data"
 
 # libponhwal mod by rajkosto to fix Software and Hardware versions
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
