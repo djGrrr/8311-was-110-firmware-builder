@@ -13,6 +13,7 @@ IMGFILE=
 IMGDIR=
 OUT_DIR=$(realpath "out")
 IMG_OUT="$OUT_DIR/local-upgrade.img"
+LIB_DIR=$(realpath "lib")
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -107,12 +108,16 @@ BFW_CONSOLE_FOOT=$(echo "$BFW_CONSOLE" | grep -P -A99999999 '^/ptrom/bin/gpio_cm
 BFW_DYING_GASP=$(grep -P -A99999999 '^#set DYING GASP EN$' "$BFW_START" | grep -P -B99999999 '^pon 1pps_event_enable$' | head -n -1)
 BFW_FOOT=$(grep -P -A99999999 '^pon 1pps_event_enable$' "$BFW_START")
 
+cp -fv "$LIB_DIR/hexbin.sh" "$ROOT_DIR/lib/functions/hexbin.sh"
+
 echo "$BFW_HEAD" > "$BFW_START"
 echo >> "$BFW_START"
 echo "$BFW_HEAD2" >> "$BFW_START"
 echo >> "$BFW_START"
 cat >> "$BFW_START" <<'BFW_START_MODS'
 
+
+. /lib/functions/hexbin.sh
 
 # 8311 MOD: fwenvsfor GPON Serial Number and Vendor ID
 GPON_SN=$(fw_printenv -n 8311_gpon_sn 2>/dev/null)
@@ -132,6 +137,7 @@ if [ -n "$VENDOR_ID" ]; then
 	uci -qc /ptdata set factory_conf.VendorCode.value="$VENDOR_ID"
 fi
 
+# 8311 MOD: fwenv to set Device SN
 DEVICE_SN=$(fw_printenv -n 8311_device_sn 2>/dev/null)
 if [ -n "$DEVICE_SN" ]; then
 	# this only really changes what's in load_cli and the webui, so no need to echo to console
@@ -140,7 +146,18 @@ if [ -n "$DEVICE_SN" ]; then
 	uci -qc /ptdata set factory_conf.SerialNumber.value="$DEVICE_SN"
 fi
 
-# fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
+# 8311 MOD: fwenv to set Registration ID
+REG_ID_HEX=$({ fw_printenv -n 8311_reg_id_hex 2>/dev/null | filterhex; } || echo -n "$(fw_printenv -n 8311_reg_id 2>/dev/null)" | str2hex)
+if [ -n "$REG_ID_HEX" ]; then
+	REG_ID_PRINTABLE=$(echo -n "$REG_ID_HEX" | hex2printable)
+	echo "Setting PON registration ID to: $(echo $(echo "$REG_ID_HEX" | awk '{gsub(/.{2}/,"0x& ")}1')) ($REG_ID_PRINTABLE)" | tee -a /dev/console
+
+	uci -qc /ptdata set factory_conf.GPONPassWord=key
+	uci -qc /ptdata set factory_conf.GPONPassWord.encryflag=1
+	uci -qc /ptdata set factory_conf.GPONPassWord.value="$(echo -n "$REG_ID_HEX" | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf | base64)"
+fi
+
+# 8311 MOD: fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
 SW_VERSION_A=$(fw_printenv -n 8311_sw_verA 2>/dev/null)
 if [ -n "$SW_VERSION_A" ]; then
 	echo "Setting PON image A version: $SW_VERSION_A" | tee -a /dev/console
@@ -157,6 +174,7 @@ if [ -n "$SW_VERSION_B" ]; then
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B.value="$SW_VERSION_B"
 fi
 
+# 8311 MOD: fwenv to set hardware version (omci_pipe.sh meg 256 0)
 HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null)
 if [ -n "$HW_VERSION" ]; then
 	# this only really changes what's in load_cli and the webui, so no need to echo to console

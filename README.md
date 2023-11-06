@@ -21,6 +21,7 @@
 8311_gpon_sn=SMBSXXXXXXXX
 8311_hw_ver=Fast5689EBell
 8311_mib_file=/etc/mibs/prx300_1V.ini
+8311_reg_id_hex=00
 8311_sw_verA=SGC830007C
 8311_sw_verB=SGC830006E
 8311_vendor_id=SMBS
