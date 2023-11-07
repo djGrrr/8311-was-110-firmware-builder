@@ -293,10 +293,23 @@ boot() {
 
 	# 8311 MOD: Ping host to help management work
 	PING_HOST=$(fw_printenv -n 8311_ping_ip 2>/dev/null)
-	if [ -n "$PING_HOST" ]; then
-		echo "Starting ping to: $PING_HOST" | tee -a /dev/console
-		ping "$PING_HOST" > /dev/null 2>&1 < /dev/null &
+	if [ -z "$PING_HOST" ]; then
+		ipaddr=$(fw_printenv -n 8311_ipaddr 2>/dev/null || echo "192.168.11.1")
+        netmask=$(fw_printenv -n 8311_netmask 2>/dev/null || echo "255.255.255.0")
+
+		IFS='.' read -r i1 i2 i3 i4 <<IPADDR
+${ipaddr}
+IPADDR
+		IFS='.' read -r m1 m2 m3 m4 <<NETMASK
+${netmask}
+NETMASK
+
+		# calculate the 2nd usable ip of the range (1st is the stick)
+		PING_HOST=$(printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$(((i4 & m4) + 2))")
 	fi
+
+	echo "Starting ping to: $PING_HOST" | tee -a /dev/console
+	ping "$PING_HOST" > /dev/null 2>&1 < /dev/null &
 
 	# set mib file from mib_file fwenv
 	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null)
