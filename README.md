@@ -9,6 +9,7 @@
 8311_ipaddr=192.168.11.1
 8311_netmask=255.255.255.0
 8311_gateway=192.168.11.254
+8311_ping_ip=192.168.11.2
 
 8311_console_en=1
 8311_ethtool_speed=speed 2500 autoneg off duplex full

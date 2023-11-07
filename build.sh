@@ -291,6 +291,13 @@ boot() {
 		fi
 	fi
 
+	# 8311 MOD: Ping host to help management work
+	PING_HOST=$(fw_printenv -n 8311_ping_ip 2>/dev/null)
+	if [ -n "$PING_HOST" ]; then
+		echo "Starting ping to: $PING_HOST" | tee -a /dev/console
+		ping "$PING_HOST" > /dev/null 2>&1 < /dev/null &
+	fi
+
 	# set mib file from mib_file fwenv
 	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null)
 	if [ -n "$MIB_FILE" ]; then
@@ -352,7 +359,7 @@ RC_LOCAL_FOOT=$(grep -P -A99999999 '^exit 0$' "$RC_LOCAL")
 echo "$RC_LOCAL_HEAD" > "$RC_LOCAL"
 cat >> "$RC_LOCAL" <<'FAILSAFE'
 
-# MOD: Failsafe, delay omcid start
+# 8311 MOD: Failsafe, delay omcid start
 DELAY=$(fw_printenv -n 8311_failsafe_delay 2>/dev/null)
 [ "$DELAY" -ge 30 ] 2>/dev/null || DELAY=30
 [ "$DELAY" -le 300 ] || DELAY=300
