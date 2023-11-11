@@ -46,6 +46,22 @@ _err() {
 	exit ${2:-1}
 }
 
+sha256() {
+	sha256sum "$1" | awk '{print $1}'
+}
+
+check_file() {
+	[ -f "$1" ] && [ "$(sha256 "$1")" = "$2" ]
+}
+
+expected_hash() {
+	EXPECTED_HASH="$2"
+	FINAL_HASH=$(sha256 "$1")
+	if ! [ "$FINAL_HASH" = "$EXPECTED_HASH" ]; then
+		_err "Final '$1' SHA256 hash '$FINAL_HASH' != '$EXPECTED_HASH'" >&2
+	fi
+}
+
 set -e
 
 HEADER=
@@ -430,22 +446,44 @@ sed -r 's#^(\s+)(start.+)$#\1\# 8311 MOD: Do not auto start omcid\n\1\# \2#g' -i
 
 sed -r 's#^(\s+)(.+ )(\|\| ubimkvol /dev/ubi0 -N rootfs_data)( .+$)#\1\# 8311 MOD: Always try to create rootfs_data at ID 6 first\n\1\2\3 -n 6\4 \3\4#g' -i "$ROOT_DIR/lib/preinit/06_create_rootfs_data"
 
+# omcid mod by up-n-atom to fix management with VEIP mode
+OMCID="$ROOT_DIR/opt/intel/bin/omcid"
+if check_file "$OMCID" "0aa64358a3afaa17b4edfed0077141981bc13322c7d1cf730abc251fae1ecbb1"; then
+	echo "Patching '$OMCID'..."
+
+	printf '\x00' | dd of="$OMCID" conv=notrunc seek=$((0x7F5C5)) bs=1 count=1 2>/dev/null
+
+	expected_hash "$OMCID" "35f6fb59b6c7f366210ab7cafa8ef7e9161fab14d752b6a6f1ca3d6295951a94"
+fi
+
+# libponnet mod by rss to fix management with VEIP mode
+LIBPONNET="$ROOT_DIR/usr/lib/libponnet.so.0.0.0"
+if check_file "$LIBPONNET" "8075079231811f58dd4cec06ed84ff5d46a06e40b94c14263a56110edfa2a705"; then
+	echo "Patching '$LIBPONNET'..."
+
+	printf '\x00\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x51B9A)) bs=1 count=2 2>/dev/null
+
+	expected_hash "$LIBPONNET" "d76ac53305e0a4f2252c265c664480fe1a35c9b375b0d5e2e092a4d56f83f029"
+fi
+
 # libponhwal mod by rajkosto to fix Software and Hardware versions
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
-if [ -f "$LIBPONHWAL" ] && [ "$(sha256sum "$LIBPONHWAL" | awk '{print $1}')" = "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d5354bf1d34fdaf6" ]; then
+if check_file "$LIBPONHWAL" "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d5354bf1d34fdaf6"; then
 	echo "Patching '$LIBPONHWAL'..."
 
-	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=161995 bs=1 count=1 2>/dev/null
-	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=161735 bs=1 count=1 2>/dev/null
-	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=161827 bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x278CB)) bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x277C7)) bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27823)) bs=1 count=1 2>/dev/null
 
-	EXPECTED_HASH="0317af1e420f6e996946dbb8151a6616a10b76ea0640203aa4d80ed95c6f4299"
-	FINAL_HASH=$(sha256sum "$LIBPONHWAL" | awk '{print $1}')
-	if ! [ "$FINAL_HASH" = "$EXPECTED_HASH" ]; then
-		echo "Final '$LIBPONHWAL' SHA256 hash '$FINAL_HASH' != '$EXPECTED_HASH'" >&2
-		exit 1
-	fi
+	expected_hash "$LIBPONHWAL" "0317af1e420f6e996946dbb8151a6616a10b76ea0640203aa4d80ed95c6f4299"
 fi
+
+# Enable LCT Management interface in VEIP mode
+cat >> "$ROOT_DIR/etc/mibs/prx300_1V.ini" <<'VEIP_LCT'
+
+# PPTP Ethernet UNI
+? 11 0x0101 0 0 0 0x00 0 1 0 2000 0 0xffff 0 0 0 0 0
+VEIP_LCT
 
 OUT_BOOTCORE=$(realpath "$OUT_DIR/bootcore.bin")
 [ "$BOOTCORE" = "$OUT_BOOTCORE" ] || cp -fv "$BOOTCORE" "$OUT_BOOTCORE"
