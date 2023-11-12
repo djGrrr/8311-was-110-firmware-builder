@@ -299,11 +299,17 @@ cat >> "$ROOT_DIR/etc/init.d/bfw_sysinit" <<'BFW_SYSINIT'
 boot() {
 	# Remove persistent root
 	PERSIST_ROOT=$(fw_printenv -n 8311_persist_root 2>/dev/null)
-	if ! [ "$PERSIST_ROOT" -eq "1" ] 2>/dev/null; then
+	if ! { [ "$PERSIST_ROOT" -eq "1" ] 2>/dev/null; }; then
+		echo "8311_persist_root not enabled, checking bootcmd..." | tee -a /dev/console
 		BOOTCMD=$(fw_printenv -n bootcmd 2>/dev/null)
-		if ! echo "$BOOTCMD" | grep -Eq '^\s*run\s+ubi_init\s*;\s*ubi\s+remove\s+rootfs_data\s*;\s*run\s+flash_flash\s*$'; then
+		if ! { echo "$BOOTCMD" | grep -Eq '^\s*run\s+ubi_init\s*;\s*ubi\s+remove\s+rootfs_data\s*;\s*run\s+flash_flash\s*$'; }; then
 			echo "Resetting bootcmd to default value and rebooting, set fwenv 8311_persist_root=1 to avoid this" | tee -a /dev/console
-			/ptrom/bin/set_bootcmd_env
+
+			fw_setenv bootcmd "run ubi_init;ubi remove rootfs_data;run flash_flash"
+			fw_setenv bootcmd "run ubi_init;ubi remove rootfs_data;run flash_flash"
+
+			reboot
+			sleep 5
 		fi
 	fi
 
@@ -466,24 +472,55 @@ if check_file "$LIBPONNET" "8075079231811f58dd4cec06ed84ff5d46a06e40b94c14263a56
 	expected_hash "$LIBPONNET" "d76ac53305e0a4f2252c265c664480fe1a35c9b375b0d5e2e092a4d56f83f029"
 fi
 
-# libponhwal mod by rajkosto to fix Software and Hardware versions
+# libponhwal mod by rajkosto/djGrrr to fix Software and Hardware versions
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
 if check_file "$LIBPONHWAL" "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d5354bf1d34fdaf6"; then
 	echo "Patching '$LIBPONHWAL'..."
 
+	# patch ponhw_get_hardware_ver to use the correct string length
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x278CB)) bs=1 count=1 2>/dev/null
+
+	# patch ponhw_get_software_ver to use the correct string length
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x277C7)) bs=1 count=1 2>/dev/null
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27823)) bs=1 count=1 2>/dev/null
 
-	expected_hash "$LIBPONHWAL" "0317af1e420f6e996946dbb8151a6616a10b76ea0640203aa4d80ed95c6f4299"
+	# patch ponhw_get_equipment_id to use the correct string length
+	printf '\x14' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27647)) bs=1 count=1 2>/dev/null
+
+	expected_hash "$LIBPONHWAL" "624aa5875a7bcf4d91a060e076475336622b267ff14b9c8fbb87df30fc889788"
 fi
 
+# libponhwal mod by djGrrr based on rajkosto's mod
+if check_file "$LIBPONHWAL" "6af1b3b1fba25488fd68e5e2e2c41ab0e178bd190f0ba2617fc32bdfad21e4c4"; then
+	echo "Patching '$LIBPONHWAL'..."
+
+	# patch ponhw_get_hardware_ver to use the correct string length
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x2738B)) bs=1 count=1 2>/dev/null
+
+	# patch ponhw_get_software_ver to use the correct string length
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27287)) bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x272E3)) bs=1 count=1 2>/dev/null
+
+	# patch ponhw_get_equipment_id to use the correct string length
+	printf '\x14' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27107)) bs=1 count=1 2>/dev/null
+
+	expected_hash "$LIBPONHWAL" "36b20ed9c64de010e14543659302fdb85090efc49e48c193c2c156f6333afaac"
+fi
+
+
+VEIP_MIB="$ROOT_DIR/etc/mibs/prx300_1V.ini"
+VEIP_HEAD=$(grep -P -B99999999 '^# Virtual Ethernet Interface Point$' "$VEIP_MIB" | head -n -1)
+VEIP_FOOT=$(grep -P -A99999999 '^# Virtual Ethernet Interface Point$' "$VEIP_MIB")
+
+echo "$VEIP_HEAD" > "$VEIP_MIB"
 # Enable LCT Management interface in VEIP mode
-cat >> "$ROOT_DIR/etc/mibs/prx300_1V.ini" <<'VEIP_LCT'
+cat >> "$VEIP_MIB" <<'VEIP_LCT'
 
 # PPTP Ethernet UNI
-? 11 0x0101 0 0 0 0x00 0 1 0 2000 0 0xffff 0 0 0 0 0
+? 11 0x0101 0 0 0 0x00 1 1 0 2000 0 0xffff 0 0 0 0 0
+
 VEIP_LCT
+echo "$VEIP_FOOT" >> "$VEIP_MIB"
 
 OUT_BOOTCORE=$(realpath "$OUT_DIR/bootcore.bin")
 [ "$BOOTCORE" = "$OUT_BOOTCORE" ] || cp -fv "$BOOTCORE" "$OUT_BOOTCORE"
