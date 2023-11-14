@@ -254,7 +254,18 @@ cat >> "$BFW_START" <<'EQUIPMENTID_MOD'
 		uci -qc /tmp commit deviceinfo
 	fi
 ) &
+
 EQUIPMENTID_MOD
+
+cat >> "$BFW_START" <<'RX_LOS'
+
+# 8311 MOD: start rx_los script
+/usr/sbin/8311-rx_los.sh &
+
+# 8311 MOD: start vlansd script
+/usr/sbin/8311-vlansd.sh &
+RX_LOS
+
 
 
 DROPBEAR="$ROOT_DIR/etc/init.d/dropbear"
@@ -404,6 +415,7 @@ FAILSAFE
 echo "$RC_LOCAL_FOOT" >> "$RC_LOCAL"
 chmod +x "$RC_LOCAL"
 
+
 IP_CONFIG="$ROOT_DIR/etc/uci-defaults/30-ip-config"
 IP_CONFIG_HEAD=$(grep -P -B99999999 '^local ip=\$\(.+/proc/cmdline\)$' "$IP_CONFIG" | head -n -1)
 IP_CONFIG_FOOT=$(grep -A99999999 'uci set network.$interface.ipaddr=' "$IP_CONFIG")
@@ -440,12 +452,11 @@ boot() {
 }
 INITD_NETWORK
 
+cp -fv "scripts/8311-rx_los.sh" "scripts/8311-vlansd.sh" "$ROOT_DIR/usr/sbin/"
 cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/root/"
 mkdir -p "$ROOT_DIR/etc/crontabs"
 
-cat > "$ROOT_DIR/etc/crontabs/root" <<'CRONTAB'
-* * * * * /root/8311-fix-vlans.sh
-CRONTAB
+touch "$ROOT_DIR/etc/crontabs/root"
 
 sed -r 's#^(\s+)(start.+)$#\1\# 8311 MOD: Do not auto start omcid\n\1\# \2#g' -i "$ROOT_DIR/etc/init.d/omcid.sh"
 

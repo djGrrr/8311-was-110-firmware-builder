@@ -16,6 +16,7 @@
 8311_failsafe_delay=30
 8311_persist_root=0
 8311_root_pwhash=$1$BghTQV7M$ZhWWiCgQptC1hpUdIfa0e.
+8311_rx_los=0
 
 8311_device_sn=DM222XXXXXXXXXX
 8311_equipment_id=5690
