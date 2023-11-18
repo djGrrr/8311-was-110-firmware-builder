@@ -32,10 +32,10 @@
 
 
 ### Management Related fwenvs
-`8311_ipaddr` **IP Address** - Set the management IP address. Defaults to `192.168.11.1`
-`8311_netmask` **Subnet Mask** - Set the management subnet mask. Defaults to `255.255.255.0`
-`8311_gateway` **Gateway** - Set the management gateway. Defaults to the IP address (ie. no default gateway)
-`8311_ping_ip` **Ping IP** - Sets an IP address to automatically ping, this helps with being able to reach the stick. Defaults to the 2nd ip address in the configured management network (ie. 192.168.11.2).
+`8311_ipaddr` **IP Address** - Set the management IP address. Defaults to `192.168.11.1`  
+`8311_netmask` **Subnet Mask** - Set the management subnet mask. Defaults to `255.255.255.0`  
+`8311_gateway` **Gateway** - Set the management gateway. Defaults to the IP address (ie. no default gateway)  
+`8311_ping_ip` **Ping IP** - Sets an IP address to automatically ping, this helps with being able to reach the stick. Defaults to the 2nd ip address in the configured management network (ie. 192.168.11.2).  
 
 
 ### 8311_console_en - Enable serial console
