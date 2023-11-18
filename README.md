@@ -31,33 +31,29 @@
 ```
 
 
-### Management Related fwenvs
-`8311_ipaddr` **IP Address** - Set the management IP address. Defaults to `192.168.11.1`  
+### Management fwenvs
+`8311_ipaddr` - **IP Address** - Set the management IP address. Defaults to `192.168.11.1`  
 
-`8311_netmask` **Subnet Mask** - Set the management subnet mask. Defaults to `255.255.255.0`  
+`8311_netmask` - **Subnet Mask** - Set the management subnet mask. Defaults to `255.255.255.0`  
 
-`8311_gateway` **Gateway** - Set the management gateway. Defaults to the IP address (ie. no default gateway)  
+`8311_gateway` - **Gateway** - Set the management gateway. Defaults to the IP address (ie. no default gateway)  
 
-`8311_ping_ip` **Ping IP** - Sets an IP address to automatically ping, this helps with being able to reach the stick. Defaults to the 2nd ip address in the configured management network (ie. 192.168.11.2).  
+`8311_ping_ip` - **Ping IP** - Sets an IP address to ping every 5 seconds, this can helps with reaching the stick. Defaults to the 2nd ip address in the configured management network (ie. 192.168.11.2).  
 
 
-### 8311_console_en - Enable serial console
-Set to `1` to enable the serial console, this will cause TX_FAULT to be asserted as it shares the same SFP pin.
+### Device fwenvs
+`8311_console_en` - **Serial console** - Set to `1` to enable the serial console, this will cause TX_FAULT to be asserted as it shares the same SFP pin.  
 
-### 8311_ethtool_speed - Ethtool Speed Settings
-Set ethtool speed settings on the eth0_0 interface (ethtool -s).
+`8311_ethtool_speed` - **Ethtool Speed Settings** - Set ethtool speed settings on the eth0_0 interface (ethtool -s).  
 
-### 8311_failsafe_delay - Failsafe Delay
-Sets the number of seconds that we will delay the startup of omcid for at bootup. Defaults to 30 seconds (30 to 300).
+`8311_failsafe_delay` - **Failsafe Delay** - Sets the number of seconds that we will delay the startup of omcid for at bootup (30 to 300). Defaults to 30 seconds.  
 
-### 8311_persist_root - Persist RootFS
-Set to `1` to allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes.
+`8311_persist_root` - **Persist RootFS** - Set to `1` to allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes.  
 
-### 8311_root_pwhash - Root password hash
-Allows you to set a custom root password by setting the hash.
+`8311_root_pwhash` - **Root password hash** - Allows you to set a custom root password by setting the hash.  
 
-### 8311_rx_los - RX_LOS Workaround
-Set to `0` to monitor the status of the RX_LOS pin to disable it any time it gets enabled. This will allow the stick to be accessible in devices which disable access to the port if RX_LOS is being asserted.
+`8311_rx_los` - **RX_LOS Workaround** - Set to `0` to monitor the status of the RX_LOS pin to disable it any time it gets enabled. This will allow the stick to be accessible in devices which disable access to the port if RX_LOS is being asserted.  
+
 
 
 ### 8311_cp_hw_ver_sync - Sync Circuit Pack Version
