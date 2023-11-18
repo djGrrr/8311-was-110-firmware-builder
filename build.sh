@@ -174,7 +174,7 @@ if [ -n "$REG_ID_HEX" ]; then
 fi
 
 # 8311 MOD: fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
-SW_VERSION_A=$(fw_printenv -n 8311_sw_verA 2>/dev/null)
+SW_VERSION_A=$(fw_printenv -n 8311_sw_verA 2>/dev/null | head -c 14)
 if [ -n "$SW_VERSION_A" ]; then
 	echo "Setting PON image A version: $SW_VERSION_A" | tee -a /dev/console
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A=key
@@ -182,7 +182,7 @@ if [ -n "$SW_VERSION_A" ]; then
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.value="$SW_VERSION_A"
 fi
 
-SW_VERSION_B=$(fw_printenv -n 8311_sw_verB 2>/dev/null)
+SW_VERSION_B=$(fw_printenv -n 8311_sw_verB 2>/dev/null | head -c 14)
 if [ -n "$SW_VERSION_B" ]; then
 	echo "Setting PON image B version: $SW_VERSION_B" | tee -a /dev/console
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B=key
@@ -191,7 +191,7 @@ if [ -n "$SW_VERSION_B" ]; then
 fi
 
 # 8311 MOD: fwenv to set hardware version (omci_pipe.sh meg 256 0)
-HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null)
+HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null | head -c 14)
 if [ -n "$HW_VERSION" ]; then
 	# this only really changes what's in load_cli and the webui, so no need to echo to console
 	uci -qc /ptdata set factory_conf.HardwareVersion=key
@@ -247,7 +247,7 @@ cat >> "$BFW_START" <<'EQUIPMENTID_MOD'
 		sleep 1
 	done
 
-	EQUIPMENT_ID=$(fw_printenv -n 8311_equipment_id 2>/dev/null)
+	EQUIPMENT_ID=$(fw_printenv -n 8311_equipment_id 2>/dev/null | head -c 20)
 	if [ -n "$EQUIPMENT_ID" ]; then
 		echo "Setting PON Equipment ID: $EQUIPMENT_ID" | tee -a /dev/console
 		uci -qc /tmp set deviceinfo.devicetype.value="$EQUIPMENT_ID"
@@ -342,7 +342,7 @@ NETMASK
 	fi
 
 	echo "Starting ping to: $PING_HOST" | tee -a /dev/console
-	ping "$PING_HOST" > /dev/null 2>&1 < /dev/null &
+	ping -i 5 "$PING_HOST" > /dev/null 2>&1 < /dev/null &
 
 	# set mib file from mib_file fwenv
 	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null)
@@ -357,6 +357,7 @@ NETMASK
 			uci commit omci
 		fi
 	fi
+	MIB_FILE="${MIB_FILE:-"/rom/etc/mibs/prx300_1U.ini"}"
 
 	# fwenv for setting eth0_0 speed settings with ethtool
 	ETH_SPEED=$(fw_printenv -n 8311_ethtool_speed 2>/dev/null)
@@ -373,15 +374,22 @@ NETMASK
 	fi
 
 	# fwenv to set hardware version (omci_pipe.sh meg 256 0)
-	HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null)
+	HW_VERSION=$(fw_printenv -n 8311_hw_ver 2>/dev/null | head -c 14)
 	if [ -n "$HW_VERSION" ]; then
 		echo "Setting PON hardware version: $HW_VERSION" | tee -a /dev/console
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion=key
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.encryflag=0
 		uci -qc /ptrom/ptconf set sysinfo_conf.HardwareVersion.value="$HW_VERSION"
+
+
+		SYNC_CP_HW_VERSION=$(fw_printenv -n 8311_cp_hw_ver_sync 2>/dev/null)
+		if [ "$SYNC_CP_HW_VERSION" -eq 1 ] 2>/dev/null; then
+			echo "Setting PON Circuit Pack versions to: $HW_VERSION" | tee -a /dev/console
+			sed -r "s#^(6\s+\S+\s+\S+\s+\S+\s+\"[^\"]+\"\s+)\"[^\"]+\"#\1\"${HW_VERSION}\"#g" -i "$MIB_FILE"
+		fi
 	fi
 
-	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null)
+	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null | head -c 14)
 	if [ -n "$SW_VERSION" ]; then
 		echo "Setting PON software version: $SW_VERSION" | tee -a /dev/console
 		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion=key
