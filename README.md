@@ -36,7 +36,7 @@
 Set to `0` to disable the automatic fixes that are applied to VLANs.  
 
 `8311_internet_vlan` - **Internet VLAN**  
-Set the local VLAN ID to use for the Internet or `0` to make the Internet Untagged (and also avoid VLAN 0 issues) (0 to 4095). Defaults to `0` (untagged).  
+Set the local VLAN ID to use for the Internet or `0` to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to `0` (untagged).  
 
 `8311_services_vlan` - **Services VLAN**  
 Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095). This fixes multi-service on Bell.  
