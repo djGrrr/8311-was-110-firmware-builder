@@ -357,7 +357,7 @@ NETMASK
 			uci commit omci
 		fi
 	fi
-	MIB_FILE="${MIB_FILE:-"/rom/etc/mibs/prx300_1U.ini"}"
+	MIB_FILE="${MIB_FILE:-"/etc/mibs/prx300_1U.ini"}"
 
 	# fwenv for setting eth0_0 speed settings with ethtool
 	ETH_SPEED=$(fw_printenv -n 8311_ethtool_speed 2>/dev/null)
