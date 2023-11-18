@@ -18,6 +18,7 @@
 8311_root_pwhash=$1$BghTQV7M$ZhWWiCgQptC1hpUdIfa0e.
 8311_rx_los=0
 
+8311_cp_hw_ver_sync=1
 8311_device_sn=DM222XXXXXXXXXX
 8311_equipment_id=5690
 8311_gpon_sn=SMBSXXXXXXXX
@@ -28,6 +29,44 @@
 8311_sw_verB=SGC830006E
 8311_vendor_id=SMBS
 ```
+
+
+### 8311_cp_hw_ver_sync
+**Sync Circuit Pack with Hardware Version**
+When set to `1` and `8311_hw_ver` is also set, will modify the configured mib file to set the Version field of any Circuit Pack MEs to match the Hardware version
+
+### 8311_device_sn
+**Device Serial Number**
+Sets the physical device S/N, this is more or less display only
+
+### 8311_equipment_id
+**Equipment ID**
+Sets the PON Equipment ID field in the ONU2-G ME (257)
+
+### 8311_gpon_sn
+**GPON Serial Number**
+Sets the GPON Serial Number sent to the OLT in various MEs (4 letters, followed by 8 hex digits)
+
+### 8311_hw_ver
+**Hardware Version**
+Set the Hardware version string sent to the OLT in various MEs (up to 14 characters)
+
+### 8311_mib_file
+**MIB File**
+Sets the MIB file used by omcid. Defaults to `/etc/mibs/prx300_1U.ini`
+
+### 8311_reg_id_hex
+**Registration ID**
+Sets the Registration ID sent to the OLT in hex format
+
+### 8311_sw_ver / 8311_sw_verA / 8311_sw_verB
+**Software Version**
+Sets the default and/or image specific software versions sent in the Software image MEs (7)
+
+### 8311_vendor_id
+**Vendor ID**
+Sets the PON Vendor ID sent to the OLT, automatically derived from the GPON Serial Number if not set (4 letters)
+
 
 ## custom uci settings
 `uci -qc /ptconf/8311 show`  
