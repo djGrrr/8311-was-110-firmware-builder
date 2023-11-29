@@ -424,6 +424,21 @@ echo "$RC_LOCAL_FOOT" >> "$RC_LOCAL"
 chmod +x "$RC_LOCAL"
 
 
+LIB_PON_SH="$ROOT_DIR/lib/pon.sh"
+LIB_PON_SH_HEAD=$(grep -P -B99999999 '^pon_base_mac_get\(\)' "$LIB_PON_SH")
+LIB_PON_SH_FOOT=$(grep -P -A99999999 '^\s+echo \$mac_addr$' "$LIB_PON_SH")
+
+echo "$LIB_PON_SH_HEAD" > "$LIB_PON_SH"
+cat >> "$LIB_PON_SH" <<'PONSH'
+	# 8311 MOD: Use proper base MAC
+	local serial_suffix=$(dd if=/sys/class/pon_mbox/pon_mbox0/device/eeprom50 bs=1 skip=72 count=8 2>/dev/null)
+	local mac_addr="10:B3:6F:00:00:00"
+
+	[ -n "$serial_suffix" ] && mac_addr="$(echo "$mac_addr" | head -c 5)$(echo "$serial_suffix" | sed -r 's/(..)/:\1/g')"
+PONSH
+echo "$LIB_PON_SH_FOOT" >> "$LIB_PON_SH"
+
+
 IP_CONFIG="$ROOT_DIR/etc/uci-defaults/30-ip-config"
 IP_CONFIG_HEAD=$(grep -P -B99999999 '^local ip=\$\(.+/proc/cmdline\)$' "$IP_CONFIG" | head -n -1)
 IP_CONFIG_FOOT=$(grep -A99999999 'uci set network.$interface.ipaddr=' "$IP_CONFIG")
