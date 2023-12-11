@@ -62,6 +62,16 @@ expected_hash() {
 	fi
 }
 
+GIT_HASH=$(git rev-parse --short HEAD)
+GIT_DIFF=$(git diff HEAD)
+GIT_TAG=$(git tag --points-at HEAD | grep -P '^v\d+\.\d+\.\d+' | sort -V -r | head -n1)
+
+FW_PREFIX=""
+[ -n "$GIT_DIFF" ] && FW_SUFFIX="~dev"
+[ -n "$GIT_TAG" ] && FW_VERSION="$GIT_TAG$FW_SUFFIX" || FW_VERSION="dev"
+FW_HASH="$GIT_HASH$FW_SUFFIX"
+
+
 set -e
 
 HEADER=
@@ -109,6 +119,67 @@ GROUP=$(id -gn)
 
 sudo chown -R "$USER:$GROUP" "$ROOT_DIR"
 
+
+BANNER="$ROOT_DIR/etc/banner"
+sed -E "s#(^\s+OpenWrt\s+.+$)#\1\n\n 8311 Community Firmware MOD - $FW_VERSION ($FW_HASH)\n https://github.com/djGrrr/8311-was-110-firmware-builder#g" -i "$BANNER"
+
+# Add MOD Version to webui
+STATE_OVCT="$ROOT_DIR/www/html/stateOverview_ct.html"
+dos2unix "$STATE_OVCT"
+
+STATE_OVCT_HEAD=$(grep -B99999999 -A1 -P '<td id="SoftwareVersion"></td>' "$STATE_OVCT")
+STATE_OVCT_FOOT=$(grep -A99999999 -P '<td id="SoftwareVersion"></td>' "$STATE_OVCT" | tail -n +3)
+
+echo "$STATE_OVCT_HEAD" > "$STATE_OVCT"
+cat >> "$STATE_OVCT" <<MOD_VERSION
+		            <tr>
+		                <td class="table_title" i18n="8311modver"></td>
+		                <td>$FW_VERSION ($FW_HASH)</td>
+		            </tr>
+MOD_VERSION
+echo "$STATE_OVCT_FOOT" >> "$STATE_OVCT"
+unix2dos "$STATE_OVCT"
+
+# Modify language files
+LANG_EN_GB="$ROOT_DIR/www/language/i18n_en_gb"
+dos2unix "$LANG_EN_GB"
+
+LANG_EN_GB_HEAD=$(grep -B99999999 -P '^\s+"softwarever":' "$LANG_EN_GB")
+LANG_EN_GB_FOOT=$(grep -A99999999 -P '^\s+"softwarever":' "$LANG_EN_GB" | tail -n +2)
+
+echo "$LANG_EN_GB_HEAD" > "$LANG_EN_GB"
+cat >> "$LANG_EN_GB" <<MOD_LANG_EN
+	"8311modver":"8311 Community MOD Version",
+MOD_LANG_EN
+echo "$LANG_EN_GB_FOOT" >> "$LANG_EN_GB"
+unix2dos "$LANG_EN_GB"
+
+LANG_ZH_CN="$ROOT_DIR/www/language/i18n_zh_cn"
+dos2unix "$LANG_ZH_CN"
+
+LANG_ZH_CN_HEAD=$(grep -B99999999 -P '^\s+"softwarever":' "$LANG_ZH_CN")
+LANG_ZH_CN_FOOT=$(grep -A99999999 -P '^\s+"softwarever":' "$LANG_ZH_CN" | tail -n +2)
+
+echo "$LANG_ZH_CN_HEAD" > "$LANG_ZH_CN"
+cat >> "$LANG_ZH_CN" <<MOD_LANG_CN
+	"8311modver":"8311社区修改版",
+MOD_LANG_CN
+echo "$LANG_ZH_CN_FOOT" >> "$LANG_ZH_CN"
+unix2dos "$LANG_ZH_CN"
+
+# Add logo
+cp -fv "files/logo_8311.png" "$ROOT_DIR/www/image/logo_8311.png"
+
+MAIN_HTML="$ROOT_DIR/www/html/main.html"
+MAIN_HTML_HEAD=$(grep -B99999999 '../image/logo_azores.png' "$MAIN_HTML" | head -n -1)
+MAIN_HTML_FOOT=$(grep -A99999999 '../image/logo_azores.png' "$MAIN_HTML" | tail -n +2)
+
+echo "$MAIN_HTML_HEAD" > "$MAIN_HTML"
+cat >> "$MAIN_HTML" <<8311_LOGO
+					<img src="../image/logo_8311.png" id="8311logo" style="width: 73px; height: 40px; margin-left: 10px; margin-top: 13px;">
+					<img src="../image/logo_azores.png" id="logoimg" style="width: 126px; height: 40px; margin-left: 30px; margin-top: 13px;">
+8311_LOGO
+echo "$MAIN_HTML_FOOT" >> "$MAIN_HTML"
 
 BFW_START="$ROOT_DIR/etc/init.d/bfw_start.sh"
 
@@ -272,31 +343,40 @@ DROPBEAR="$ROOT_DIR/etc/init.d/dropbear"
 DROPBEAR_HEAD=$(pcre2grep -B99999999 -M 'boot\(\)\s+\{\s+BOOT=1$' "$DROPBEAR")
 DROPBEAR_FOOT=$(pcre2grep -A99999999 -M 'boot\(\)\s+\{\s+BOOT=1$' "$DROPBEAR" | tail -n +4)
 
+rm -rfv "$ROOT_DIR/etc/dropbear"
+ln -fsv "/ptconf/8311/.ssh" "$ROOT_DIR/root/.ssh"
+ln -fsv "/ptconf/8311/dropbear" "$ROOT_DIR/etc/dropbear"
+
 echo "$DROPBEAR_HEAD" > "$DROPBEAR"
 cat >> "$DROPBEAR" <<'DROPBEAR_KEYS'
 
 	# 8311 MOD: persistent server and client key
-	mkdir -p /ptconf/8311
-	touch /ptconf/8311/dropbear
-
 	DROPBEAR_RSA_KEY=$(uci -qc /ptconf/8311 get dropbear.rsa_key.value)
+	DROPBEAR_PUBKEY=$(uci -qc /ptconf/8311 get dropbear.public_key.value)
+	DROPBEAR_PUBKEY_BASE64=$(uci -qc /ptconf/8311 get dropbear.public_key.encryflag)
+
+	[ -f "/ptconf/8311/dropbear" ] && rm -fv "/ptconf/8311/dropbear"
+	mkdir -p /ptconf/8311 /ptconf/8311/dropbear /ptconf/8311/.ssh
+	chmod 700 /ptconf/8311/dropbear /ptconf/8311/.ssh
+	ln -fsv /ptconf/8311/.ssh/authorized_keys /ptconf/8311/dropbear/authorized_keys
+
 	if [ -n "$DROPBEAR_RSA_KEY" ]; then
-		echo "$DROPBEAR_RSA_KEY" | base64 -d > /etc/dropbear/dropbear_rsa_host_key
-		chmod 600 /etc/dropbear/dropbear_rsa_host_key
+		echo "Migrating dropbear.rsa_key to /ptconf/8311/dropbear/dropbear_rsa_host_key" | tee -a /dev/console
+
+		echo "$DROPBEAR_RSA_KEY" | base64 -d > /ptconf/8311/dropbear/dropbear_rsa_host_key
+		chmod 600 /ptconf/8311/dropbear/dropbear_rsa_host_key
 	fi
 
-	DROPBEAR_PUBKEY=$(uci -qc /ptconf/8311 get dropbear.public_key.value)
 	if [ -n "$DROPBEAR_PUBKEY" ]; then
-		mkdir -p /root/.ssh
-		chmod 700 /root/.ssh
-		BASE64=$(uci -qc /ptconf/8311 get dropbear.public_key.encryflag)
-		if [ "$BASE64" = "1" ]; then
-			echo "$DROPBEAR_PUBKEY" | base64 -d > /root/.ssh/id_dropbear
+		echo "Migrating dropbear.public_key to /ptconf/8311/.ssh/authorized_keys" | tee -a /dev/console
+
+		if [ "$DROPBEAR_PUBKEY_BASE64" = "1" ]; then
+			echo "$DROPBEAR_PUBKEY" | base64 -d > /ptconf/8311/.ssh/authorized_keys
 		else
-			echo "$DROPBEAR_PUBKEY" > /root/.ssh/id_dropbear
+			echo "$DROPBEAR_PUBKEY" > /ptconf/8311/.ssh/authorized_keys
 		fi
 
-		chmod 600 /root/.ssh/id_dropbear
+		chmod 600 /ptconf/8311/.ssh/authorized_keys
 	fi
 
 DROPBEAR_KEYS
@@ -367,7 +447,7 @@ NETMASK
 	fi
 
 	# fwenv for setting the root account password hash
-	ROOT_PWHASH=$(fw_printenv -n 8311_root_pwhash 2>/dev/null)
+	ROOT_PWHASH=$(fw_printenv -n 8311_root_pwhash 2>/dev/null | sed 's#/#\\/#g')
 	if [ -n "$ROOT_PWHASH" ]; then
 		echo "Setting root password hash: $ROOT_PWHASH" | tee -a /dev/console
 		sed -r "s/(root:)([^:]+)(:.+)/\1${ROOT_PWHASH}\3/g" -i /etc/shadow
@@ -475,8 +555,10 @@ boot() {
 }
 INITD_NETWORK
 
-cp -fv "scripts/8311-rx_los.sh" "scripts/8311-vlansd.sh" "$ROOT_DIR/usr/sbin/"
-cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/root/"
+cp -fv "scripts/8311-rx_los.sh" "scripts/8311-vlansd.sh" "scripts/8311-persist-root-password.sh" "$ROOT_DIR/usr/sbin/"
+cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/usr/sbin/"
+ln -fsv "/usr/sbin/8311-detect-config.sh" "$ROOT_DIR/root/8311-detect-config.sh"
+ln -fsv "/usr/sbin/8311-fix-vlans.sh" "$ROOT_DIR/root/8311-fix-vlans.sh"
 mkdir -p "$ROOT_DIR/etc/crontabs"
 
 touch "$ROOT_DIR/etc/crontabs/root"

@@ -106,14 +106,9 @@ Sets the PON Vendor ID sent to the OLT, automatically derived from the GPON Seri
 
 
 
-## Custom uci settings
-`uci -qc /ptconf/8311 show`  
-```
-dropbear.rsa_key=key
-dropbear.rsa_key.value='BASE64 of the RSA server key'
-dropbear.public_key=key
-dropbear.public_key.value='ssh-rsa public key' 
-```
+## SSH Keys
+SSH host keys (all of /etc/dropbear) and authorized_keys (all of /root/.ssh) are now stored persistently.
+Previous UCI settings will be automatically migrated.
 
 ## Scripts
 
