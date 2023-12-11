@@ -107,10 +107,10 @@ Sets the PON Vendor ID sent to the OLT, automatically derived from the GPON Seri
 
 
 ## Authentication
-SSH host keys (all of /etc/dropbear) and authorized_keys (all of /root/.ssh) are now stored persistently.
+SSH host keys (all of `/etc/dropbear`) and authorized_keys (all of `/root/.ssh`) are now stored persistently.
 Previous UCI settings will be automatically migrated.
 
-The current root password (change with passwd) can be persisted using the 8311-persist-root-password.sh command
+The current root password (change with passwd) can be persisted using the `8311-persist-root-password.sh` command
 
 
 
