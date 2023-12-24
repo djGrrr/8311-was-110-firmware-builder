@@ -86,20 +86,29 @@ Sets the physical device S/N, this is more or less display only.
 `8311_equipment_id` - **Equipment ID**  
 Sets the PON Equipment ID field in the ONU2-G ME (257).  
 
-`8311_gpon_sn` - **GPON Serial Number**  
+`8311_gpon_sn` - **GPON Serial Number / ONT ID**  
 Sets the GPON Serial Number sent to the OLT in various MEs (4 letters, followed by 8 hex digits).  
 
 `8311_hw_ver` - **Hardware Version**  
 Set the Hardware version string sent to the OLT in various MEs (up to 14 characters).  
 
+`8311_loid` - **Logical ONU ID**  
+Sets the Logical ONU ID presented to the OLT in ME 256 (up to 24 characters).  
+
+`8311_lpwd` - **Logical Password**  
+Sets the Logical Password prsented to the OLT in ME 256 (up to 12 characters).  
+
 `8311_mib_file` - **MIB File**  
 Sets the MIB file used by omcid. Defaults to `/etc/mibs/prx300_1U.ini`  
 
-`8311_reg_id_hex` - **Registration ID**  
-Sets the Registration ID sent to the OLT in hex format.  
+`8311_pon_slot` - **PON Slot**  
+Sets the slot number that the UNI port is presented on, needed on some ISPs.  
 
-`8311_sw_ver` / `8311_sw_verA` / `8311_sw_verB` - **Software Versions**  
-Sets the default and/or image specific software versions sent in the Software image MEs (7).  
+`8311_reg_id_hex` - **Registration ID**  
+Sets the Registration ID (up to 36 characters [72 hex]) sent to the OLT in hex format. This is where you would set a ploam password (which is contained in the last 12 characters).  
+
+`8311_sw_verA` / `8311_sw_verB` - **Software Versions**  
+Sets the image specific software versions sent in the Software image MEs (7).  
 
 `8311_vendor_id` - **Vendor ID**  
 Sets the PON Vendor ID sent to the OLT, automatically derived from the GPON Serial Number if not set (4 letters).  

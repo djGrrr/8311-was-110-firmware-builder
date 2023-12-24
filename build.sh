@@ -181,6 +181,13 @@ cat >> "$MAIN_HTML" <<8311_LOGO
 8311_LOGO
 echo "$MAIN_HTML_FOOT" >> "$MAIN_HTML"
 
+
+# Remove dumb defaults for loid and lpwd
+CONFIG_OMCI="$ROOT_DIR/etc/config/omci"
+CONFIG_OMCI_FILTERED=$(grep -v -E '(loid|lpwd)' "$CONFIG_OMCI")
+echo "$CONFIG_OMCI_FILTERED" > "$CONFIG_OMCI"
+
+
 BFW_START="$ROOT_DIR/etc/init.d/bfw_start.sh"
 
 
@@ -245,7 +252,7 @@ if [ -n "$REG_ID_HEX" ]; then
 fi
 
 # 8311 MOD: fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
-SW_VERSION_A=$(fw_printenv -n 8311_sw_verA 2>/dev/null | head -c 14)
+SW_VERSION_A=$({ fw_printenv -n 8311_sw_verA || fw_printenv -n 8311_sw_ver || fw_printenv -n 8311_sw_verB; } 2>/dev/null | head -c 14)
 if [ -n "$SW_VERSION_A" ]; then
 	echo "Setting PON image A version: $SW_VERSION_A" | tee -a /dev/console
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A=key
@@ -253,7 +260,7 @@ if [ -n "$SW_VERSION_A" ]; then
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_A.value="$SW_VERSION_A"
 fi
 
-SW_VERSION_B=$(fw_printenv -n 8311_sw_verB 2>/dev/null | head -c 14)
+SW_VERSION_B=$({ fw_printenv -n 8311_sw_verB || fw_printenv -n 8311_sw_ver || fw_printenv -n 8311_sw_verA; } 2>/dev/null | head -c 14)
 if [ -n "$SW_VERSION_B" ]; then
 	echo "Setting PON image B version: $SW_VERSION_B" | tee -a /dev/console
 	uci -qc /ptconf set sysinfo_conf.SoftwareVersion_B=key
@@ -424,6 +431,20 @@ NETMASK
 	echo "Starting ping to: $PING_HOST" | tee -a /dev/console
 	ping -i 5 "$PING_HOST" > /dev/null 2>&1 < /dev/null &
 
+	# 8311 MOD: fwenv to set Logical ONU ID
+	LOID=$(fw_printenv -n 8311_loid 2>/dev/null | head -c 24)
+	if [ -n "$LOID" ]; then
+		echo "Setting PON Logical ONU ID to: $LOID" | tee -a /dev/console
+		uci -q set omci.default.loid="$LOID"
+	fi
+
+	# 8311 MOD: fwenv to set Logical Password
+	LPWD=$(fw_printenv -n 8311_lpwd | head -c 12)
+	if [ -n "$LPWD" ]; then
+		echo "Setting PON Logical Password to: $LPWD" | tee -a /dev/console
+		uci -q set omci.default.lpwd="$LPWD"
+	fi
+
 	# set mib file from mib_file fwenv
 	MIB_FILE=$(fw_printenv -n 8311_mib_file 2>/dev/null)
 	if [ -n "$MIB_FILE" ]; then
@@ -433,8 +454,7 @@ NETMASK
 
 		if [ -f "$MIB_FILE" ]; then
 			echo "Setting OMCI MIB file: $MIB_FILE" | tee -a /dev/console
-			uci set omci.default.mib_file="$MIB_FILE"
-			uci commit omci
+			uci -q set omci.default.mib_file="$MIB_FILE"
 		fi
 	fi
 	MIB_FILE="${MIB_FILE:-"/etc/mibs/prx300_1U.ini"}"
@@ -469,16 +489,18 @@ NETMASK
 		fi
 	fi
 
-	SW_VERSION=$(fw_printenv -n 8311_sw_ver 2>/dev/null | head -c 14)
-	if [ -n "$SW_VERSION" ]; then
-		echo "Setting PON software version: $SW_VERSION" | tee -a /dev/console
-		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion=key
-		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.encryflag=0
-		uci -qc /ptrom/ptconf set sysinfo_conf.SoftwareVersion.value="$SW_VERSION"
+	# fwenv to change the slot presented to the OLT
+	PON_SLOT=$(fw_printenv -n 8311_pon_slot 2>/dev/null)
+	if [ "$PON_SLOT" -gt "1" ] 2>/dev/null && [ "$PON_SLOT" -le "254" ]; then
+		PON_SLOT_HEX=$(printf '%.2x\n' "$PON_SLOT")
+		sed -r "s/^(277\s+(\S+\s+){6})0x01/\10x${PON_SLOT_HEX}/g" -i "$MIB_FILE"
+		sed -r "s/^(5|6)\s+0x0101/\1 0x01${PON_SLOT_HEX}/g" -i "$MIB_FILE"
+		sed -r "s/^(([?!]\s+)?\d+)\s+0x0101/\1 0x${PON_SLOT_HEX}01/g" -i "$MIB_FILE"
 	fi
 
 	# commit uci changes
 	[ -n "$(uci -qc /ptrom/ptconf changes sysinfo_conf)" ] && uci -qc /ptrom/ptconf commit sysinfo_conf
+	[ -n "$(uci -q changes omci)" ] && uci -q commit omci
 
 
 	start "$@"
@@ -568,14 +590,18 @@ sed -r 's#^(\s+)(start.+)$#\1\# 8311 MOD: Do not auto start omcid\n\1\# \2#g' -i
 
 sed -r 's#^(\s+)(.+ )(\|\| ubimkvol /dev/ubi0 -N rootfs_data)( .+$)#\1\# 8311 MOD: Always try to create rootfs_data at ID 6 first\n\1\2\3 -n 6\4 \3\4#g' -i "$ROOT_DIR/lib/preinit/06_create_rootfs_data"
 
-# omcid mod by up-n-atom to fix management with VEIP mode
 OMCID="$ROOT_DIR/opt/intel/bin/omcid"
 if check_file "$OMCID" "0aa64358a3afaa17b4edfed0077141981bc13322c7d1cf730abc251fae1ecbb1"; then
 	echo "Patching '$OMCID'..."
 
+	# omcid mod by up-n-atom to fix management with VEIP mode
 	printf '\x00' | dd of="$OMCID" conv=notrunc seek=$((0x7F5C5)) bs=1 count=1 2>/dev/null
 
-	expected_hash "$OMCID" "35f6fb59b6c7f366210ab7cafa8ef7e9161fab14d752b6a6f1ca3d6295951a94"
+	# omcid mod by djGrrr to make default LOID and LPWD empty
+	printf '\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF42F4)) bs=1 count=6 2>/dev/null
+	printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF4304)) bs=1 count=9 2>/dev/null
+
+	expected_hash "$OMCID" "62925b4dd5ca2b097f914aa4fb26247e72c04f18e7c8a9e0263d31c9817ea1fc"
 fi
 
 # libponnet mod by rss to fix management with VEIP mode
