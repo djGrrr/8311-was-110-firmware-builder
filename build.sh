@@ -152,6 +152,8 @@ cat >> "$LANG_EN_GB" <<MOD_LANG_EN
 	"8311modver":"8311 Community MOD Version",
 MOD_LANG_EN
 echo "$LANG_EN_GB_FOOT" >> "$LANG_EN_GB"
+
+sed -r 's/("regidtextlength":".+ octets)[^"]+"/\1"/g' -i "$LANG_EN_GB"
 unix2dos "$LANG_EN_GB"
 
 LANG_ZH_CN="$ROOT_DIR/www/language/i18n_zh_cn"
@@ -165,7 +167,23 @@ cat >> "$LANG_ZH_CN" <<MOD_LANG_CN
 	"8311modver":"8311社区修改版",
 MOD_LANG_CN
 echo "$LANG_ZH_CN_FOOT" >> "$LANG_ZH_CN"
+
+sed -r 's/("regidtextlength":".+位)[^"]+"/\1"/g' -i "$LANG_ZH_CN"
 unix2dos "$LANG_ZH_CN"
+
+OLTAUTH_JS="$ROOT_DIR/www/js/oltauth_comn.js"
+OLTAUTH_JS_PART1=$(grep -B99999999 'Regid_text.length > 36' "$OLTAUTH_JS" | head -n -1)
+OLTAUTH_JS_PART2=$(grep -A99999999 'Regid_text.length > 36' "$OLTAUTH_JS" | tail -n +2 | grep -B99999999 -A1 'function validCheck()')
+OLTAUTH_JS_PART3=$(grep -A99999999 'function validCheck()' "$OLTAUTH_JS" | grep -A99999999 'if ( isCnInclude($("#Regid_text").val()) )' | grep -B99999999 -A1 'function validCheckCu()')
+OLTAUTH_JS_PART4=$(grep -A99999999 'function validCheckCu()' "$OLTAUTH_JS" | grep -A99999999 'if ( isCnInclude($("#Regid_text").val()) )')
+
+echo "$OLTAUTH_JS_PART1" > "$OLTAUTH_JS"
+cat >> "$OLTAUTH_JS" <<REG_ID_CHECK
+			if( Regid_text.length > 36 ) {
+REG_ID_CHECK
+echo "$OLTAUTH_JS_PART2" >> "$OLTAUTH_JS"
+echo "$OLTAUTH_JS_PART3" >> "$OLTAUTH_JS"
+echo "$OLTAUTH_JS_PART4" >> "$OLTAUTH_JS"
 
 # Add logo
 cp -fv "files/logo_8311.png" "$ROOT_DIR/www/image/logo_8311.png"
@@ -181,6 +199,8 @@ cat >> "$MAIN_HTML" <<8311_LOGO
 8311_LOGO
 echo "$MAIN_HTML_FOOT" >> "$MAIN_HTML"
 
+# Fix Registration ID default value of "NULL"
+sed -r 's#(<param name="RegistrationID" .+ value=)"\S+"(></param>)#\1""\2#g' -i "$ROOT_DIR/ptrom/ptconf/param_ct.xml"
 
 # Remove dumb defaults for loid and lpwd
 CONFIG_OMCI="$ROOT_DIR/etc/config/omci"
@@ -249,6 +269,9 @@ if [ -n "$REG_ID_HEX" ]; then
 	uci -qc /ptdata set factory_conf.GPONPassWord=key
 	uci -qc /ptdata set factory_conf.GPONPassWord.encryflag=1
 	uci -qc /ptdata set factory_conf.GPONPassWord.value="$(echo -n "$REG_ID_HEX" | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf | base64)"
+
+	uci -qc /ptconf delete usrconfig_conf.InternetGatewayDevice__DeviceInfo__.RegistrationID
+	[ -n "$(uci -qc /ptconf changes usrconfig_conf)" ] && uci -qc /ptconf commit usrconfig_conf
 fi
 
 # 8311 MOD: fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
@@ -439,7 +462,7 @@ NETMASK
 	fi
 
 	# 8311 MOD: fwenv to set Logical Password
-	LPWD=$(fw_printenv -n 8311_lpwd | head -c 12)
+	LPWD=$(fw_printenv -n 8311_lpwd 2>/dev/null | head -c 12)
 	if [ -n "$LPWD" ]; then
 		echo "Setting PON Logical Password to: $LPWD" | tee -a /dev/console
 		uci -q set omci.default.lpwd="$LPWD"
