@@ -274,6 +274,36 @@ if [ -n "$REG_ID_HEX" ]; then
 	[ -n "$(uci -qc /ptconf changes usrconfig_conf)" ] && uci -qc /ptconf commit usrconfig_conf
 fi
 
+# 8311 MOD: set LCT MAC
+LCT_MAC=$(uci get network.lct.macaddr)
+echo "Setting LCT MAC Address to: $LCT_MAC" | tee -a /dev/console
+uci -qc /ptdata set factory_conf.brmac=key
+uci -qc /ptdata set factory_conf.brmac.encryflag=0
+uci -qc /ptdata set factory_conf.brmac.value="$LCT_MAC"
+
+# 8311 MOD: set IP Host MAC
+IPHOST_MAC=$(uci get network.iphost1.macaddr)
+echo "Setting IP Host MAC Address to: $IPHOST_MAC" | tee -a /dev/console
+uci -qc /ptdata set factory_conf.internetmac=key
+uci -qc /ptdata set factory_conf.internetmac.encryflag=0
+uci -qc /ptdata set factory_conf.internetmac.value="$IPHOST_MAC"
+
+
+IPHOST_HOSTNAME=$(fw_printenv -n 8311_iphost_hostname | head -c 25)
+if [ -n "$IPHOST_HOSTNAME" ]; then
+	echo "Setting PON IP Host Hostname to: $IPHOST_HOSTNAME" | tee -a /dev/console
+fi
+echo "$IPHOST_HOSTNAME" > /tmp/8311-iphost-hostname
+
+# 8311 MOD: fwenv to set IP Host Domain Name and Host Name
+IPHOST_DOMAIN=$(fw_printenv -n 8311_iphost_domain | head -c 25)
+if [ -n "$IPHOST_DOMAIN" ]; then
+	echo "Setting PON IP Host Domain Name to: $IPHOST_DOMAIN" | tee -a /dev/console
+fi
+echo "$IPHOST_DOMAIN" > /tmp/8311-iphost-domainname
+
+
+
 # 8311 MOD: fwenvs to set software versions (omci_pipe.sh meg 7 0/1)
 SW_VERSION_A=$({ fw_printenv -n 8311_sw_verA || fw_printenv -n 8311_sw_ver || fw_printenv -n 8311_sw_verB; } 2>/dev/null | head -c 14)
 if [ -n "$SW_VERSION_A" ]; then
@@ -300,13 +330,30 @@ if [ -n "$HW_VERSION" ]; then
 	uci -qc /ptdata set factory_conf.HardwareVersion.value="$HW_VERSION"
 fi
 
+# Remove Reservedata as it causes the stick to reboot every few minutes
+uci -qc /ptdata delete factory_conf.Reservedata
 
 [ -n "$(uci -qc /ptconf changes sysinfo_conf)" ] && uci -qc /ptconf commit sysinfo_conf
 
-if [ -n "$(uci -qc /ptdata changes factory_conf)" ]; then
+# 8311 MOD: Disable factory mode unless specifically enabled
+FAC_MODE=$(fw_printenv -n 8311_factory_mode 2>/dev/null)
+[ "$FAC_MODE" = "1" ] || FAC_MODE=0
+
+FAC_MODE_FLAG="/ptdata/factorymodeflag"
+[ -e "$FAC_MODE_FLAG" ] && CUR_FAC_MODE=1 || CUR_FAC_MODE=0
+
+FAC_CHANGES="$(uci -qc /ptdata changes factory_conf)"
+if [ -n "$FAC_CHANGES" ] || [ "$CUR_FAC_MODE" != "$FAC_MODE" ]; then
 	mount -o remount,rw /ptdata
-	uci -qc /ptdata commit factory_conf
-	[ -e "/ptdata/factorymodeflag" ] || mount -o remount,ro /ptdata
+
+	[ -n "$FAC_CHANGES" ] && uci -qc /ptdata commit factory_conf
+
+	if [ "$FAC_MODE" -eq 1 ]; then
+		touch "$FAC_MODE_FLAG"
+	else
+		rm -f "$FAC_MODE_FLAG"
+		mount -o remount,ro /ptdata
+	fi
 fi
 
 
@@ -366,7 +413,6 @@ cat >> "$BFW_START" <<'RX_LOS'
 # 8311 MOD: start vlansd script
 /usr/sbin/8311-vlansd.sh &
 RX_LOS
-
 
 
 DROPBEAR="$ROOT_DIR/etc/init.d/dropbear"
@@ -580,6 +626,19 @@ uci set network.$interface.auto=1
 UCI_IP_CONFIG
 echo "$IP_CONFIG_FOOT" >> "$IP_CONFIG"
 
+cat >> "$IP_CONFIG" <<'UCI_IP_CONFIG2'
+
+# 8311 MOD: fwenv to set LCT MAC
+local lct_mac=$(fw_printenv -n 8311_lct_mac | grep -i -E '^[0-9a-f]{2}(:[0-9a-f]{2}){5}$')
+lct_mac="${lct_mac:-$(pon_mac_get lct)}"
+uci set network.$interface.macaddr="$lct_mac"
+
+# 8311 MOD: fwenv to set IP Host MAC
+local iphost_mac=$(fw_printenv -n 8311_iphost_mac | grep -i -E '^[0-9a-f]{2}(:[0-9a-f]{2}){5}$')
+iphost_mac="${iphost_mac:-$(pon_mac_get host)}"
+uci set network.iphost1.macaddr="$iphost_mac"
+UCI_IP_CONFIG2
+
 
 cat >> "$ROOT_DIR/etc/init.d/network" <<'INITD_NETWORK'
 
@@ -624,49 +683,61 @@ if check_file "$OMCID" "0aa64358a3afaa17b4edfed0077141981bc13322c7d1cf730abc251f
 	printf '\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF42F4)) bs=1 count=6 2>/dev/null
 	printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF4304)) bs=1 count=9 2>/dev/null
 
+	# patch uni2port to always set the port to 0 (by djGrrr)
+#	printf '\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0x26008)) bs=1 count=4 2>/dev/null
+#	printf '\x00' | dd of="$OMCID" conv=notrunc seek=$((0x2600d)) bs=1 count=1 2>/dev/null
+
 	expected_hash "$OMCID" "62925b4dd5ca2b097f914aa4fb26247e72c04f18e7c8a9e0263d31c9817ea1fc"
+#	expected_hash "$OMCID" "da19ae642b5f47b1b58a2e0f6535324f1be24069ce7e8868ba91e2a63b90b982"
 fi
 
-# libponnet mod by rss to fix management with VEIP mode
+# libponnet mod for 1.0.12 to fix management with VEIP mode
 LIBPONNET="$ROOT_DIR/usr/lib/libponnet.so.0.0.0"
 if check_file "$LIBPONNET" "8075079231811f58dd4cec06ed84ff5d46a06e40b94c14263a56110edfa2a705"; then
 	echo "Patching '$LIBPONNET'..."
 
+	# patch pon_net_dev_db_add to return 0 instead of -1 when an existing device entry exists
 	printf '\x00\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x51B9A)) bs=1 count=2 2>/dev/null
 
-	expected_hash "$LIBPONNET" "d76ac53305e0a4f2252c265c664480fe1a35c9b375b0d5e2e092a4d56f83f029"
+	# patch file location for IP Host hostname
+	printf '/tmp/8311-iphost-hostname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x92064)) bs=1 count=26 2>/dev/null
+
+	# patch file location for IP Host domain
+	printf '/tmp/8311-iphost-domainname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x92090)) bs=1 count=28 2>/dev/null
+
+	expected_hash "$LIBPONNET" "1d92a9cf288f64317f6d82e8f87651fbc07bef53ce3f4f28e73fc17e6041b107"
 fi
 
-# libponhwal mod by rajkosto/djGrrr to fix Software and Hardware versions
+# libponhwal mods for 1.0.12 to fix Software/Hardware versions and Equipment ID
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
 if check_file "$LIBPONHWAL" "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d5354bf1d34fdaf6"; then
 	echo "Patching '$LIBPONHWAL'..."
 
-	# patch ponhw_get_hardware_ver to use the correct string length
+	# patch ponhw_get_hardware_ver to use the correct string length (by rajkosto)
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x278CB)) bs=1 count=1 2>/dev/null
 
-	# patch ponhw_get_software_ver to use the correct string length
+	# patch ponhw_get_software_ver to use the correct string length (by rajkosto)
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x277C7)) bs=1 count=1 2>/dev/null
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27823)) bs=1 count=1 2>/dev/null
 
-	# patch ponhw_get_equipment_id to use the correct string length
+	# patch ponhw_get_equipment_id to use the correct string length (by djGrrr)
 	printf '\x14' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27647)) bs=1 count=1 2>/dev/null
 
 	expected_hash "$LIBPONHWAL" "624aa5875a7bcf4d91a060e076475336622b267ff14b9c8fbb87df30fc889788"
 fi
 
-# libponhwal mod by djGrrr based on rajkosto's mod
+# libponhwal mods for 1.0.8 to fix Software/Hardware versions and Equipment ID
 if check_file "$LIBPONHWAL" "6af1b3b1fba25488fd68e5e2e2c41ab0e178bd190f0ba2617fc32bdfad21e4c4"; then
 	echo "Patching '$LIBPONHWAL'..."
 
-	# patch ponhw_get_hardware_ver to use the correct string length
+	# patch ponhw_get_hardware_ver to use the correct string length ((by djGrrr, based on rajkosto's patch for 1.0.12)
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x2738B)) bs=1 count=1 2>/dev/null
 
-	# patch ponhw_get_software_ver to use the correct string length
+	# patch ponhw_get_software_ver to use the correct string length (by djGrrr, based on rajkosto's patch for 1.0.12)
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27287)) bs=1 count=1 2>/dev/null
 	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x272E3)) bs=1 count=1 2>/dev/null
 
-	# patch ponhw_get_equipment_id to use the correct string length
+	# patch ponhw_get_equipment_id to use the correct string length (by djGrrr)
 	printf '\x14' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27107)) bs=1 count=1 2>/dev/null
 
 	expected_hash "$LIBPONHWAL" "36b20ed9c64de010e14543659302fdb85090efc49e48c193c2c156f6333afaac"
@@ -686,6 +757,10 @@ cat >> "$VEIP_MIB" <<'VEIP_LCT'
 
 VEIP_LCT
 echo "$VEIP_FOOT" >> "$VEIP_MIB"
+
+# Copy custom Bell MIB
+BELL_MIB="$ROOT_DIR/etc/mibs/prx300_1V_bell.ini"
+cp -fv "files/prx300_1V_bell.ini" "$BELL_MIB"
 
 OUT_BOOTCORE=$(realpath "$OUT_DIR/bootcore.bin")
 [ "$BOOTCORE" = "$OUT_BOOTCORE" ] || cp -fv "$BOOTCORE" "$OUT_BOOTCORE"

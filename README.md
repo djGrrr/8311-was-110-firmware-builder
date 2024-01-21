@@ -63,8 +63,14 @@ Set to `1` to enable the serial console, this will cause TX_FAULT to be asserted
 `8311_ethtool_speed` - **Ethtool Speed Settings**  
 Set ethtool speed settings on the eth0_0 interface (ethtool -s).  
 
+`8311_factory_mode` - **Factory Mode**  
+Set to 1 to enable factory mode, otherwise factory mode will be automatically disabled on boot.  
+
 `8311_failsafe_delay` - **Failsafe Delay**  
 Sets the number of seconds that we will delay the startup of omcid for at bootup (30 to 300). Defaults to 30 seconds.  
+
+`8311_lct_mac` - **LCT MAC Address**  
+Set the MAC address on the LCT management interface.  
 
 `8311_persist_root` - **Persist RootFS**  
 Set to `1` to allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes.  
@@ -91,6 +97,15 @@ Sets the GPON Serial Number sent to the OLT in various MEs (4 letters, followed 
 
 `8311_hw_ver` - **Hardware Version**  
 Set the Hardware version string sent to the OLT in various MEs (up to 14 characters).  
+
+`8311_iphost_domain` - **IP Host Domain Name**  
+Set the domain name sent to the OLT in ME 134 (up to 25 characters).  
+
+`8311_iphost_hostname` - **IP Host Hostname**  
+Set the hostname sent to the OLT in ME 134 (up to 25 characters).  
+
+`8311_iphost_mac` - **IP Host MAC Address**  
+Set the MAC address sent to the OLT in ME 134.  
 
 `8311_loid` - **Logical ONU ID**  
 Sets the Logical ONU ID presented to the OLT in ME 256 (up to 24 characters).  
