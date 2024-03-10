@@ -1,0 +1,187 @@
+#!/bin/bash
+
+cat >> "$ROOT_DIR/etc/init.d/network" <<'INITD_NETWORK'
+
+_lib_8311 2>/dev/null || . /lib/8311.sh
+
+# 8311 MOD: Configure IP/subnet/gateway
+boot() {
+	local ipaddr=$(get_8311_ipaddr)
+	local netmask=$(get_8311_netmask)
+	local gateway=$(get_8311_gateway)
+
+	echo "Setting IP: $ipaddr, Netmask: $netmask, Gateway: $gateway" | to_console
+
+	sed -r 's#(<param name="Ipaddr" .+ value=)"\S+"(></param>)#\1"'"$ipaddr"'"\2#g' -i /ptrom/ptconf/param_ct.xml
+	sed -r 's#(<param name="SubnetMask" .+ value=)"\S+"(></param>)#\1"'"$netmask"'"\2#g' -i /ptrom/ptconf/param_ct.xml
+	sed -r 's#(<param name="Gateway" .+ value=)"\S+"(></param>)#\1"'"$gateway"'"\2#g' -i /ptrom/ptconf/param_ct.xml
+
+	start "$@"
+}
+INITD_NETWORK
+
+# Add MOD Version to webui
+STATE_OVCT="$ROOT_DIR/www/html/stateOverview_ct.html"
+dos2unix "$STATE_OVCT"
+
+STATE_OVCT_HEAD=$(grep -B99999999 -A1 -P '<td id="SoftwareVersion"></td>' "$STATE_OVCT")
+STATE_OVCT_FOOT=$(grep -A99999999 -P '<td id="SoftwareVersion"></td>' "$STATE_OVCT" | tail -n +3)
+
+echo "$STATE_OVCT_HEAD" > "$STATE_OVCT"
+cat >> "$STATE_OVCT" <<MOD_VERSION
+					<tr>
+						<td class="table_title" i18n="8311modver"></td>
+						<td>[$FW_VARIANT] - $FW_VERSION ($FW_HASH)</td>
+					</tr>
+MOD_VERSION
+echo "$STATE_OVCT_FOOT" >> "$STATE_OVCT"
+unix2dos "$STATE_OVCT"
+
+# Modify language files
+LANG_EN_GB="$ROOT_DIR/www/language/i18n_en_gb"
+dos2unix "$LANG_EN_GB"
+
+LANG_EN_GB_HEAD=$(grep -B99999999 -P '^\s+"softwarever":' "$LANG_EN_GB")
+LANG_EN_GB_FOOT=$(grep -A99999999 -P '^\s+"softwarever":' "$LANG_EN_GB" | tail -n +2)
+
+echo "$LANG_EN_GB_HEAD" > "$LANG_EN_GB"
+cat >> "$LANG_EN_GB" <<MOD_LANG_EN
+	"8311modver":"8311 Community MOD Version",
+MOD_LANG_EN
+echo "$LANG_EN_GB_FOOT" >> "$LANG_EN_GB"
+
+sed -r 's/("regidtextlength":".+ octets)[^"]+"/\1"/g' -i "$LANG_EN_GB"
+unix2dos "$LANG_EN_GB"
+
+LANG_ZH_CN="$ROOT_DIR/www/language/i18n_zh_cn"
+dos2unix "$LANG_ZH_CN"
+
+LANG_ZH_CN_HEAD=$(grep -B99999999 -P '^\s+"softwarever":' "$LANG_ZH_CN")
+LANG_ZH_CN_FOOT=$(grep -A99999999 -P '^\s+"softwarever":' "$LANG_ZH_CN" | tail -n +2)
+
+echo "$LANG_ZH_CN_HEAD" > "$LANG_ZH_CN"
+cat >> "$LANG_ZH_CN" <<MOD_LANG_CN
+	"8311modver":"8311社区修改版",
+MOD_LANG_CN
+echo "$LANG_ZH_CN_FOOT" >> "$LANG_ZH_CN"
+
+sed -r 's/("regidtextlength":".+位)[^"]+"/\1"/g' -i "$LANG_ZH_CN"
+unix2dos "$LANG_ZH_CN"
+
+OLTAUTH_JS="$ROOT_DIR/www/js/oltauth_comn.js"
+OLTAUTH_JS_PART1=$(grep -B99999999 'Regid_text.length > 36' "$OLTAUTH_JS" | head -n -1)
+OLTAUTH_JS_PART2=$(grep -A99999999 'Regid_text.length > 36' "$OLTAUTH_JS" | tail -n +2 | grep -B99999999 -A1 'function validCheck()')
+OLTAUTH_JS_PART3=$(grep -A99999999 'function validCheck()' "$OLTAUTH_JS" | grep -A99999999 'if ( isCnInclude($("#Regid_text").val()) )' | grep -B99999999 -A1 'function validCheckCu()')
+OLTAUTH_JS_PART4=$(grep -A99999999 'function validCheckCu()' "$OLTAUTH_JS" | grep -A99999999 'if ( isCnInclude($("#Regid_text").val()) )')
+
+echo "$OLTAUTH_JS_PART1" > "$OLTAUTH_JS"
+cat >> "$OLTAUTH_JS" <<REG_ID_CHECK
+			if( Regid_text.length > 36 ) {
+REG_ID_CHECK
+echo "$OLTAUTH_JS_PART2" >> "$OLTAUTH_JS"
+echo "$OLTAUTH_JS_PART3" >> "$OLTAUTH_JS"
+echo "$OLTAUTH_JS_PART4" >> "$OLTAUTH_JS"
+
+MAIN_HTML="$ROOT_DIR/www/html/main.html"
+MAIN_HTML_HEAD=$(grep -B99999999 -P '<img[^"]+"[^"]*logo[^"]*"' "$MAIN_HTML" | head -n -1)
+MAIN_HTML_FOOT=$(grep -A99999999 -P '<img[^"]+"[^"]*logo[^"]*"' "$MAIN_HTML" | tail -n +2)
+
+echo "$MAIN_HTML_HEAD" > "$MAIN_HTML"
+cat >> "$MAIN_HTML" <<8311_LOGO
+					<img src="../image/logo_8311.png" id="8311logo" style="width: 73px; height: 40px; margin-left: 10px; margin-top: 13px;">
+					<img src="../image/logo_azores.png" id="logoimg" style="width: 126px; height: 40px; margin-left: 30px; margin-top: 13px;">
+8311_LOGO
+echo "$MAIN_HTML_FOOT" >> "$MAIN_HTML"
+
+# Fix Registration ID default value of "NULL"
+sed -r 's#(<param name="RegistrationID" .+ value=)"\S+"(></param>)#\1""\2#g' -i "$ROOT_DIR/ptrom/ptconf/param_ct.xml"
+
+
+BFW_START="$ROOT_DIR/etc/init.d/bfw_start.sh"
+
+# Push messages about changes to UART to the console
+sed -r 's#^(\s*echo \".+\!\!\")$#\1 | to_console#g' -i "$BFW_START"
+
+BFW_HEAD=$(grep -P -B99999999 '^#read bootcmd, if not default, modify$' "$BFW_START" | head -n -2)
+BFW_HEAD2=$(grep -P -A99999999 '^./ptrom/bin/set_bootcmd_env$' "$BFW_START" | tail -n +2 | grep -P -B99999999 '^#set FXM_TXFAULT_EN$' | head -n -1)
+BFW_CONSOLE=$(grep -P -A99999999 '^#set FXM_TXFAULT_EN$' "$BFW_START" | grep -P -B99999999 '^#set DYING GASP EN$' | head -n -1)
+BFW_CONSOLE_HEAD=$(echo "$BFW_CONSOLE" | grep -P -B99999999 '^/ptrom/bin/gpio_cmd set 30 0$')
+BFW_CONSOLE_FOOT=$(echo "$BFW_CONSOLE" | grep -P -A99999999 '^/ptrom/bin/gpio_cmd set 30 0$' | tail -n +2)
+BFW_DYING_GASP=$(grep -P -A99999999 '^#set DYING GASP EN$' "$BFW_START" | grep -P -B99999999 '^pon 1pps_event_enable$' | head -n -1)
+BFW_FOOT=$(grep -P -A99999999 '^pon 1pps_event_enable$' "$BFW_START")
+
+echo "$BFW_HEAD" > "$BFW_START"
+echo >> "$BFW_START"
+echo "$BFW_HEAD2" >> "$BFW_START"
+echo >> "$BFW_START"
+cat >> "$BFW_START" <<'BFW_START_MODS'
+
+
+_lib_8311 2>/dev/null || . /lib/8311.sh
+
+# Remove Reservedata as it causes the stick to reboot every few minutes
+uci -qc /ptdata delete factory_conf.Reservedata
+
+# 8311 MOD: Disable factory mode unless specifically enabled
+FAC_MODE=$(fw_printenv -n 8311_factory_mode 2>/dev/null)
+[ "$FAC_MODE" = "1" ] || FAC_MODE=0
+
+FAC_MODE_FLAG="/ptdata/factorymodeflag"
+[ -e "$FAC_MODE_FLAG" ] && CUR_FAC_MODE=1 || CUR_FAC_MODE=0
+
+FAC_CHANGES="$(uci -qc /ptdata changes factory_conf)"
+if [ -n "$FAC_CHANGES" ] || [ "$CUR_FAC_MODE" != "$FAC_MODE" ]; then
+	mount -o remount,rw /ptdata
+
+	[ -n "$FAC_CHANGES" ] && uci -qc /ptdata commit factory_conf
+
+	if [ "$FAC_MODE" -eq 1 ]; then
+		touch "$FAC_MODE_FLAG"
+	else
+		rm -f "$FAC_MODE_FLAG"
+		mount -o remount,ro /ptdata
+	fi
+fi
+
+
+BFW_START_MODS
+
+echo "$BFW_DYING_GASP" >> "$BFW_START"
+echo >> "$BFW_START"
+echo "$BFW_CONSOLE_HEAD" >> "$BFW_START"
+cat >> "$BFW_START" <<'CONSOLE_FWENV'
+
+# 8311 MOD: fwenv for enabling UART
+console_en=$(fw_printenv -n 8311_console_en 2>/dev/null)
+if [ "$console_en" = "1" ]; then
+	echo "fwenv console_en set console enable!!" | to_console
+	/ptrom/bin/gpio_cmd set 30 1
+fi
+CONSOLE_FWENV
+echo "$BFW_CONSOLE_FOOT" >> "$BFW_START"
+
+# Don't set console GPIO til the setting is determined
+sed -r 's#/ptrom/bin/gpio_cmd set 30 (0|1)$#CONSOLE_EN=\1#g' -i "$BFW_START"
+
+cat >> "$BFW_START" <<'CONSOLE_SET'
+
+# 8311 MOD: Enable or Disable UART TX
+if [ "$CONSOLE_EN" = "1" ]; then
+	/ptrom/bin/gpio_cmd set 30 1
+else
+	/ptrom/bin/gpio_cmd set 30 0
+fi
+CONSOLE_SET
+echo >> "$BFW_START"
+echo "$BFW_FOOT" >> "$BFW_START"
+
+
+BFW_SYSINIT="$ROOT_DIR/etc/init.d/bfw_sysinit"
+
+cat >> "$BFW_SYSINIT" <<'BFW_SYSINIT'
+
+# 8311 MOD
+boot() {
+	start "$@"
+}
+BFW_SYSINIT

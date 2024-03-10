@@ -1,0 +1,12 @@
+#!/bin/sh
+
+_lib_8311 2>/dev/null || . /lib/8311.sh
+
+_8311_mounts() {
+	ubinfo /dev/ubi0 -N ptconf &>/dev/null && {
+		echo "Mounting /ptconf partition" | to_console
+		mount -o sync -t ubifs ubi0:ptconf /ptconf
+	}
+}
+
+[ "$INITRAMFS" = "1" ] || boot_hook_add preinit_main _8311_mounts

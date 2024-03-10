@@ -10,6 +10,6 @@ if ! [ "$RX_LOS" -eq 0 ] 2>/dev/null; then
 fi
 
 while true; do
-    [ "$(cat "$GPIO/value")" -eq 0 ] || echo "low" > "$GPIO/direction"
-    sleep 1
+	[ "$(cat "$GPIO/value")" -eq 0 ] || echo "low" > "$GPIO/direction"
+	sleep 1
 done

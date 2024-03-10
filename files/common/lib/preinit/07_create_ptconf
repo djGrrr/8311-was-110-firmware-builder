@@ -1,0 +1,13 @@
+#!/bin/sh
+
+_lib_8311 2>/dev/null || . /lib/8311.sh
+
+_8311_create_ptconf_data() {
+	ubinfo /dev/ubi0 --name=ptconf &>/dev/null || {
+		echo "Creating ubi0:ptconf partition" | to_console
+		ubimkvol /dev/ubi0 -N ptconf -n 7 -S 48 ||
+		ubimkvol /dev/ubi0 -N ptconf -S 48
+	}
+}
+
+[ "$INITRAMFS" = "1" ] || boot_hook_add preinit_main _8311_create_ptconf_data

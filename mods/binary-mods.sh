@@ -1,22 +1,27 @@
 #!/bin/bash
 OMCID="$ROOT_DIR/opt/intel/bin/omcid"
+# Azores 1.0.12
 if check_file "$OMCID" "0aa64358a3afaa17b4edfed0077141981bc13322c7d1cf730abc251fae1ecbb1"; then
 	echo "Patching '$OMCID'..."
-
-	# omcid mod by up-n-atom to fix management with VEIP mode
-	printf '\x00' | dd of="$OMCID" conv=notrunc seek=$((0x7F5C5)) bs=1 count=1 2>/dev/null
 
 	# omcid mod by djGrrr to make default LOID and LPWD empty
 	printf '\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF42F4)) bs=1 count=6 2>/dev/null
 	printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF4304)) bs=1 count=9 2>/dev/null
 
-	# patch uni2port to always set the port to 0 (by djGrrr)
-#	printf '\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0x26008)) bs=1 count=4 2>/dev/null
-#	printf '\x00' | dd of="$OMCID" conv=notrunc seek=$((0x2600d)) bs=1 count=1 2>/dev/null
-
-	expected_hash "$OMCID" "62925b4dd5ca2b097f914aa4fb26247e72c04f18e7c8a9e0263d31c9817ea1fc"
-#	expected_hash "$OMCID" "da19ae642b5f47b1b58a2e0f6535324f1be24069ce7e8868ba91e2a63b90b982"
+	expected_hash "$OMCID" "cb4c3e631ea783aebf8603298da0b7a2ac0c3750a2d35be0c5f80a93e64228ec"
 fi
+
+# Azores 1.0.19
+if check_file "$OMCID" "d696843c3801cb68f9d779ed95bd72299fcb2fa05459c17bac5d346645562067"; then
+	echo "Patching '$OMCID'..."
+
+	# omcid mod by djGrrr to make default LOID and LPWD empty
+	printf '\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF43F4)) bs=1 count=6 2>/dev/null
+	printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xF4404)) bs=1 count=9 2>/dev/null
+
+	expected_hash "$OMCID" "0111a39c55f776e9b9756833943a06a19bffe973e601e8a1abb1dfab3647f733"
+fi
+
 
 OMCID="$ROOT_DIR/usr/bin/omcid"
 # Potrontec 1.18.1 OMCId v8.15.17
@@ -47,6 +52,22 @@ if check_file "$LIBPONNET" "8075079231811f58dd4cec06ed84ff5d46a06e40b94c14263a56
 	expected_hash "$LIBPONNET" "1d92a9cf288f64317f6d82e8f87651fbc07bef53ce3f4f28e73fc17e6041b107"
 fi
 
+# libponnet mod for 1.0.19 to fix management with VEIP mode
+if check_file "$LIBPONNET" "f1031d3452f86647dbdf4b6c94abaccdc05b9d3b2c339bf560db0191e799f0c6"; then
+	echo "Patching '$LIBPONNET'..."
+
+	# patch pon_net_dev_db_add to return 0 instead of -1 when an existing device entry exists
+	printf '\x00\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x51B9A)) bs=1 count=2 2>/dev/null
+
+	# patch file location for IP Host hostnam
+	printf '/tmp/8311-iphost-hostname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x92084)) bs=1 count=26 2>/dev/null
+
+	# patch file location for IP Host domain
+	printf '/tmp/8311-iphost-domainname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x920B0)) bs=1 count=28 2>/dev/null
+
+	expected_hash "$LIBPONNET" "baa8d1dc984387aaec12afe8f24338b19b8b162430ebea11d670c924c09cad00"
+fi
+
 # Potrontec 1.18.1 OMCId v8.15.17
 if check_file "$LIBPONNET" "05536d164e51c5d412421a347a5c99b6883a53c57c24ed4d00f4b98b79cddfc3"; then
 	echo "Patching '$LIBPONNET'..."
@@ -64,6 +85,7 @@ if check_file "$LIBPONNET" "05536d164e51c5d412421a347a5c99b6883a53c57c24ed4d00f4
 fi
 
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
+# libponhwal mods for 1.0.12 to fix Software/Hardware versions and Equipment ID
 if check_file "$LIBPONHWAL" "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d5354bf1d34fdaf6"; then
 	echo "Patching '$LIBPONHWAL'..."
 
@@ -78,6 +100,23 @@ if check_file "$LIBPONHWAL" "f0e48ceba56c7d588b8bcd206c7a3a66c5c926fd1d69e6d9d53
 	printf '\x14' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x27647)) bs=1 count=1 2>/dev/null
 
 	expected_hash "$LIBPONHWAL" "624aa5875a7bcf4d91a060e076475336622b267ff14b9c8fbb87df30fc889788"
+fi
+
+# libponhwal mods for 1.0.19 to fix Software/Hardware versions and Equipment ID
+if check_file "$LIBPONHWAL" "cd157969cd9127d97709a96f3612f6f7c8f0eff05d4586fde178e9c4b7a4d362"; then
+	echo "Patching '$LIBPONHWAL'..."
+
+	# patch ponhw_get_hardware_ver to use the correct string length (by djGrrr, based on rajkosto's patch for 1.0.12)
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x278A3)) bs=1 count=1 2>/dev/null
+
+	# patch ponhw_get_software_ver to use the correct string length (by djGrrr, based on rajkosto's patch for 1.0.12)
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x2779F)) bs=1 count=1 2>/dev/null
+	printf '\x0E' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x277FB)) bs=1 count=1 2>/dev/null
+
+	# patch ponhw_get_equipment_id to use the correct string length (by djGrrr)
+	printf '\x14' | dd of="$LIBPONHWAL" conv=notrunc seek=$((0x2C2B7)) bs=1 count=1 2>/dev/null
+
+	expected_hash "$LIBPONHWAL" "48f932b62fd22c693bae0aa99962a4821ef18f503eed3822d41d44330cb32db5"
 fi
 
 # libponhwal mods for 1.0.8 to fix Software/Hardware versions and Equipment ID

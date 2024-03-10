@@ -1,7 +1,11 @@
 #!/bin/sh
 
+_lib_hexbin() {
+	return 0
+}
+
 filterhex() {
-    sed -r 's/\s+//g' | grep -E '^([0-9a-f]{2})+$'
+	sed -r 's/\s+//g' | grep -E '^([0-9A-Fa-f]{2})+$'
 }
 
 str2hex() {
