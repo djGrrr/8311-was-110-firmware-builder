@@ -17,14 +17,6 @@ start() {
 	MIB_FILE=$(get_8311_mib_file)
 	[ -n "$MIB_FILE" ] && set_8311_mib_file "$MIB_FILE"
 
-	# fwenv for setting eth0_0 speed settings with ethtool
-	ETH_SPEED=$(get_8311_ethtool)
-	[ -n "$ETH_SPEED" ] && set_8311_ethtool "$ETH_SPEED"
-
-	# fwenv for setting the root account password hash
-	ROOT_PWHASH=$(get_8311_root_pwhash)
-	[ -n "$ROOT_PWHASH" ] && set_8311_root_pwhash "$ROOT_PWHASH"
-
 	# fwenv to change the slot presented to the OLT
 	PON_SLOT=$(get_8311_pon_slot)
 	[ -n "$PON_SLOT" ] && set_8311_pon_slot "$PON_SLOT"
@@ -45,7 +37,7 @@ start() {
 
 	# 8311 MOD: Set Registration ID
 	REG_ID_HEX=$(get_8311_reg_id_hex)
-	[ -n "$REG_ID_HEX" ] && set_8311_reg_id_hex "$REG_ID_HEX"
+	set_8311_reg_id_hex "$REG_ID_HEX"
 
 	# 8311 MOD: fwenvs to set IP Host Host Name and Domain Name
 	IPHOST_HOSTNAME=$(get_8311_iphost_hostname)

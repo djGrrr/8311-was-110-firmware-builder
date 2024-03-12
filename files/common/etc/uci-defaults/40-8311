@@ -11,3 +11,9 @@ uci set "network.lct.macaddr"="$(get_8311_lct_mac)"
 
 # Configure IP Host Interface
 uci set "network.iphost1.macaddr"="$(get_8311_iphost_mac)"
+
+# Configure WebUI
+if [ -d "/usr/lib/lua/luci" ]; then
+	uci set "luci.main.mediaurlbase"="/luci-static/bootstrap"
+	uci commit "luci"
+fi

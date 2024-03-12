@@ -13,6 +13,14 @@ to_console() {
 	tee -a /dev/console | logger -t "8311" -p daemon.info
 }
 
+strtoupper() {
+	tr '[a-z]' '[A-Z]'
+}
+
+strtolower() {
+	tr '[A-Z]' '[a-z]'
+}
+
 _8311_check_persistent_root() {
 	# Remove persistent root
 	PERSIST_ROOT=$(fw_printenv -n 8311_persist_root 2>/dev/null)
@@ -103,7 +111,7 @@ set_8311_mib_file() {
 }
 
 get_8311_reg_id_hex() {
-	{ { fw_printenv -n "8311_reg_id_hex" | filterhex; } || echo -n "$(fw_printenv -n 8311_reg_id)" | str2hex; } 2>/dev/null | tr 'abcdef' 'ABCDEF'
+	{ { fw_printenv -n "8311_reg_id_hex" | hex2str; } || echo -n "$(fw_printenv -n 8311_reg_id)"; cat /dev/zero; } 2>/dev/null | head -c 36 | str2hex | strtoupper
 }
 
 
@@ -169,7 +177,7 @@ set_8311_equipment_id() {
 get_8311_lct_mac() {
 	if [ ! -f "/tmp/8311-lct-mac" ]; then
 		local lct_mac=$(fw_printenv -n 8311_lct_mac 2>/dev/null | grep -i -E '^[0-9a-f]{2}(:[0-9a-f]{2}){5}$')
-		echo "${lct_mac:-$(pon_mac_get lct)}" | tr 'abcdef' 'ABCDEF' > "/tmp/8311-lct-mac"
+		echo "${lct_mac:-$(pon_mac_get lct)}" | strtoupper > "/tmp/8311-lct-mac"
 	fi
 
 	cat "/tmp/8311-lct-mac"
@@ -183,7 +191,7 @@ set_8311_lct_mac() {
 get_8311_iphost_mac() {
 	if [ ! -f "/tmp/8311-iphost-mac" ]; then
 		local iphost_mac=$(fw_printenv -n 8311_iphost_mac 2>/dev/null | grep -i -E '^[0-9a-f]{2}(:[0-9a-f]{2}){5}$')
-		echo "${iphost_mac:-$(pon_mac_get host)}" | tr 'abcdef' 'ABCDEF' > "/tmp/8311-iphost-mac"
+		echo "${iphost_mac:-$(pon_mac_get host)}" | strtoupper > "/tmp/8311-iphost-mac"
 	fi
 
 	cat "/tmp/8311-iphost-mac"
@@ -332,7 +340,7 @@ get_8311_module_type() {
 get_8311_base_mac() {
 	local serial=$(dd if=/sys/class/pon_mbox/pon_mbox0/device/eeprom50 bs=1 skip=68 count=12 2>/dev/null)
 	local suffix=$(echo "$serial" | tail -c 7 | filterhex)
-	[ -z "$suffix" ] && suffix=$(echo -n "$serial" | sha256sum | head -c 6 | tr 'abcdef' 'ABCDEF')
+	[ -z "$suffix" ] && suffix=$(echo -n "$serial" | sha256sum | head -c 6 | strtoupper)
 
 	echo -n "10:B3:6F"
 

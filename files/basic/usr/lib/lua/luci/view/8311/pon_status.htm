@@ -1,0 +1,31 @@
+<%
+
+local tools = require "8311.tools"
+local esc = tools.html_escape
+-%>
+
+<%+header%>
+<script type="text/javascript" src="<%=resource%>/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/view/8311.js"></script>
+
+<h2 name="content"><%:PON Status%></h2>
+<br />
+
+<ul class="cbi-tabmenu">
+<% for _,key in pairs(order) do %>
+	<li data-tab="<%= key %>" class="<% if key == 'status' then %>cbi-tab<% else %>cbi-tab-disabled<% end %>"><a href="#" onclick="switchTabPonStatus('<%= key %>');"><%= esc(labels[key]) %></a></li>
+<% end %>
+</ul>
+<div class="content_syslog">
+<textarea id="syslog" style="font-size:10pt; font-family: monospace;" readonly="readonly" wrap="off" rows="48">
+test
+</textarea>
+</div>
+
+<script type="text/javascript">
+$( document ).ready(function() {
+	switchTabPonStatus('status');
+});
+</script>
+
+<%+footer%>

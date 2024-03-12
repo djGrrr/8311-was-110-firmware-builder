@@ -5,6 +5,10 @@ _lib_8311 2>/dev/null || . /lib/8311.sh
 START=18
 
 start() {
+	# fwenv for setting the root account password hash
+	ROOT_PWHASH=$(get_8311_root_pwhash)
+	[ -n "$ROOT_PWHASH" ] && set_8311_root_pwhash "$ROOT_PWHASH"
+
 	# 8311 MOD: set LCT MAC
 	LCT_MAC=$(get_8311_lct_mac)
 	set_8311_lct_mac "$LCT_MAC"

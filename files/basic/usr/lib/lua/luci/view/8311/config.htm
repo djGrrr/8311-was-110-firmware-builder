@@ -1,0 +1,59 @@
+<%-
+local tools = require "8311.tools"
+local esc = tools.html_escape
+-%>
+
+<%+header%>
+<script type="text/javascript" src="<%=resource%>/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/view/8311.js"></script>
+
+<h2 name="content">8311 Configuration</h2>
+<br />
+
+<ul class="cbi-tabmenu">
+<%- for catid, cat in pairs(fwenvs) do -%>
+	<li class="cbi-tab<% if catid > 1 then %>-disabled<% end %>" data-tab="<%= cat.id %>"><a href="#" onclick="switchTab('<%= cat.id %>')"><%= esc(cat.category) %></a></li>
+<% end -%>
+</ul>
+
+<form action="save" method="post">
+<div id="cbi-system-poncfg" class="cbi-section-node cbi-section-node-tabbed" data-section-id="poncfg" data-initialized="true">
+<%- for catid, cat in pairs(fwenvs) do -%>
+	<div id="container.system.poncfg.<%= cat.id %>" data-tab="<%= cat.id %>" data-tab-title="<%= esc(cat.category) %>" <% if catid < 2 then %>data-tab-active="true"<% end %>>
+<%- for itemid, item in pairs(cat.items) do %>
+		<div class="cbi-value" id="cbi-system-poncfg-<%= item.id %>" data-index="<%= (itemid - 1) %>" data-field="cbid.system.poncfg.<%= item.id %>" data-name="<%= item.id %>" data-widget="CBI.Value">
+			<label class="cbi-value-title" for="widget.cbid.system.poncfg.<%= item.id %>"><%= esc(item.name) %></label>
+			<div class="cbi-value-field">
+				<div id="cbid.system.poncfg.<%= item.id %>">
+					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" type="<%= item.type %>" class="cbi-input-<%= item.type %>"
+<%-
+local value = nil
+local placeholder = nil
+local checked = nil
+if item.type == "checkbox" then
+	value = "1"
+	if item.value == '1' or (item.default and item.value ~= '0') then
+		checked=' checked="checked"'
+	end
+else
+	value = item.value
+	if item.default and (item.type == 'text' or item.type == 'password') then
+		placeholder = item.default
+	end
+end
+%> value="<%= esc(value) %>"<% if item.maxlength then %> maxlength="<%= item.maxlength %>"<% end %><%= checked %><% if placeholder then %> placeholder="<%= esc(placeholder) %>"<% end %>
+<%- if item.type == 'text' and item.pattern then %> pattern="<%= item.pattern %>"<% end %> />
+				</div>
+<% if item.description then %>
+				<div class="cbi-value-description"><%= esc(item.description) %></div>
+<% end %>
+			</div>
+		</div>
+<% end %>
+	</div>
+<% end %>
+</div>
+<input type="submit" value="Save" />
+</form>
+
+<%+footer%>

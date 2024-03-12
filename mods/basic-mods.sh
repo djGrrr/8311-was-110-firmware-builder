@@ -26,3 +26,17 @@ echo "$UCI_FW_RULES_FOOT" >> "$UCI_FW_RULES"
 
 
 sed -r 's#(\s+start \"\$@\")$#\1 \&#' -i "$ROOT_DIR/etc/init.d/dropbear"
+
+INITTAB="$ROOT_DIR/etc/inittab"
+sed -r 's/^(ttyLTQ0)/#\1/g' -i "$INITTAB"
+echo "::askconsole:/bin/login" >> "$INITTAB"
+
+LUA8311="$ROOT_DIR/usr/lib/lua/8311"
+mkdir -pv "$LUA8311"
+cat > "$LUA8311/version.lua" <<8311VER
+module "8311.version"
+
+variant = "${FW_VARIANT}"
+version = "${FW_VERSION}"
+revision = "${FW_HASH}"
+8311VER

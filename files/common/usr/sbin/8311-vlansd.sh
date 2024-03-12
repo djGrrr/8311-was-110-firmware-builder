@@ -12,7 +12,7 @@ fi
 LAST_HASH=""
 while true ; do
 	HASH=$(pon_hash)
-	if [ "$HASH" != "$LAST_HASH" ] && ps | grep -q ' /opt/intel/bin/omcid$'; then
+	if [ "$HASH" != "$LAST_HASH" ] && ps | grep -q '/bin/omcid$'; then
 		flock /tmp/8311-fix-vlans.lock /root/8311-fix-vlans.sh &>/dev/null && LAST_HASH="$HASH"
 	fi
 
