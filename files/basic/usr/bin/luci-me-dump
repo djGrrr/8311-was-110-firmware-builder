@@ -1,0 +1,2 @@
+#!/bin/sh
+omci_pipe.sh md | sed -r 's#^(\|\s+(\d+)\s+\|\s+(\d+)\s+.+)$#<a href="\#" onclick="showPonMe(\2, \3); return false;">\1</a>#g'

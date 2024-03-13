@@ -1,0 +1,40 @@
+#!/bin/sh
+_lib_8311 2>/dev/null || . /lib/8311.sh
+
+
+# Configure LCT Interface
+uci set "network.lct.auto"="1"
+uci set "network.lct.ipaddr"="$(get_8311_ipaddr)"
+uci set "network.lct.netmask"="$(get_8311_netmask)"
+uci set "network.lct.gateway"="$(get_8311_gateway)"
+uci set "network.lct.macaddr"="$(get_8311_lct_mac)"
+
+# Configure IP Host Interface
+uci set "network.iphost1.macaddr"="$(get_8311_iphost_mac)"
+uci commit "network"
+
+SYS_HOSTNAME=$(get_8311_hostname)
+if [ -n "$SYS_HOSTNAME" ]; then
+	uci set "system.@system[0].hostname"="$SYS_HOSTNAME"
+	uci commit "system"
+fi
+
+# Configure WebUI
+if [ -d "/www/luci-static/bootstrap" ]; then
+	uci set "luci.main.mediaurlbase"="/luci-static/bootstrap"
+	uci commit "luci"
+fi
+
+if [ -f "/usr/sbin/dropbear" ]; then
+	rm -f "/etc/config/dropbear"
+	touch "/etc/config/dropbear"
+
+	uci batch <<BATCH
+add dropbear dropbear
+set dropbear.@dropbear[0].PasswordAuth='on'
+set dropbear.@dropbear[0].RootPasswordAuth='on'
+set dropbear.@dropbear[0].Port='22'
+set dropbear.@dropbear[0].Interface='lct'
+commit dropbear
+BATCH
+fi

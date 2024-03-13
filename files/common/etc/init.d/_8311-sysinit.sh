@@ -5,6 +5,42 @@ _lib_8311 2>/dev/null || . /lib/8311.sh
 START=18
 
 start() {
+	CONSOLE_EN=$(get_8311_console_en)
+	DYING_GASP_EN=$(get_8311_dying_gasp_en)
+
+	if [ "$CONSOLE_EN" != "1" ]; then
+		echo "Disabling serial console output, set fwenv 8311_console_en to 1 to re-enable" | to_console
+		UART_TX="0"
+	else
+		UART_TX="1"
+	fi
+
+	if [ "$DYING_GASP_EN" = "1" ]; then
+		echo "Enabling dying gasp. This will disable serial console input, set fwenv 8311_dying_gasp_en to 0 to re-enable" | to_console
+		UART_RX="0"
+	else
+		UART_RX="1"
+	fi
+
+	# Delay to give enough time to write to console if UART TX is being disabled
+	[ "$UART_TX" -eq 0 ] && sleep 1
+
+	[ -e "/sys/class/gpio/gpio508" ] || echo 508 > "/sys/class/gpio/export"
+	echo "out" > "/sys/class/gpio/gpio508/direction"
+	echo "$UART_RX" > "/sys/class/gpio/gpio508/value"
+
+	[ -e "/sys/class/gpio/gpio510" ] || echo 510 > "/sys/class/gpio/export"
+	echo "out" > "/sys/class/gpio/gpio510/direction"
+	echo "$UART_TX" > "/sys/class/gpio/gpio510/value"
+
+	# Move cursor to begining of line to hide garbage created by setting UART_TX
+	[ "$UART_TX" = "1" ] && echo -n -e "\r" | to_console
+
+
+	# Custom hostname suppport
+	SYS_HOSTNAME=$(get_8311_hostname)
+	[ -n "$SYS_HOSTNAME" ] && set_8311_hostname "$SYS_HOSTNAME"
+
 	# fwenv for setting the root account password hash
 	ROOT_PWHASH=$(get_8311_root_pwhash)
 	[ -n "$ROOT_PWHASH" ] && set_8311_root_pwhash "$ROOT_PWHASH"

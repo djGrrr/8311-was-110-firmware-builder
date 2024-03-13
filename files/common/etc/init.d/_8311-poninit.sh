@@ -5,6 +5,11 @@ _lib_8311 2>/dev/null || . /lib/8311.sh
 START=79
 
 start() {
+	# Configure Dying Gasp
+	[ "$(get_8311_dying_gasp_en)" = "1" ] && DG_DIS="0" || DG_DIS="1"
+	uci set "optic.common.dg_dis"="$DG_DIS"
+	uci commit "optic"
+
 	# 8311 MOD: fwenv to set Logical ONU ID
 	LOID=$(get_8311_loid)
 	[ -n "$LOID" ] && set_8311_loid "$LOID"

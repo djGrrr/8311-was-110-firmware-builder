@@ -1,0 +1,4 @@
+#!/bin/sh
+[ -n "$1" ] || exit 1
+
+fw_printenv -n "$1" 2>/dev/null

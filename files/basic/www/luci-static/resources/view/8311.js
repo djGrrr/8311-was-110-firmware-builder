@@ -29,3 +29,21 @@ function switchTabPonStatus(tab) {
 		pontop.text(data);
 	});
 }
+
+function showPonMe(meId, instanceId) {
+	meLabel = $('#me_label');
+	meLabel.hide();
+	meDump = $('#me_dump');
+	meDump.hide();
+
+	$.ajax({
+		url: 'pon_dump/' + meId + '/' + instanceId,
+		dataType: 'text'
+	}).done(function(data) {
+		meLabel.text("ME " + meId + " Instance " + instanceId);
+		meLabel.show();
+		meDump.text(data);
+		meDump.show();
+		meLabel.get(0).scrollIntoView({behavior: 'smooth'});
+	});
+}

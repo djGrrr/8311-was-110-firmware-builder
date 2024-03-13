@@ -9,117 +9,151 @@ local dispatcher = require "luci.dispatcher"
 
 function index()
 	entry({"admin", "8311"}, firstchild(), "8311", 99).dependent=false
-	entry({"admin", "8311", "pontop"}, call("action_pontop")).leaf=true
-	entry({"admin", "8311", "pon_status"}, call("action_pon_status"), "PON Status", 1)
-	entry({"admin", "8311", "config"}, call("action_config"), "Configuration", 2)
+	entry({"admin", "8311", "config"}, call("action_config"), "Configuration", 1)
+	entry({"admin", "8311", "pon_status"}, call("action_pon_status"), "PON Status", 2)
+	entry({"admin", "8311", "pon_explorer"}, call("action_pon_explorer"), "PON ME Explorer", 3)
+
 	entry({"admin", "8311", "save"}, post_on({ data = true }, "action_save"))
+	entry({"admin", "8311", "pontop"}, call("action_pontop")).leaf=true
+	entry({"admin", "8311", "pon_dump"}, call("action_pon_dump")).leaf=true
 end
 
-function pontop_order()
-	return {
-		"status",
-		"cap",
---		"lan",
-		"alarms",
-		"gem",
-		"gem_stats",
---		"gem_ds",
---		"gem_us",
---		"eth_ds",
---		"eth_us",
-		"fec",
-		"gtc",
-		"power_save",
-		"psm",
-		"alloc_stats",
-		"ploam_ds",
-		"ploam_us",
-		"optical",
-		"optical_info",
---		"debug_burst",
-		"cqm",
-		"cqm_map",
-		"datapath_ports",
-		"datapath_qos",
-		"pp4_buffers",
-		"pp4_pps",
-		"pp4_stats",
-		"pp4_tree",
-		"pp4_qstats"
+function pontop_page_details()
+	return {{
+			id="status",
+			page="Status",
+			label="Status"
+		},{
+			id="cap",
+			page="Capability and Configuration",
+			label="Capability"
+		},{
+			id="lan",
+			page="LAN Interface Status & Counters",
+			label="LAN Info",
+			display=false
+		},{
+			id="alarms",
+			page="Active alarms",
+			label="Alarms"
+		},{
+			id="gem",
+			page="GEM/XGEM Port Status",
+			label="GEM Status"
+		},{
+			id="gem_stats",
+			page="GEM/XGEM Port Counters",
+			label="GEM Stats"
+		},{
+			id="gem_ds",
+			page="GEM/XGEM port DS Counters",
+			label="GEM DS",
+			display=false
+		},{
+			id="gem_us",
+			page="GEM/XGEM port US Counters",
+			label="GEM US",
+			display=false
+		},{
+			id="eth_ds",
+			page="GEM/XGEM port Eth DS Cnts",
+			label="ETH DS Stats",
+		},{
+			id="eth_us",
+			page="GEM/XGEM port Eth US Cnts",
+			label="ETH US Stats"
+		},{
+			id="fec",
+			page="FEC Status & Counters",
+			label="FEC Info"
+		},{
+			id="gtc",
+			page="GTC/XGTC Status & Counters",
+			label="GTC Info"
+		},{
+			id="power_save",
+			page="Power Save Status",
+			label="PS Status"
+		},{
+			id="psm",
+			page="PSM Configuration",
+			label="PSM"
+		},{
+			id="alloc_stats",
+			page="Allocation Counters",
+			label="Alloc Stats"
+		},{
+			id="ploam_ds",
+			page="PLOAM Downstream Counters",
+			label="PLOAM DS"
+		},{
+			id="ploam_us",
+			page="PLOAM Upstream Counters",
+			label="PLOAM US"
+		},{
+			id="optical",
+			page="Optical Interface Status",
+			label="Optical Status"
+		},{
+			id="optical_info",
+			page="Optical Interface Info",
+			label="Optical Info"
+		},{
+			id="debug_burst",
+			page="Debug Burst Profile",
+			label="Burst Profile"
+		},{
+			id="cqm",
+			page="CQM ofsc",
+			label="CQM"
+		},{
+			id="cqm_map",
+			page="CQM Queue Map",
+			label="CQM Q Map"
+		},{
+			id="datapath_ports",
+			page="Datapath Ports",
+			label="DP Ports"
+		},{
+			id="datapath_qos",
+			page="Datapath QOS",
+			label="DP QoS"
+		},{
+			id="pp4_buffers",
+			page="PPv4 Buffer MGR HW Stats",
+			label="PPv4 Buffers"
+		},{
+			id="pp4_pps",
+			page="PPv4 QoS Queue PPS",
+			label="PPv4 PPS"
+		},{
+			id="pp4_stats",
+			page="PPv4 QoS Queues Stats",
+			label="PPv4 Stats"
+		},{
+			id="pp4_tree",
+			page="PPv4 QoS Tree",
+			label="PPv4 Tree"
+		},{
+			id="pp4_qstats",
+			page="PPv4 QoS QStats",
+			label="PPv4 QStats"
+		}
 	}
 end
 
-function pontop_labels()
-	return {
-		status="Status",
-		cap="Capability",
-		lan="LAN Info",
-		alarms="Alarms",
-		gem="GEM Status",
-		gem_stats="GEM Stats",
-		gem_ds="GEM DS",
-		gem_us="GEM US",
-		eth_ds="ETH DS Stats",
-		eth_us="ETH US Stats",
-		fec="FEC Info",
-		gtc="GTC Info",
-		power_save="PS Info",
-		psm="PSM",
-		alloc_stats="Alloc Stats",
-		ploam_ds="PLOAM DS",
-		ploam_us="PLOAM US",
-		optical="Optical Status",
-		optical_info="Optical Info",
-		debug_burst="Burst Profile",
-		cqm="CQM",
-		cqm_map="CQM Q Map",
-		datapath_ports="DP Ports",
-		datapath_qos="DP QoS",
-		pp4_buffers="PPv4 Buffers",
-		pp4_pps="PPv4 PPS",
-		pp4_stats="PPv4 Stats",
-		pp4_tree="PPv4 Tree",
-		pp4_qstats="PPv4 QStats"
-	}
-end
+function pontop_pages()
+	local details = pontop_page_details()
+	local pages = {}
+	for _, page in pairs(details) do
+		pages[page.id] = page.page
+	end
 
-function pontop_modes()
-	return {
-		status="Status",
-		cap="Capability and Configuration",
-		lan="LAN Interface Status & Counters",
-		alarms="Active alarms",
-		gem="GEM/XGEM Port Status",
-		gem_stats="GEM/XGEM Port Counters",
-		gem_ds="GEM/XGEM port DS Counters",
-		gem_us="GEM/XGEM port US Counters",
-		eth_ds="GEM/XGEM port Eth DS Cnts",
-		eth_us="GEM/XGEM port Eth US Cnts",
-		fec="FEC Status & Counters",
-		gtc="GTC/XGTC Status & Counters",
-		power_save="Power Save Status",
-		psm="PSM Configuration",
-		alloc_stats="Allocation Counters",
-		ploam_ds="PLOAM Downstream Counters",
-		ploam_us="PLOAM Upstream Counters",
-		optical="Optical Interface Status",
-		optical_info="Optical Interface Info",
-		debug_burst="Debug Burst Profile",
-		cqm="CQM ofsc",
-		cqm_map="CQM Queue Map",
-		datapath_ports="Datapath Ports",
-		datapath_qos="Datapath QOS",
-		pp4_buffers="PPv4 Buffer MGR HW Stats",
-		pp4_pps="PPv4 QoS Queue PPS",
-		pp4_stats="PPv4 QoS Queues Stats",
-		pp4_tree="PPv4 QoS Tree",
-		pp4_qstats="PPv4 QoS QStats"
-	}
+	return pages
 end
 
 function fwenvs_8311()
-	return {
-		{
+	return {{
 			id="pon",
 			category="PON",
 			items={	{
@@ -128,7 +162,8 @@ function fwenvs_8311()
 					description="GPON Serial Number sent to the OLT in various MEs (4 letters, followed by 8 hex digits).",
 					maxlength=12,
 					pattern='^[A-Za-z0-9]{4}[A-F0-9]{8}$',
-					type="text"
+					type="text",
+					required=true
 				},{
 					id="vendor_id",
 					name="Vendor ID",
@@ -191,9 +226,18 @@ function fwenvs_8311()
 					id="mib_file",
 					name="MIB File",
 					description="MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini",
-					maxlength=255,
-					pattern='^(\\/etc\\/mibs\\/)?[A-Za-z0-9_.-]+\\.ini$',
-					type="text"
+					type="select",
+					default="/etc/mibs/prx300_1U.ini",
+					options={
+						"/etc/mibs/prx300_1U.ini",
+						"/etc/mibs/prx300_1U_telus.ini",
+						"/etc/mibs/prx300_1V.ini",
+						"/etc/mibs/prx300_1V_bell.ini",
+						"/etc/mibs/prx300_2U.ini",
+						"/etc/mibs/prx300_2U_voip.ini",
+						"/etc/mibs/urx800_1U.ini",
+						"/etc/mibs/urx800_1V.ini"
+					}
 				},{
 					id="pon_slot",
 					name="PON Slot",
@@ -274,7 +318,7 @@ function fwenvs_8311()
 				},{
 					id="root_pwhash",
 					name="Root password hash",
-					description="Custom password hash for the root user.",
+					description="Custom password hash for the root user. This can be set from System > Administration",
 					maxlength=255,
 					type="text",
 				},{
@@ -291,6 +335,13 @@ function fwenvs_8311()
 					pattern='^[0-9]+$',
 					type="text",
 					default="15"
+				},{
+					id="hostname",
+					name="System Hostname",
+					description="Set the system hostname visible over SSH/Console/WebUI.",
+					maxlength=100,
+					type="text",
+					default="prx126-sfp-pon"
 				},{
 					id="persist_root",
 					name="Persist RootFS",
@@ -348,30 +399,27 @@ function fwenvs_8311()
 	}
 end
 
-function action_pontop(mode)
+function action_pontop(page)
 	local cmd
 
-	mode = mode or "status"
+	page = page or "status"
 
-	local modes = pontop_modes()
-	if not modes[mode] then
+	local pages = pontop_pages()
+
+	if not pages[page] then
 		return false
 	end
 
-	cmd = { "/usr/bin/pontop", "-g", modes[mode], "-b" }
+	cmd = { "/usr/bin/pontop", "-g", pages[page], "-b" }
 	luci.http.prepare_content("text/plain; charset=utf-8")
 	luci.sys.process.exec(cmd, luci.http.write)
 end
 
 function action_pon_status()
-	local order = pontop_order()
-	local labels = pontop_labels()
-	local modes = pontop_modes()
+	local pages = pontop_page_details()
 
 	ltemplate.render("8311/pon_status", {
-		order=order,
-		labels=labels,
-		modes=modes
+		pages=pages,
 	})
 end
 
@@ -414,14 +462,25 @@ function action_save()
 				value = ''
 			end
 
---			http.write(item.id .. " - '" .. tools.html_escape(value) .. "'<br />\n")
-
 			if item.value ~= value then
---				http.write("Setting " .. item.id .. " to '" .. tools.html_escape(value) .. "'<br />\n")
 				tools.fw_setenv_8311(item.id, value)
 			end
 		end
 	end
 
 	http.redirect(dispatcher.build_url("admin/8311/config"))
+end
+
+function action_pon_explorer()
+	local omci = util.exec("/usr/bin/luci-me-dump")
+
+	ltemplate.render("8311/pon_me", {
+		omci=omci
+	})
+end
+
+function action_pon_dump(me_id, instance_id)
+	cmd = { "/usr/bin/omci_pipe.sh", "meg", me_id, instance_id }
+	luci.http.prepare_content("text/plain; charset=utf-8")
+	luci.sys.process.exec(cmd, http.write)
 end

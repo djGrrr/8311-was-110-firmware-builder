@@ -25,7 +25,6 @@ local esc = tools.html_escape
 			<label class="cbi-value-title" for="widget.cbid.system.poncfg.<%= item.id %>"><%= esc(item.name) %></label>
 			<div class="cbi-value-field">
 				<div id="cbid.system.poncfg.<%= item.id %>">
-					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" type="<%= item.type %>" class="cbi-input-<%= item.type %>"
 <%-
 local value = nil
 local placeholder = nil
@@ -41,8 +40,24 @@ else
 		placeholder = item.default
 	end
 end
-%> value="<%= esc(value) %>"<% if item.maxlength then %> maxlength="<%= item.maxlength %>"<% end %><%= checked %><% if placeholder then %> placeholder="<%= esc(placeholder) %>"<% end %>
-<%- if item.type == 'text' and item.pattern then %> pattern="<%= item.pattern %>"<% end %> />
+
+if item.type == "select" then %>
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-<%= item.type %>">
+<%
+for _, option in pairs(item.options) do
+	local option_html = esc(option)
+%>
+						<option value="<%= option_html %>"
+<%- if option == value or value == '' and option == item.default then %> selected="selected"<% end %>>&nbsp;<%= option_html %></option>
+<% end %>
+					</select>
+<%- else %>
+					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-<%= item.type %>"
+						type="<%= item.type %>" value="<%= esc(value) %>"<% if item.required then %> required="required"<% end %>
+						<% if item.maxlength then %> maxlength="<%= item.maxlength %>"<% end %>
+						<%= checked %><% if placeholder then %> placeholder="<%= esc(placeholder) %>"<% end %>
+						<% if item.type == 'text' and item.pattern then %> pattern="<%= item.pattern %>"<% end %> />
+<% end %>
 				</div>
 <% if item.description then %>
 				<div class="cbi-value-description"><%= esc(item.description) %></div>

@@ -40,3 +40,28 @@ variant = "${FW_VARIANT}"
 version = "${FW_VERSION}"
 revision = "${FW_HASH}"
 8311VER
+
+rm -fv "$ROOT_DIR/etc/mibs/prx300_1U.ini.bk"
+
+LUCI_MENUD_SYSTEM_JSON="$ROOT_DIR/usr/share/luci/menu.d/luci-mod-system.json"
+echo "Patching '$LUCI_MENUD_SYSTEM_JSON' ..."
+LUCI_MENUD_SYSTEM=$(jq 'delpaths([["admin/system/flash"], ["admin/system/crontab"], ["admin/system/startup"], ["admin/system/admin/dropbear"], ["admin/system/system"]])' "$LUCI_MENUD_SYSTEM_JSON")
+echo "$LUCI_MENUD_SYSTEM" > "$LUCI_MENUD_SYSTEM_JSON"
+
+LUCI_MENUD_STATUS_JSON="$ROOT_DIR/usr/share/luci/menu.d/luci-mod-status.json"
+echo "Patching '$LUCI_MENUD_STATUS_JSON' ..."
+LUCI_MENUD_STATUS=$(jq 'delpaths([["admin/status/iptables"]])' "$LUCI_MENUD_STATUS_JSON")
+echo "$LUCI_MENUD_STATUS" > "$LUCI_MENUD_STATUS_JSON"
+
+RPCD_LUCI="$ROOT_DIR/usr/libexec/rpcd/luci"
+echo "Patching '$RPCD_LUCI' ..."
+sed -r 's#passwd %s >/dev/null 2>&1#passwd %s \&>/dev/null \&\& /usr/sbin/8311-persist-root-password.sh \&>/dev/null#' -i "$RPCD_LUCI"
+
+rm -fv "$ROOT_DIR/usr/lib/lua/luci/view/opkg.htm"
+rm -fv "$ROOT_DIR/usr/lib/lua/luci/controller/admin/network.lua"
+rm -fv "$ROOT_DIR/usr/lib/lua/luci/controller/opkg.lua"
+rm -fv "$ROOT_DIR/usr/lib/lua/luci/controller/firewall.lua"
+rm -fv "$ROOT_DIR/usr/share/luci/menu.d/luci-app-advanced-reboot.json" "$ROOT_DIR/usr/lib/lua/luci/controller/advanced_reboot.lua"
+rm -fv "$ROOT_DIR/usr/libexec/rpcd/luci.advanced_reboot" "$ROOT_DIR/usr/share/rpcd/acl.d/luci-app-advanced-reboot.json"
+rm -fv "$ROOT_DIR/www/luci-static/resources/view/system/advanced_reboot.js" "$ROOT_DIR/www/luci-static/resources/view/opkg.js"
+rm -rfv "$ROOT_DIR/usr/share/advanced-reboot" "$ROOT_DIR/usr/lib/lua/luci/advanced-reboot" "$ROOT_DIR/usr/lib/lua/luci/view/advanced_reboot"

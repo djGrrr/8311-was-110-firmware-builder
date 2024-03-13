@@ -1,0 +1,6 @@
+#!/bin/sh
+[ -n "$1" ] || return 1
+
+for i in 0 1; do
+	fw_setenv "$1" "$2" || return $?
+done
