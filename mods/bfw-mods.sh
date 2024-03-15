@@ -1,25 +1,5 @@
 #!/bin/bash
 
-cat >> "$ROOT_DIR/etc/init.d/network" <<'INITD_NETWORK'
-
-_lib_8311 2>/dev/null || . /lib/8311.sh
-
-# 8311 MOD: Configure IP/subnet/gateway
-boot() {
-	local ipaddr=$(get_8311_ipaddr)
-	local netmask=$(get_8311_netmask)
-	local gateway=$(get_8311_gateway)
-
-	echo "Setting IP: $ipaddr, Netmask: $netmask, Gateway: $gateway" | to_console
-
-	sed -r 's#(<param name="Ipaddr" .+ value=)"\S+"(></param>)#\1"'"$ipaddr"'"\2#g' -i /ptrom/ptconf/param_ct.xml
-	sed -r 's#(<param name="SubnetMask" .+ value=)"\S+"(></param>)#\1"'"$netmask"'"\2#g' -i /ptrom/ptconf/param_ct.xml
-	sed -r 's#(<param name="Gateway" .+ value=)"\S+"(></param>)#\1"'"$gateway"'"\2#g' -i /ptrom/ptconf/param_ct.xml
-
-	start "$@"
-}
-INITD_NETWORK
-
 # Add MOD Version to webui
 STATE_OVCT="$ROOT_DIR/www/html/stateOverview_ct.html"
 dos2unix "$STATE_OVCT"
@@ -118,7 +98,7 @@ _lib_8311 2>/dev/null || . /lib/8311.sh
 uci -qc /ptdata delete factory_conf.Reservedata
 
 # 8311 MOD: Disable factory mode unless specifically enabled
-FAC_MODE=$(fw_printenv -n 8311_factory_mode 2>/dev/null)
+FAC_MODE=$(fwenv_get_8311 factory_mode)
 [ "$FAC_MODE" = "1" ] || FAC_MODE=0
 
 FAC_MODE_FLAG="/ptdata/factorymodeflag"
@@ -141,14 +121,3 @@ fi
 BFW_START_MODS
 
 echo "$BFW_FOOT" >> "$BFW_START"
-
-
-BFW_SYSINIT="$ROOT_DIR/etc/init.d/bfw_sysinit"
-
-cat >> "$BFW_SYSINIT" <<'BFW_SYSINIT'
-
-# 8311 MOD
-boot() {
-	start "$@"
-}
-BFW_SYSINIT

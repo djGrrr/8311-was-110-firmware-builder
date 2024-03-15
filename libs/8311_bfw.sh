@@ -64,6 +64,18 @@ _set_8311_equipment_id() {
 	) &
 }
 
+_set_8311_ipaddr() {
+    sed -r 's#(<param name="Ipaddr" .+ value=)"\S+"(></param>)#\1"'"$1"'"\2#g' -i "/ptrom/ptconf/param_ct.xml"
+}
+
+_set_8311_netmask() {
+	sed -r 's#(<param name="SubnetMask" .+ value=)"\S+"(></param>)#\1"'"$1"'"\2#g' -i "/ptrom/ptconf/param_ct.xml"
+}
+
+_set_8311_gateway() {
+	sed -r 's#(<param name="Gateway" .+ value=)"\S+"(></param>)#\1"'"$1"'"\2#g' -i "/ptrom/ptconf/param_ct.xml"
+}
+
 _set_8311_lct_mac() {
 	uci -qc /ptdata set "factory_conf.brmac"="key"
 	uci -qc /ptdata set "factory_conf.brmac.encryflag"="0"

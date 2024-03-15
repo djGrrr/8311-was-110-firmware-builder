@@ -41,6 +41,21 @@ _set_8311_equipment_id() {
 	return 0
 }
 
+_set_8311_ipaddr() {
+	# handled by uci-defaults
+	return 0
+}
+
+_set_8311_netmask() {
+	# handled by uci-defaults
+	return 0
+}
+
+_set_8311_gateway() {
+	# handled by uci-defaults
+	return 0
+}
+
 _set_8311_lct_mac() {
 	# handled by uci-defaults
 	return 0

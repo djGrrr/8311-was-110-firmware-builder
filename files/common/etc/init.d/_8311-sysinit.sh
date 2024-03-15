@@ -44,19 +44,11 @@ start() {
 	# fwenv for setting the root account password hash
 	ROOT_PWHASH=$(get_8311_root_pwhash)
 	[ -n "$ROOT_PWHASH" ] && set_8311_root_pwhash "$ROOT_PWHASH"
-
-	# 8311 MOD: set LCT MAC
-	LCT_MAC=$(get_8311_lct_mac)
-	set_8311_lct_mac "$LCT_MAC"
-
-	# 8311 MOD: set IP Host MAC
-	IPHOST_MAC=$(get_8311_iphost_mac)
-	set_8311_iphost_mac "$IPHOST_MAC"
 }
 
 boot() {
 	# 8311 MOD: Remove persistent root
-	_8311_check_persistent_root
+	_8311_check_persistent_root || return 1
 
 	# 8311 MOD: persistent server and client key
 	DROPBEAR_RSA_KEY=$(uci -qc /ptconf/8311 get dropbear.rsa_key.value)

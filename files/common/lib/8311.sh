@@ -43,7 +43,7 @@ _8311_check_persistent_root() {
 
 			sync
 			reboot
-			sleep 60
+			return 1
 		fi
 	fi
 }
@@ -242,16 +242,31 @@ get_8311_ipaddr() {
 	cat "/tmp/8311-ipaddr"
 }
 
+set_8311_ipaddr() {
+	echo "Setting LCT IP address: $1" | to_console
+	_set_8311_ipaddr "$1"
+}
+
 get_8311_netmask() {
 	[ -f "/tmp/8311-netmask" ] || { fwenv_get_8311 "netmask" || echo "255.255.255.0"; } > "/tmp/8311-netmask"
 
 	cat "/tmp/8311-netmask"
 }
 
+set_8311_netmask() {
+	echo "Setting LCT netmask: $1" | to_console
+	_set_8311_netmask "$1"
+}
+
 get_8311_gateway() {
 	[ -f "/tmp/8311-gateway" ] || { fwenv_get_8311 "gateway" || get_8311_ipaddr; } > "/tmp/8311-gateway"
 
 	cat "/tmp/8311-gateway"
+}
+
+set_8311_gateway() {
+	echo "Setting LCT gateway: $1" | to_console
+	_set_8311_gateway "$1"
 }
 
 get_8311_loid() {
