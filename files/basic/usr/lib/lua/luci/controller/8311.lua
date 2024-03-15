@@ -159,7 +159,7 @@ function fwenvs_8311()
 			items={	{
 					id="gpon_sn",
 					name="PON Serial Number (ONT ID)",
-					description="GPON Serial Number sent to the OLT in various MEs (4 letters, followed by 8 hex digits).",
+					description="GPON Serial Number sent to the OLT in various MEs (4 alphanumeric characters, followed by 8 hex digits).",
 					maxlength=12,
 					pattern='^[A-Za-z0-9]{4}[A-F0-9]{8}$',
 					type="text",
@@ -167,7 +167,7 @@ function fwenvs_8311()
 				},{
 					id="vendor_id",
 					name="Vendor ID",
-					description="PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 letters).",
+					description="PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters.",
 					maxlength=4,
 					pattern='^[A-Za-z0-9]{4}$',
 					type="text"
@@ -206,7 +206,7 @@ function fwenvs_8311()
 				},{
 					id="reg_id_hex",
 					name="Registration ID (HEX)",
-					description="Registration ID (up to 36 characters [72 hex]) sent to the OLT in hex format. This is where you would set a ploam password (which is contained in the last 12 characters).",
+					description="Registration ID (up to 36 bytes) sent to the OLT, in hex format. This is where you would set a ploam password (which is contained in the last 12 bytes).",
 					maxlength=72,
 					pattern='^([A-Fa-f0-9]{2})*$',
 					type="text"
@@ -252,7 +252,7 @@ function fwenvs_8311()
 					maxlength=17,
 					pattern='^[A-Fa-f0-9]{2}(:[A-Fa-f0-9]{2}){5}$',
 					type="text",
-					default=util.trim(util.exec("sh -c '. /lib/pon.sh; pon_mac_get host'")):upper()
+					default=util.trim(util.exec(". /lib/pon.sh && pon_mac_get host")):upper()
 				},{
 					id="iphost_hostname",
 					name="IP Host Hostname",
@@ -380,7 +380,7 @@ function fwenvs_8311()
 				},{
 					id="ping_ip",
 					name="Ping IP",
-					description="IP address to ping every 5 seconds, this can helps with reaching the stick. Defaults to the 2nd ip address in the configured management network (ie. 192.168.11.2).",
+					description="IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2).",
 					maxlength=15,
 					pattern='^[0-9]{1,3}(\\.[0-9]{1,3}){3}$',
 					type="text",
@@ -392,7 +392,7 @@ function fwenvs_8311()
 					maxlength=17,
 					pattern='^[A-Fa-f0-9]{2}(:[A-Fa-f0-9]{2}){5}$',
 					type="text",
-					default=util.trim(util.exec("sh -c '. /lib/pon.sh; pon_mac_get lct'")):upper()
+					default=util.trim(util.exec(". /lib/pon.sh && pon_mac_get lct")):upper()
 				}
 			}
 		}

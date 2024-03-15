@@ -31,7 +31,7 @@ echo "$STATE_OVCT_HEAD" > "$STATE_OVCT"
 cat >> "$STATE_OVCT" <<MOD_VERSION
 					<tr>
 						<td class="table_title" i18n="8311modver"></td>
-						<td>[$FW_VARIANT] - $FW_VERSION ($FW_HASH)</td>
+						<td>[$FW_VARIANT] - $FW_VERSION ($FW_REVISION)</td>
 					</tr>
 MOD_VERSION
 echo "$STATE_OVCT_FOOT" >> "$STATE_OVCT"
@@ -104,10 +104,6 @@ sed -r 's#^(\s*echo \".+\!\!\")$#\1 | to_console#g' -i "$BFW_START"
 
 BFW_HEAD=$(grep -P -B99999999 '^#read bootcmd, if not default, modify$' "$BFW_START" | head -n -2)
 BFW_HEAD2=$(grep -P -A99999999 '^./ptrom/bin/set_bootcmd_env$' "$BFW_START" | tail -n +2 | grep -P -B99999999 '^#set FXM_TXFAULT_EN$' | head -n -1)
-BFW_CONSOLE=$(grep -P -A99999999 '^#set FXM_TXFAULT_EN$' "$BFW_START" | grep -P -B99999999 '^#set DYING GASP EN$' | head -n -1)
-BFW_CONSOLE_HEAD=$(echo "$BFW_CONSOLE" | grep -P -B99999999 '^/ptrom/bin/gpio_cmd set 30 0$')
-BFW_CONSOLE_FOOT=$(echo "$BFW_CONSOLE" | grep -P -A99999999 '^/ptrom/bin/gpio_cmd set 30 0$' | tail -n +2)
-BFW_DYING_GASP=$(grep -P -A99999999 '^#set DYING GASP EN$' "$BFW_START" | grep -P -B99999999 '^pon 1pps_event_enable$' | head -n -1)
 BFW_FOOT=$(grep -P -A99999999 '^pon 1pps_event_enable$' "$BFW_START")
 
 echo "$BFW_HEAD" > "$BFW_START"
@@ -115,7 +111,6 @@ echo >> "$BFW_START"
 echo "$BFW_HEAD2" >> "$BFW_START"
 echo >> "$BFW_START"
 cat >> "$BFW_START" <<'BFW_START_MODS'
-
 
 _lib_8311 2>/dev/null || . /lib/8311.sh
 
@@ -143,36 +138,8 @@ if [ -n "$FAC_CHANGES" ] || [ "$CUR_FAC_MODE" != "$FAC_MODE" ]; then
 	fi
 fi
 
-
 BFW_START_MODS
 
-echo "$BFW_DYING_GASP" >> "$BFW_START"
-echo >> "$BFW_START"
-echo "$BFW_CONSOLE_HEAD" >> "$BFW_START"
-cat >> "$BFW_START" <<'CONSOLE_FWENV'
-
-# 8311 MOD: fwenv for enabling UART
-console_en=$(fw_printenv -n 8311_console_en 2>/dev/null)
-if [ "$console_en" = "1" ]; then
-	echo "fwenv console_en set console enable!!" | to_console
-	/ptrom/bin/gpio_cmd set 30 1
-fi
-CONSOLE_FWENV
-echo "$BFW_CONSOLE_FOOT" >> "$BFW_START"
-
-# Don't set console GPIO til the setting is determined
-sed -r 's#/ptrom/bin/gpio_cmd set 30 (0|1)$#CONSOLE_EN=\1#g' -i "$BFW_START"
-
-cat >> "$BFW_START" <<'CONSOLE_SET'
-
-# 8311 MOD: Enable or Disable UART TX
-if [ "$CONSOLE_EN" = "1" ]; then
-	/ptrom/bin/gpio_cmd set 30 1
-else
-	/ptrom/bin/gpio_cmd set 30 0
-fi
-CONSOLE_SET
-echo >> "$BFW_START"
 echo "$BFW_FOOT" >> "$BFW_START"
 
 

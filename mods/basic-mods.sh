@@ -38,7 +38,7 @@ module "8311.version"
 
 variant = "${FW_VARIANT}"
 version = "${FW_VERSION}"
-revision = "${FW_HASH}"
+revision = "${FW_REVISION}"
 8311VER
 
 rm -fv "$ROOT_DIR/etc/mibs/prx300_1U.ini.bk"

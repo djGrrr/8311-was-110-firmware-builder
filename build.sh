@@ -29,7 +29,11 @@ while [ $# -gt 0 ]; do
 			IMG_OUT="$2"
 			shift
 		;;
-		--help|-h)
+		-V|--image-version)
+			FW_VER="$2"
+			shift
+		;;
+		-h|--help)
 			_help
 			exit 0
 		;;
@@ -68,9 +72,12 @@ GIT_TAG=$(git tag --points-at HEAD | grep -P '^v\d+\.\d+\.\d+' | sort -V -r | he
 
 FW_PREFIX=""
 [ -n "$GIT_DIFF" ] && FW_SUFFIX="~dev"
-[ -n "$GIT_TAG" ] && FW_VERSION="$GIT_TAG$FW_SUFFIX" || FW_VERSION="dev"
-FW_HASH="$GIT_HASH$FW_SUFFIX"
+[ -n "$GIT_TAG" ] && FW_VERSION="${GIT_TAG}${FW_SUFFIX}" || FW_VERSION="dev"
 
+FW_REV="$GIT_HASH"
+FW_REVISION="$GIT_HASH$FW_SUFFIX"
+
+FW_VER="${FW_VER:-"${GIT_TAG:-"dev"}"}"
 
 set -e
 
@@ -121,6 +128,8 @@ sudo chown -R "$USER:$GROUP" "$ROOT_DIR"
 
 [ -d "$ROOT_DIR/ptrom" ] && FW_VARIANT="bfw" || FW_VARIANT="basic"
 
+FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
+
 
 . mods/common-mods.sh
 
@@ -135,4 +144,4 @@ OUT_KERNEL=$(realpath "$OUT_DIR/kernel.bin")
 [ "$KERNEL" = "$OUT_KERNEL" ] || cp -fv "$KERNEL" "$OUT_KERNEL"
 
 mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -comp xz -b 256K || _err "Error creating new rootfs image"
-[ -n "$HEADER" ] && [ -f "$HEADER" ] && ./create.sh -i "$IMG_OUT" -H "$HEADER" -b "$BOOTCORE" -k "$KERNEL" -r "$ROOTFS"
+[ -n "$HEADER" ] && [ -f "$HEADER" ] && ./create.sh -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" -b "$BOOTCORE" -k "$KERNEL" -r "$ROOTFS"

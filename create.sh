@@ -45,6 +45,10 @@ while [ $# -gt 0 ]; do
 			VERSION="$2"
 			shift
 		;;
+		-L|--image-long-version)
+			LONGVERSION="$2"
+			shift
+		;;
 		--help|-h)
 			_help
 			exit 0
@@ -78,7 +82,9 @@ NUM=0
 FILE_OFFSET=$((0x100))
 LEN_HDR=$((0xD00))
 DATA_OFFSET=$LEN_HDR
+HW_OFFSET=$((0x10))
 VERSION_OFFSET=$((0x30))
+LONGVERSION_OFFSET=$((0x46))
 
 FILES=()
 add_image() {
@@ -111,7 +117,12 @@ head -c "$LEN_HDR" "$HEADER" > "$OUT"
 
 if [ -n "$VERSION" ]; then
 	echo "Setting image version string to '$VERSION'"
-	{ echo -n "$VERSION"; cat /dev/zero; } | dd of="$OUT" seek="$VERSION_OFFSET" bs=1 count=14 conv=notrunc 2>/dev/null
+	{ echo -n "$VERSION" | head -c 15; cat /dev/zero; } | dd of="$OUT" seek="$VERSION_OFFSET" bs=1 count=16 conv=notrunc 2>/dev/null
+fi
+
+if [ -n "$LONGVERSION" ]; then
+	echo "Setting long image version string to '$LONGVERSION'"
+	{ echo -n "$LONGVERSION" | head -c 31; cat /dev/zero; } | dd of="$OUT" seek="$LONGVERSION_OFFSET" bs=1 count=32 conv=notrunc 2>/dev/null
 fi
 
 add_image "bootcore.bin" "$BOOTCORE"

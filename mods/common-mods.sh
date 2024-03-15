@@ -1,6 +1,6 @@
 #!/bin/bash
 BANNER="$ROOT_DIR/etc/banner"
-sed -E "s#(^\s+OpenWrt\s+.+$)#\1\n\n 8311 Community Firmware MOD [$FW_VARIANT] - $FW_VERSION ($FW_HASH)\n https://github.com/djGrrr/8311-was-110-firmware-builder#g" -i "$BANNER"
+sed -E "s#(^\s+OpenWrt\s+.+$)#\1\n\n 8311 Community Firmware MOD [$FW_VARIANT] - $FW_VERSION ($FW_REVISION)\n https://github.com/djGrrr/8311-was-110-firmware-builder#g" -i "$BANNER"
 
 UBIMGVARS="$ROOT_DIR/sbin/uboot_img_vars.sh"
 echo "Patching '$UBIMGVARS'..."
@@ -119,3 +119,13 @@ sed -r "s#(option 'tx_en_mode' ').*(')#\10\2#" -i "$OPTICDB_DEFAULT"
 sed -r "s#(option 'tx_pup_mode' ').*(')#\11\2#" -i "$OPTICDB_DEFAULT"
 
 mkdir -pv "$ROOT_DIR/ptconf"
+
+cat > "$ROOT_DIR/etc/8311_version" <<8311_VER
+FW_VER=$FW_VER
+FW_VERSION=$FW_VERSION
+FW_LONG_VERSION=$FW_LONG_VERSION
+FW_REV=$FW_REV
+FW_REVISION=$FW_REVISION
+FW_VARIANT=$FW_VARIANT
+FW_SUFFIX=$FW_SUFFIX
+8311_VER
