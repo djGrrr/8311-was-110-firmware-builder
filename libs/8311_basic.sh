@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#!/bin/sh
-
 _lib_8311 2>/dev/null || . /lib/8311.sh
 _lib_hexbin 2>/dev/null || . /lib/functions/hexbin.sh
 
