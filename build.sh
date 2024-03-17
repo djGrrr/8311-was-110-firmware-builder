@@ -54,6 +54,10 @@ sha256() {
 	sha256sum "$1" | awk '{print $1}'
 }
 
+file_size() {
+	stat -c '%s' "$1"
+}
+
 check_file() {
 	[ -f "$1" ] && [ "$(sha256 "$1")" = "$2" ]
 }
@@ -138,10 +142,42 @@ FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
 . "mods/${FW_VARIANT}-mods.sh"
 
 
-OUT_BOOTCORE=$(realpath "$OUT_DIR/bootcore.bin")
+REAL_OUT=$(realpath "$OUT_DIR")
+OUT_BOOTCORE="$REAL_OUT/bootcore.bin"
 [ "$BOOTCORE" = "$OUT_BOOTCORE" ] || cp -fv "$BOOTCORE" "$OUT_BOOTCORE"
-OUT_KERNEL=$(realpath "$OUT_DIR/kernel.bin")
+OUT_KERNEL="$REAL_OUT/kernel.bin"
 [ "$KERNEL" = "$OUT_KERNEL" ] || cp -fv "$KERNEL" "$OUT_KERNEL"
 
-mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -comp xz -b 256K || _err "Error creating new rootfs image"
-[ -n "$HEADER" ] && [ -f "$HEADER" ] && ./create.sh -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" -b "$BOOTCORE" -k "$KERNEL" -r "$ROOTFS"
+mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -no-xattrs -comp xz -b 256K || _err "Error creating new rootfs image"
+[ -n "$HEADER" ] && [ -f "$HEADER" ] && ./create.sh -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" -b "$OUT_BOOTCORE" -k "$OUT_KERNEL" -r "$ROOTFS"
+
+SHA256_KERNEL=$(sha256 "$OUT_KERNEL")
+SHA256_BOOTCORE=$(sha256 "$OUT_BOOTCORE")
+SHA256_ROOTFS=$(sha256 "$ROOTFS")
+
+SIZE_KERNEL=$(file_size "$OUT_KERNEL")
+SIZE_BOOTCORE=$(file_size "$OUT_BOOTCORE")
+SIZE_ROOTFS=$(file_size "$ROOTFS")
+
+VER_8311=$(cat "$ROOT_DIR/etc/8311_version")
+
+CONTROL_FILE="$REAL_OUT/control"
+cat > "$CONTROL_FILE" <<CONTROL
+$VER_8311
+
+SIZE_KERNEL=$SIZE_KERNEL
+SIZE_BOOTCORE=$SIZE_BOOTCORE
+SIZE_ROOTFS=$SIZE_ROOTFS
+
+SHA256_KERNEL=$SHA256_KERNEL
+SHA256_BOOTCORE=$SHA256_BOOTCORE
+SHA256_ROOTFS=$SHA256_ROOTFS
+CONTROL
+
+TAR_UPGRADE="$REAL_OUT/local-upgrade.tar"
+echo -n "Creating local-upgrade TAR file..."
+tar -c --sparse -f "$TAR_UPGRADE" -C "$REAL_OUT" -- "control" "kernel.bin" "bootcore.bin" "rootfs.img"
+echo " Done"
+rm -fv "$CONTROL_FILE"
+
+echo "Firmware build $FW_LONG_VERSION complete."

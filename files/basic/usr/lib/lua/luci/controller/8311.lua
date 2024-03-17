@@ -6,6 +6,9 @@ local ltemplate = require "luci.template"
 local http = require "luci.http"
 local formvalue = http.formvalue
 local dispatcher = require "luci.dispatcher"
+local sys = require "luci.sys"
+
+local firmwareOutput = ''
 
 function index()
 	entry({"admin", "8311"}, firstchild(), "8311", 99).dependent=false
@@ -16,6 +19,8 @@ function index()
 	entry({"admin", "8311", "save"}, post_on({ data = true }, "action_save"))
 	entry({"admin", "8311", "pontop"}, call("action_pontop")).leaf=true
 	entry({"admin", "8311", "pon_dump"}, call("action_pon_dump")).leaf=true
+
+	entry({"admin", "8311", "firmware"}, call("action_firmware"), "Firmware", 4);
 end
 
 function pontop_page_details()
@@ -483,4 +488,123 @@ function action_pon_dump(me_id, instance_id)
 	cmd = { "/usr/bin/omci_pipe.sh", "meg", me_id, instance_id }
 	luci.http.prepare_content("text/plain; charset=utf-8")
 	luci.sys.process.exec(cmd, http.write)
+end
+
+function action_firmware()
+	local version = require "8311.version"
+	local altversion = {
+		variant="unknown",
+		version="unknown",
+		revision="unknown"
+	}
+
+	version.bank = util.trim(util.exec(". /lib/8311.sh && active_fwbank"))
+	altversion.bank = util.trim(util.exec(". /lib/8311.sh && inactive_fwbank"))
+
+	for k, v in string.gmatch(util.exec("/usr/sbin/alternate_firmware_info"), '([^\n=]+)=([^\n]+)') do
+		if k == "FW_VARIANT" then
+			altversion.variant=v
+		elseif k == "FW_VERSION" then
+			altversion.version=v
+		elseif k == "FW_REVISION" then
+			altversion.revision=v
+		end
+	end
+
+	
+	local input_field = "firmware_file"
+	local location = "/tmp"
+	local file_name = "8311-local-upgrade.tar"
+	local firmware_file = location .. "/" .. file_name
+	local values = luci.http.formvalue()
+
+	if not file_exists(firmware_file) then
+		local ul = values[input_field]
+	
+		if ul ~= '' and ul ~= nil then
+			setFileHandler(location, input_field, file_name)
+		end
+	end
+
+	local firmware_file_exists = file_exists(firmware_file)
+	local firmware_exec = nil
+	local action = "validate"
+
+	if firmware_file_exists then
+		local cmd = {}
+		action = values["action"] or "validate"
+
+		if action == "cancel" then
+			os.remove(firmware_file)
+			firmware_file_exists = false
+		elseif action == "install" then
+			cmd = { "/usr/sbin/8311-firmware-upgrade.sh", "--yes", "--install", firmware_file }
+			firmware_exec = luci.sys.process.exec(cmd, firmwareUpgradeOutput, firmwareUpgradeOutput)
+		elseif action == "install_reboot" then
+			cmd = { "/usr/sbin/8311-firmware-upgrade.sh", "--yes", "--install", "--reboot", firmware_file }	
+			firmware_exec = luci.sys.process.exec(cmd, firmwareUpgradeOutput, firmwareUpgradeOutput)
+		elseif action == "reboot" then
+			sys.reboot()
+		else
+			-- validate
+			cmd = { "/usr/sbin/8311-firmware-upgrade.sh", "--validate", firmware_file }
+			firmware_exec = luci.sys.process.exec(cmd, firmwareUpgradeOutput, firmwareUpgradeOutput)
+		end
+	end
+
+
+	ltemplate.render("8311/firmware", {
+		version=version,
+		altversion=altversion,
+		firmware_file_exists=firmware_file_exists,
+		firmware_exec=firmware_exec,
+		firmware_output=firmwareOutput,
+		firmware_action=action
+	})
+end
+
+function file_exists(filename)
+	local fp = io.open(filename, "r")
+	if fp ~= nil then
+		io.close(fp)
+		return true
+	else
+		return false
+	end
+end
+
+function firmwareUpgradeOutput(data)
+	data = data or ''
+	firmwareOutput = firmwareOutput .. data
+end
+
+--location: (string) The full path to where the file should be saved.
+--input_name: (string) The name specified by the input html field.  <input type="submit" name="input_name_here" value="whatever you want"/>
+--file_name: (string, optional) The optional name you would like the file to be saved as. If left blank the file keeps its uploaded name.
+function setFileHandler(location, input_name, file_name)
+	local fs = require "nixio.fs"
+	local fp
+
+	luci.http.setfilehandler(
+		function(meta, chunk, eof)
+			if not fp then
+				-- make sure the field name is the one we want
+				if meta and meta.name == input_name then
+					-- use the file name if specified
+					file_name = file_name or meta.file
+
+					fp = io.open(location .. "/" .. file_name, "w")
+				end
+			end
+
+			-- actually write the uploaded file
+			if chunk then
+				fp:write(chunk)
+			end
+
+			if eof then
+				fp:close()
+			end
+		end
+	)
 end

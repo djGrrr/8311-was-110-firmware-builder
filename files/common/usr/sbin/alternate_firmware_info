@@ -1,0 +1,87 @@
+#!/bin/sh
+
+if [ -f "/tmp/8311-alt-firmware" ]; then
+	cat "/tmp/8311-alt-firmware"
+	exit 0
+fi
+
+_lib_8311 2>/dev/null || . /lib/8311.sh
+
+_err() {
+	echo "$1" >&2
+	exit ${2:-1}
+}
+
+ALTERNAT_BANK=$(inactive_fwbank)
+[ -z "$ALTERNAT_BANK" ] && _err "Alternate firmware bank could not be detected!" >&2
+
+MTDALTROOT=$(grep -e ' "rootfs'"$ALTERNAT_BANK"'"$' /proc/mtd | cut -d: -f 1 | sed 's/mtd/mtdblock/g')
+[ -z "$MTDALTROOT" ] && _err "Unable to detect alternate firmeware mtd block device!"
+
+
+MTDALTBLOCK="/dev/$MTDALTROOT"
+[ ! -b "$MTDALTBLOCK" ] && _err "MTD block device '$MTDALTBLOCK' does not exist!"
+
+
+MNTDIR=$(mktemp -d /tmp/XXXXXX)
+[ -z "$MNTDIR" ] && _err "Failed to create mount directory!"
+
+FW_VARIANT="unknown"
+FW_VERSION="unknown"
+FW_REVISION="unknown"
+
+mount -t squashfs -o ro "$MTDALTBLOCK" "$MNTDIR" || _err "Failed to mount alternate firmware image!"
+
+VER_8311="$MNTDIR/etc/8311_version"
+PTCONF="$MNTDIR/ptrom/ptconf"
+SYSINFO="$PTCONF/sysinfo_conf"
+STATEOV="$MNTDIR/www/html/stateOverview_ct.html"
+BANNER="$MNTDIR/etc/banner"
+
+if [ -f "$VER_8311" ]; then
+	cat "$VER_8311" > "/tmp/8311-alt-firmware"
+else
+	if [ -f "$STATEOV" ]; then
+		BFW_VER=$(grep -A1 8311modver "$STATEOV" | grep -E '<td>\S+ \(\S+)</td>' | sed -r 's#\s*</?td>##g' | tr '()' '  ')
+		if [ -n "$BFW_VER" ]; then
+			FW_VARIANT="bfw"
+			FW_VERSION=$(echo "$BFW_VER" | awk '{print $1}')
+			FW_REVISION=$(echo "$BFW_VER" | awk '{print $2}')
+		fi
+	fi
+
+	if [ "$FW_VARIANT" = "unknown" ] && [ -f "$BANNER" ]; then
+		VER=$(grep -E -o '8311 Community Firmware MOD \[\S+\] - \S+ \(\S+)' "$BANNER" | tr '[]()' '    ')
+		if [ -n "$VER" ]; then
+			FW_VARIANT=$(echo "$VER" | awk '{print $5}')
+			FW_VERSION=$(echo "$VER" | awk '{print $6}')
+			FW_REVISION=$(echo "$VER" | awk '{print $7}')
+		else
+			VER=$(grep -E -o '8311 Community Firmware MOD - \S+ \(\S+)' "$BANNER" | tr '[]()' '    ')
+			if [ -n "$VER" ]; then
+				FW_VARIANT="bfw"
+				FW_VERSION=$(echo "$BFW_VER" | awk '{print $5}')
+				FW_REVISION=$(echo "$BFW_VER" | awk '{print $6}')
+			fi
+		fi
+	fi
+
+	if [ "$FW_VARIANT" = "unknown" ] && [ -f "$SYSINFO" ]; then
+		BFW_VER=$(uci -c "$PTCONF" -q get sysinfo_conf.SoftwareVersion.value)
+		if [ -n "$BFW_VER" ]; then
+			FW_VARIANT="bfw_stock"
+			FW_VERSION="$BFW_VER"
+			FW_REVISION=""
+		fi
+	fi
+
+	echo "FW_VARIANT=$FW_VARIANT" > "/tmp/8311-alt-firmware"
+	echo "FW_VERSION=$FW_VERSION" >> "/tmp/8311-alt-firmware"
+	echo "FW_REVISION=$FW_REVISION" >> "/tmp/8311-alt-firmware"
+fi
+
+umount "$MNTDIR" 2>/dev/null
+rmdir "$MNTDIR" 2>/dev/null
+
+cat "/tmp/8311-alt-firmware"
+exit 0

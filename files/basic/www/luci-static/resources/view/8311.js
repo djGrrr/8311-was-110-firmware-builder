@@ -47,3 +47,34 @@ function showPonMe(meId, instanceId) {
 		meLabel.get(0).scrollIntoView({behavior: 'smooth'});
 	});
 }
+
+function submitFirmwareForm() {
+	$('input.firmware-button').attr('disabled', 'disabled');
+	$('#firmware-loading').show();
+	$('#firmware-form').submit();
+}
+
+function uploadFirmware() {
+	if ($('#firmware-form').valid()) {
+		submitFirmwareForm();
+	}
+}
+
+function cancelFirmware() {
+	$('#firmware-action').attr('value', 'cancel');
+	submitFirmwareForm();
+}
+
+function rebootFirmware() {
+	$('#firmware-action').attr('value', 'reboot');
+	submitFirmwareForm();
+}
+
+function installFirmware(reboot) {
+	action = 'install';
+	if (reboot)
+		action = 'install_reboot';
+
+	$('#firmware-action').attr('value', action);
+	submitFirmwareForm();
+}

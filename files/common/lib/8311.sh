@@ -389,3 +389,20 @@ get_8311_base_mac() {
 
 	cat "/tmp/8311-base-mac"
 }
+
+active_fwbank() {
+	grep -E -o '\brootfsname=rootfs[AB]\b' /proc/cmdline | grep -E -o '[AB]$'
+}
+
+inactive_fwbank() {
+	local active_bank=$(active_fwbank)
+	if [ "$active_bank" = "A" ]; then
+		echo "B"
+	elif [ "$active_bank" = "B" ]; then
+		echo "A"
+	else
+		return 1
+	fi
+
+	return 0
+}
