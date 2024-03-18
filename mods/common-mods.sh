@@ -117,6 +117,7 @@ sed -r "s#(option 'tx_pup_mode' ').*(')#\11\2#" -i "$CONFIG_OPTIC"
 OPTICDB_DEFAULT="$ROOT_DIR/etc/optic-db/default"
 sed -r "s#(option 'tx_en_mode' ').*(')#\10\2#" -i "$OPTICDB_DEFAULT"
 sed -r "s#(option 'tx_pup_mode' ').*(')#\11\2#" -i "$OPTICDB_DEFAULT"
+sed "/option 'dg_dis'/d" -i "$OPTICDB_DEFAULT"
 
 mkdir -pv "$ROOT_DIR/ptconf"
 
@@ -129,3 +130,6 @@ FW_REVISION=$FW_REVISION
 FW_VARIANT=$FW_VARIANT
 FW_SUFFIX=$FW_SUFFIX
 8311_VER
+
+# don't load sfp_i2c module early, prevent weird virtual eeprom bug
+rm -fv "$ROOT_DIR/etc/modules.d/20-pon-sfp-i2c"

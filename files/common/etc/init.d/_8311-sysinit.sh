@@ -10,31 +10,29 @@ start() {
 
 	if [ "$CONSOLE_EN" != "1" ]; then
 		echo "Disabling serial console output, set fwenv 8311_console_en to 1 to re-enable" | to_console
-		UART_TX="0"
+		UART_TX="low"
 	else
-		UART_TX="1"
+		UART_TX="high"
 	fi
 
 	if [ "$DYING_GASP_EN" = "1" ]; then
 		echo "Enabling dying gasp. This will disable serial console input, set fwenv 8311_dying_gasp_en to 0 to re-enable" | to_console
-		UART_RX="0"
+		UART_RX="low"
 	else
-		UART_RX="1"
+		UART_RX="high"
 	fi
 
 	# Delay to give enough time to write to console if UART TX is being disabled
-	[ "$UART_TX" -eq 0 ] && sleep 1
+	[ "$UART_TX" = "low" ] && sleep 1
 
 	[ -e "/sys/class/gpio/gpio508" ] || echo 508 > "/sys/class/gpio/export"
-	echo "out" > "/sys/class/gpio/gpio508/direction"
-	echo "$UART_RX" > "/sys/class/gpio/gpio508/value"
+	echo "$UART_RX" > "/sys/class/gpio/gpio508/direction"
 
 	[ -e "/sys/class/gpio/gpio510" ] || echo 510 > "/sys/class/gpio/export"
-	echo "out" > "/sys/class/gpio/gpio510/direction"
-	echo "$UART_TX" > "/sys/class/gpio/gpio510/value"
+	echo "$UART_TX" > "/sys/class/gpio/gpio510/direction"
 
 	# Move cursor to begining of line to hide garbage created by setting UART_TX
-	[ "$UART_TX" = "1" ] && echo -n -e "\r" | to_console
+	[ "$UART_TX" = "high" ] && echo -n -e "\r" | to_console
 
 
 	# Custom hostname suppport
@@ -78,6 +76,9 @@ boot() {
 
 		chmod 600 /ptconf/8311/.ssh/authorized_keys
 	fi
+
+	# load sfp_i2c module late, prevents weird virtual eeprom bug
+	modprobe mod_sfp_i2c fw_name=prx_i2c_aca_fw.bin eeprom0_init=sfp_eeprom0.bin
 
 	start "$@"
 
