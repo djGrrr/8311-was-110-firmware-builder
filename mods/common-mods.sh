@@ -131,5 +131,6 @@ FW_VARIANT=$FW_VARIANT
 FW_SUFFIX=$FW_SUFFIX
 8311_VER
 
-# don't load sfp_i2c module early, prevent weird virtual eeprom bug
+# Change load order of mod_sfp_i2c module and add hack that sets the default virtual eeprom to the content of the physical one
 rm -fv "$ROOT_DIR/etc/modules.d/20-pon-sfp-i2c"
+ln -s "/sys/bus/platform/devices/18100000.ponmbox/eeprom50" "$ROOT_DIR/lib/firmware/sfp_eeprom0_hack.bin"

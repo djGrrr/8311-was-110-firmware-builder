@@ -77,9 +77,6 @@ boot() {
 		chmod 600 /ptconf/8311/.ssh/authorized_keys
 	fi
 
-	# load sfp_i2c module late, prevents weird virtual eeprom bug
-	modprobe mod_sfp_i2c fw_name=prx_i2c_aca_fw.bin eeprom0_init=sfp_eeprom0.bin
-
 	start "$@"
 
 	# 8311 MOD: start rx_los script

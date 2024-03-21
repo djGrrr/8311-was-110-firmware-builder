@@ -1,0 +1,1 @@
+mod_sfp_i2c fw_name=prx_i2c_aca_fw.bin eeprom0_init=sfp_eeprom0_hack.bin

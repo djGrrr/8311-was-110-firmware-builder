@@ -35,6 +35,21 @@ if check_file "$OMCID" "82b6746d5385d676765d185a21443fabcab63f193fac7eb56a1a8cd8
 	expected_hash "$OMCID" "184aad016a0d38da5c3a6fc8451f8b4971be59702d6d10a2bca379b2f9bce7f7"
 fi
 
+LIBPON="$ROOT_DIR/usr/lib/libpon.so.0.0.0"
+if check_file "$LIBPON" "401cc97e0f43b6b08a1d27f7be94a9e37fa798a810ae89838776f14b55e66cc1"; then
+	echo "Patching '$LIBPON'..."
+
+	# NOP system() calls to sfp_i2c
+	printf '\x00\x00\x00\x00' | dd of="$LIBPON" conv=notrunc seek=$((0x17850)) bs=1 count=4 2>/dev/null
+	printf '\x00\x00\x00\x00' | dd of="$LIBPON" conv=notrunc seek=$((0x17894)) bs=1 count=4 2>/dev/null
+	printf '\x00\x00\x00\x00' | dd of="$LIBPON" conv=notrunc seek=$((0x178BC)) bs=1 count=4 2>/dev/null
+	printf '\x00\x00\x00\x00' | dd of="$LIBPON" conv=notrunc seek=$((0x17940)) bs=1 count=4 2>/dev/null
+	printf '\x00\x00\x00\x00' | dd of="$LIBPON" conv=notrunc seek=$((0x179D8)) bs=1 count=4 2>/dev/null
+	printf '\x00\x00\x00\x00' | dd of="$LIBPON" conv=notrunc seek=$((0x17A08)) bs=1 count=4 2>/dev/null
+
+	expected_hash "$LIBPON" "b9deb9b22715a4c4f54307939d94ac7b15e116aa5f5edabea5ba7365d3b807dc"
+fi
+
 # libponnet mod for 1.0.12 to fix management with VEIP mode
 LIBPONNET="$ROOT_DIR/usr/lib/libponnet.so.0.0.0"
 if check_file "$LIBPONNET" "8075079231811f58dd4cec06ed84ff5d46a06e40b94c14263a56110edfa2a705"; then

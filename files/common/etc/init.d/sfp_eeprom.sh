@@ -105,9 +105,9 @@ default_sfp_init() {
 	config_load sfp_eeprom
 
 	# reset to default values, if no init file exists
-	[ -e /lib/firmware/sfp_eeprom0.bin ] || sfp_i2c -d yes
-	vendor_config
-	serialnumber_config
+#	[ -e /lib/firmware/sfp_eeprom0.bin ] || sfp_i2c -d yes
+#	vendor_config
+#	serialnumber_config
 	bitrate_config
 	# configure I2C EEPROM addresses
 	eeprom_addr_config

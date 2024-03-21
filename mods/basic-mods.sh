@@ -65,3 +65,17 @@ rm -fv "$ROOT_DIR/usr/share/luci/menu.d/luci-app-advanced-reboot.json" "$ROOT_DI
 rm -fv "$ROOT_DIR/usr/libexec/rpcd/luci.advanced_reboot" "$ROOT_DIR/usr/share/rpcd/acl.d/luci-app-advanced-reboot.json"
 rm -fv "$ROOT_DIR/www/luci-static/resources/view/system/advanced_reboot.js" "$ROOT_DIR/www/luci-static/resources/view/opkg.js"
 rm -rfv "$ROOT_DIR/usr/share/advanced-reboot" "$ROOT_DIR/usr/lib/lua/luci/advanced-reboot" "$ROOT_DIR/usr/lib/lua/luci/view/advanced_reboot"
+
+BFW_FILES=(
+#	"usr/bin/sfp_i2c"
+	"usr/sbin/nandwrite"
+	"usr/sbin/flash_eraseall"
+	"usr/sbin/mtdinfo"
+	"usr/sbin/flash_erase"
+	"usr/sbin/nandtest"
+	"usr/sbin/nanddump"
+)
+
+for bfw_file in "${BFW_FILES[@]}"; do
+	cp -fv "${ROOT_BFW}/${bfw_file}" "${ROOT_DIR}/${bfw_file}"
+done

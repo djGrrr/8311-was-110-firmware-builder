@@ -1,2 +1,6 @@
 out/
-rootfs/
+rootfs
+rootfs-bfw/
+rootfs-basic/
+stock/
+whole_image/

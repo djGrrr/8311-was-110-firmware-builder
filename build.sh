@@ -15,13 +15,15 @@ OUT_DIR=$(realpath "out")
 IMG_OUT="$OUT_DIR/local-upgrade.img"
 LIB_DIR=$(realpath "lib")
 
+FW_VARIANT="basic"
+
 while [ $# -gt 0 ]; do
 	case "$1" in
-		-i|--image)
+		-i|--bfw-image-file)
 			IMGFILE="$2"
 			shift
 		;;
-		-I|--image-dir)
+		-I|--basic-image-dir)
 			IMGDIR="$2"
 			shift
 		;;
@@ -32,6 +34,12 @@ while [ $# -gt 0 ]; do
 		-V|--image-version)
 			FW_VER="$2"
 			shift
+		;;
+		-b|--basic)
+			FW_VARIANT="basic"
+		;;
+		-w|--bfw)
+			FW_VARIANT="bfw"
 		;;
 		-h|--help)
 			_help
@@ -85,52 +93,75 @@ FW_VER="${FW_VER:-"${GIT_TAG:-"dev"}"}"
 
 set -e
 
-HEADER=
 if [ -n "$IMGFILE" ]; then
-	[ -f "$IMGFILE" ] || _err "Image file '$IMGFILE' does not exist."
+	IMG_FILE=$(realpath "$IMGFILE")
+	[ -f "$IMG_FILE" ] || _err "Image file '$IMG_FILE' does not exist."
 
 	HEADER="$OUT_DIR/header.bin"
-	BOOTCORE="$OUT_DIR/bootcore.bin"
-	KERNEL="$OUT_DIR/kernel.bin"
-	ORIG_ROOTFS="$OUT_DIR/rootfs-orig.img"
-	rm -rfv "$OUT_DIR"
-	mkdir -pv "$OUT_DIR"
+else
+	__err "Must specify --bfw-image-file"
+fi
 
-	./extract.sh -i "$IMGFILE" -H "$HEADER" -b "$BOOTCORE" -k "$KERNEL" -r "$ORIG_ROOTFS" || _err "Error extracting image '$IMGFILE'"
-elif [ -n "$IMGDIR" ] && [ -d "$IMGDIR" ]; then
+if [ -n "$IMGDIR" ] && [ -d "$IMGDIR" ]; then
 	IMG_DIR=$(realpath "$IMGDIR")
 	[ -d "$IMG_DIR" ] || _err "Image directory '$IMG_DIR' does not exist."
-
-	HEADER="$IMG_DIR/header.bin"
-	BOOTCORE="$IMG_DIR/bootcore.bin"
-	KERNEL="$IMG_DIR/kernel.bin"
-	ORIG_ROOTFS="$IMG_DIR/rootfs.img"
-
-	rm -rfv "$OUT_DIR"
-	mkdir -pv "$OUT_DIR"
 else
-	_err "Muat specify one of --image or --image-dir"
+	_err "Muat specify --basic-image-dir"
 fi
+
+rm -rfv "$OUT_DIR"
+mkdir -pv "$OUT_DIR"
+
+KERNEL_BFW="$OUT_DIR/kernel-bfw.bin"
+KERNEL_BASIC="$IMG_DIR/kernel.bin"
+
+BOOTCORE_BFW="$OUT_DIR/bootcore-bfw.bin"
+BOOTCORE_BASIC="$IMG_DIR/bootcore.bin"
+
+ROOTFS_BFW="$OUT_DIR/rootfs-bfw.img"
+ROOTFS_BASIC="$IMG_DIR/rootfs.img"
+
+if [ "$FW_VARIANT" = "bfw" ]; then
+	BOOTCORE="$BOOTCORE_BFW"
+	KERNEL="$KERNEL_BFW"
+else
+	BOOTCORE="$BOOTCORE_BASIC"
+	KERNEL="$KERNEL_BASIC"
+fi
+
+./extract.sh -i "$IMGFILE" -H "$HEADER" -b "$BOOTCORE_BFW" -k "$KERNEL_BFW" -r "$ROOTFS_BFW" || _err "Error extracting image '$IMG_FILE'"
+
 
 echo
 
 ROOTFS="$OUT_DIR/rootfs.img"
 
+[ -f "$HEADER" ] || _err "Header file '$HEADER' does not exist."
 [ -f "$BOOTCORE" ] || _err "Bootcore file '$BOOTCORE' does not exist."
 [ -f "$KERNEL" ] || _err "Kernel file '$KERNEL' does not exist."
-[ -f "$ORIG_ROOTFS" ] || _err "RootFS file '$ORIG_ROOTFS' does not exist."
+[ -f "$ROOTFS_BFW" ] || _err "RootFS file '$ROOTFS_BFW' does not exist."
+[ -f "$ROOTFS_BASIC" ] || _err "RootFS file '$ROOTFS_BASIC' does not exist."
 
-ROOT_DIR=$(realpath "rootfs")
-rm -rfv "$ROOT_DIR"
+ROOT_BASE=$(realpath -s "./rootfs")
+ROOT_BFW="${ROOT_BASE}-bfw"
+ROOT_BASIC="${ROOT_BASE}-basic"
 
-sudo unsquashfs -d "$ROOT_DIR" "$ORIG_ROOTFS" || _err "Error unsquashifying RootFS image '$ORIG_ROOTFS'"
+ROOT_DIR="${ROOT_BASE}-${FW_VARIANT}"
+
+rm -rfv "$ROOT_BASE" "$ROOT_BFW" "$ROOT_BASIC"
+
+sudo unsquashfs -d "$ROOT_BFW" "$ROOTFS_BFW" || _err "Error unsquashifying bfw RootFS image '$ORIG_ROOTFS'"
+sudo unsquashfs -d "$ROOT_BASIC" "$ROOTFS_BASIC" || _err "Error unsquashifying basic RootFS image '$ORIG_ROOTFS'"
+
+ln -s "rootfs-${FW_VARIANT}" "$ROOT_BASE"
+
+[ -d "$ROOT_BFW/ptrom" ] || _err "/ptrom not found in bfw rootfs"
+[ -d "$ROOT_BASIC/ptrom" ] && _err "/ptrom found in basic rootfs"
 
 USER=$(id -un)
 GROUP=$(id -gn)
 
-sudo chown -R "$USER:$GROUP" "$ROOT_DIR"
-
-[ -d "$ROOT_DIR/ptrom" ] && FW_VARIANT="bfw" || FW_VARIANT="basic"
+sudo chown -R "$USER:$GROUP" "$ROOT_BASIC" "$ROOT_BFW"
 
 FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
 
@@ -178,6 +209,6 @@ TAR_UPGRADE="$REAL_OUT/local-upgrade.tar"
 echo -n "Creating local-upgrade TAR file..."
 tar -c --sparse -f "$TAR_UPGRADE" -C "$REAL_OUT" -- "control" "kernel.bin" "bootcore.bin" "rootfs.img"
 echo " Done"
-rm -fv "$CONTROL_FILE"
+rm -fv "$CONTROL_FILE" "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW"
 
 echo "Firmware build $FW_LONG_VERSION complete."
