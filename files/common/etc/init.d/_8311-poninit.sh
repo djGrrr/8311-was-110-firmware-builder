@@ -57,6 +57,10 @@ start() {
 	HW_VERSION=$(get_8311_hw_ver)
 	[ -n "$HW_VERSION" ] && set_8311_hw_ver "$HW_VERSION"
 
+	# Override active bank in software version MEs
+	OVERRIDE_ACTIVE=$(get_8311_override_active)
+	[ -n "$OVERRIDE_ACTIVE" ] && set_8311_override_active "$OVERRIDE_ACTIVE"
+
 	# 8311 MOD: Set equipment id (omci_pipe.sh meg 257 0)
 	EQUIPMENT_ID=$(get_8311_equipment_id)
 	[ -n "$EQUIPMENT_ID" ] && set_8311_equipment_id "$EQUIPMENT_ID"

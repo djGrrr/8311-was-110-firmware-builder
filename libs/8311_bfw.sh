@@ -41,6 +41,10 @@ _set_8311_sw_ver() {
 	uci -qc /ptconf commit "sysinfo_conf"
 }
 
+_set_8311_override_active() {
+	fwenv_set "active_bank" "$1"
+}
+
 _set_8311_hw_ver() {
 	uci -qc /ptrom/ptconf set "sysinfo_conf.HardwareVersion"="key"
 	uci -qc /ptrom/ptconf set "sysinfo_conf.HardwareVersion.encryflag"="0"

@@ -154,6 +154,15 @@ set_8311_sw_ver() {
 	_set_8311_sw_ver "$1" "$2"
 }
 
+get_8311_override_active() {
+	fwenv_get_8311 override_active | grep -E '^[AB]$'
+}
+
+set_8311_override_active() {
+	echo "Settings PON active bank to: $1" | to_console
+	_set_8311_override_active "$1"
+}
+
 get_8311_hw_ver() {
 	fwenv_get_8311 "hw_ver" | head -c 14
 }

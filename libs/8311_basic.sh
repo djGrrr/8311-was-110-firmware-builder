@@ -25,7 +25,12 @@ _set_8311_reg_id_hex() {
 }
 
 _set_8311_sw_ver() {
-	# handled elsewhere
+	# handled in uboot_img_vars.sh
+	return 0
+}
+
+_set_8311_override_active() {
+	# handled in uboot_img_vars.sh
 	return 0
 }
 
