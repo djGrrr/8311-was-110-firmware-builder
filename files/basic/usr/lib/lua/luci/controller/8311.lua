@@ -209,6 +209,28 @@ function fwenvs_8311()
 					type="text",
 					default=tools.fw_getenv("img_versionB")
 				},{
+					id="override_active",
+					name="Override active firmware bank",
+					description="Override which software bank is marked as active in the Software image MEs [7].",
+					type="select",
+					default="",
+					options={
+						"",
+						"A",
+						"B"
+					}
+				},{
+					id="override_commit",
+					name="Override committed firmware bank",
+					description="Override which software bank is marked as committed in the Software image MEs [7].",
+					type="select",
+					default="",
+					options={
+						"",
+						"A",
+						"B"
+					}
+				},{
 					id="reg_id_hex",
 					name="Registration ID (HEX)",
 					description="Registration ID (up to 36 bytes) sent to the OLT, in hex format. This is where you would set a ploam password (which is contained in the last 12 bytes).",

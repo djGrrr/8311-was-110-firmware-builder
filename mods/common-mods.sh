@@ -10,7 +10,7 @@ UBIMGVARS_FOOT=$(grep -B3 -A99999999 -P '^get_uboot_vars\(\)' "$UBIMGVARS")
 
 echo "$UBIMGVARS_HEAD" > "$UBIMGVARS"
 cat >> "$UBIMGVARS" <<'UBIMGVARS_MOD'
-	vars="active_bank img_validA:8311_sw_valA img_validB:8311_sw_valB img_versionA:8311_sw_verA img_versionB:8311_sw_verB commit_bank img_activate"
+	vars="active_bank:8311_override_active img_validA:8311_sw_valA img_validB:8311_sw_valB img_versionA:8311_sw_verA img_versionB:8311_sw_verB commit_bank:8311_override_commit img_activate:8311_override_activate"
 
 	printf "{"
 	for var in $vars; do

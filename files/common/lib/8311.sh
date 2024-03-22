@@ -364,12 +364,18 @@ NETMASK
 
 get_8311_module_type() {
 	if [ ! -f "/tmp/8311-module-type" ]; then
+		local FLASH_VOLTS=$(dmesg | grep -E "nand:.+ NAND" | grep -o -E ' \d,\dv ' | awk '{print $1}' | tr ',' '.')
+		local MTDPARTS=$(fwenv_get mtdparts)
 		local SFP_HASH=$(head -c 56 /sys/class/pon_mbox/pon_mbox0/device/eeprom51 | sha256sum | awk '{print $1}')
+
 		local MODULE_TYPE='bfw'
-		if [ "$SFP_HASH" = "cbd13cd3cea10e799c3ae93733f0ab5d7f1f3f48598111164e46634b2aaccb40" ]; then
-			MODULE_TYPE='potron'
-		elif [ "$SFP_HASH" = "d28ab047c3574a085ee78f087ad8ab96ae3a75f4bc3ee8c286fae6fa374b0055" ]; then
+		if [ "$SFP_HASH" = "d28ab047c3574a085ee78f087ad8ab96ae3a75f4bc3ee8c286fae6fa374b0055" ]; then
 			MODULE_TYPE='bfw'
+		elif [ "$SFP_HASH" = "cbd13cd3cea10e799c3ae93733f0ab5d7f1f3f48598111164e46634b2aaccb40" ]; then
+			MODULE_TYPE='potron'
+		elif [ "$FLASH_VOLTS" = "3.3v" ] &&
+			 [ "$MTDPARTS" = 'mtdparts=nand.0:1m(uboot),256k(ubootconfigA),256k(ubootconfigB),256k(gphyfirmware),1m(calibration),16m(bootcore),108m(system_sw),-(res)' ]; then
+			MODULE_TYPE='potron'
 		fi
 
 		echo "$MODULE_TYPE" > "/tmp/8311-module-type"
