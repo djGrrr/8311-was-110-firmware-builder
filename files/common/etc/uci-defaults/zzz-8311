@@ -11,6 +11,10 @@ uci set "network.lct.macaddr"="$(get_8311_lct_mac)"
 
 # Configure IP Host Interface
 uci set "network.iphost1.macaddr"="$(get_8311_iphost_mac)"
+
+# Get rid of warnings about delegated IPv6 prefixes
+uci delete "network.globals.ula_prefix"
+
 uci commit "network"
 
 SYS_HOSTNAME=$(get_8311_hostname)
@@ -34,7 +38,7 @@ add dropbear dropbear
 set dropbear.@dropbear[0].PasswordAuth='on'
 set dropbear.@dropbear[0].RootPasswordAuth='on'
 set dropbear.@dropbear[0].Port='22'
-set dropbear.@dropbear[0].Interface='lct'
+set dropbear.@dropbear[0].DirectInterface='lct'
 commit dropbear
 BATCH
 fi
@@ -46,3 +50,21 @@ uci commit "sfp_eeprom"
 [ "$(get_8311_dying_gasp_en)" = "1" ] && DG_DIS="0" || DG_DIS="1"
 uci set "optic.common.dg_dis"="$DG_DIS"
 uci commit "optic"
+
+
+TIMEZONE=$(get_8311_timezone)
+[ -n "$TIMEZONE" ] && uci set "system.@system[0].zonename"="$TIMEZONE"
+
+uci delete "system.ntp.server"
+uci set "system.ntp.enable_server"="0"
+
+NTP_ENABLED="0"
+NTP_SERVERS=$(get_8311_ntp_servers)
+if [ -n "$NTP_SERVERS" ]; then
+	NTP_ENABLED="1"
+	for NTP_SERVER in $NTP_SERVERS; do
+		uci add_list "system.ntp.server"="$NTP_SERVER"
+	done
+fi
+uci set "system.ntp.enabled"="$NTP_ENABLED"
+uci commit "system"

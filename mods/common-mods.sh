@@ -43,11 +43,6 @@ VEIP_LCT
 echo "$VEIP_FOOT" >> "$VEIP_MIB"
 
 
-# Setup custom dropbear configuration links
-rm -rfv "$ROOT_DIR/etc/dropbear"
-ln -fsv "/ptconf/8311/.ssh" "$ROOT_DIR/root/.ssh"
-ln -fsv "/ptconf/8311/dropbear" "$ROOT_DIR/etc/dropbear"
-
 # Copy custom files
 cp -va "files/common/." "$ROOT_DIR/"
 cp -va "files/${FW_VARIANT}/." "$ROOT_DIR/"
@@ -121,16 +116,29 @@ sed "/option 'dg_dis'/d" -i "$OPTICDB_DEFAULT"
 
 mkdir -pv "$ROOT_DIR/ptconf"
 
-cat > "$ROOT_DIR/etc/8311_version" <<8311_VER
-FW_VER=$FW_VER
-FW_VERSION=$FW_VERSION
-FW_LONG_VERSION=$FW_LONG_VERSION
-FW_REV=$FW_REV
-FW_REVISION=$FW_REVISION
-FW_VARIANT=$FW_VARIANT
-FW_SUFFIX=$FW_SUFFIX
-8311_VER
-
 # Change load order of mod_sfp_i2c module and add hack that sets the default virtual eeprom to the content of the physical one
 rm -fv "$ROOT_DIR/etc/modules.d/20-pon-sfp-i2c"
 ln -s "/sys/bus/platform/devices/18100000.ponmbox/eeprom50" "$ROOT_DIR/lib/firmware/sfp_eeprom0_hack.bin"
+
+
+if ls packages/busybox_*.ipk &>/dev/null; then
+	echo "Removing all links to busybox..."
+	find -L "$ROOT_DIR/" -samefile "$ROOT_DIR/bin/busybox" -exec rm -fv {} +
+fi
+
+if ls packages/*.ipk &>/dev/null; then
+	for IPK in packages/*.ipk; do
+		echo "Extracting '$(basename "$IPK")' to '$ROOT_DIR'."
+		tar xfz "$IPK" -O -- "./data.tar.gz" | tar xvz -C "$ROOT_DIR/"
+	done
+fi
+
+# Fix dropbear init script from newer OpenWRT
+sed -r 's/^extra_command "killclients" .+$/EXTRA_COMMANDS="killclients"\nEXTRA_HELP="    killclients Kill ${NAME} processes except servers and yourself"/' -i "$ROOT_DIR/etc/init.d/dropbear"
+
+# Setup custom dropbear configuration links
+rm -rfv "$ROOT_DIR/etc/dropbear"
+ln -fsv "/ptconf/8311/.ssh" "$ROOT_DIR/root/.ssh"
+ln -fsv "/ptconf/8311/dropbear" "$ROOT_DIR/etc/dropbear"
+
+ln -fsv "../init.d/sysntpd" "$ROOT_DIR/etc/rc.d/S98sysntpd"

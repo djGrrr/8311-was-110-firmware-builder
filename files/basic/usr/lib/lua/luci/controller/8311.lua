@@ -158,6 +158,12 @@ function pontop_pages()
 end
 
 function fwenvs_8311()
+	local zones = util.trim(util.exec("grep -v '^#' /usr/share/zoneinfo/zone.tab  | awk '{print $3}' | sort -uV ; echo UTC"))
+	local timezones = {}
+	for zone in zones:gmatch("[^\r\n]+") do
+		table.insert(timezones, zone)
+	end
+
 	return {{
 			id="pon",
 			category="PON",
@@ -341,7 +347,7 @@ function fwenvs_8311()
 					name="RX Loss of Signal",
 					description="Enable the RX_LOS pin. Disable to allow stick to be accessible without the fiber connected in all devices.",
 					type="checkbox",
-					default=true
+					default=false
 				},{
 					id="root_pwhash",
 					name="Root password hash",
@@ -369,6 +375,19 @@ function fwenvs_8311()
 					maxlength=100,
 					type="text",
 					default="prx126-sfp-pon"
+				},{
+					id="timezone",
+					name="Time Zone",
+					description="System Time Zone",
+					type="select",
+					default="UTC",
+					options=timezones
+				},{
+					id="ntp_servers",
+					name="NTP Servers",
+					description="NTP server(s) to sync time from (space separated).",
+					maxlength=255,
+					type="text"
 				},{
 					id="persist_root",
 					name="Persist RootFS",

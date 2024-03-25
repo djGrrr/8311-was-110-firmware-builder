@@ -83,7 +83,7 @@ set_8311_gpon_sn() {
 }
 
 get_8311_device_sn() {
-	fwenv_get_8311 "device_sn" 2>/dev/null
+	fwenv_get_8311 "device_sn"
 }
 
 set_8311_device_sn() {
@@ -159,6 +159,8 @@ get_8311_override_active() {
 }
 
 set_8311_override_active() {
+	[ "$(active_fwbank)" = "$1" ] && return 0
+
 	echo "Settings PON active bank to: $1" | to_console
 	_set_8311_override_active "$1"
 }
@@ -168,7 +170,7 @@ get_8311_hw_ver() {
 }
 
 get_8311_cp_hw_ver_sync() {
-	fwenv_get_8311 "cp_hw_ver_sync" 2>/dev/null
+	fwenv_get_8311 "cp_hw_ver_sync"
 }
 
 set_8311_hw_ver() {
@@ -403,6 +405,17 @@ get_8311_base_mac() {
 	fi
 
 	cat "/tmp/8311-base-mac"
+}
+
+get_8311_timezone() {
+	local TZ=$(fwenv_get_8311 "timezone" | sed 's/ /_/g')
+	[ -f "/usr/share/zoneinfo/$TZ" ] || return 1
+
+	echo "$TZ" | sed 's/_/ /g'
+}
+
+get_8311_ntp_servers() {
+	fwenv_get_8311 "ntp_servers"
 }
 
 active_fwbank() {

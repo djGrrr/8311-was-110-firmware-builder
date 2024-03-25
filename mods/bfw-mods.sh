@@ -121,3 +121,9 @@ fi
 BFW_START_MODS
 
 echo "$BFW_FOOT" >> "$BFW_START"
+
+if [ "$KERNEL_VARIANT" = "basic" ]; then
+	rm -rfv "$ROOT_DIR/lib/modules" #"$ROOT_DIR/lib/firmware"
+	cp -va "$ROOT_BASIC/lib/modules/." "$ROOT_DIR/lib/modules"
+	cp -va "$ROOT_BASIC/lib/firmware/." "$ROOT_DIR/lib/firmware"
+fi

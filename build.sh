@@ -3,19 +3,32 @@ _help() {
 	printf -- 'Tool for building new modded WAS-110 firmware images\n\n'
 	printf -- 'Usage: %s [options]\n\n' "$0"
 	printf -- 'Options:\n'
-	printf -- '-i --image <filename>\t\tSpecify stock local upgrade image file.\n'
-	printf -- '-I --image-dir <dir>\t\tSpecify stock image directory (must contain bootcore.bin, kernel.bin, and rootfs.img).\n'
-	printf -- '-o --image-out <filename>\tSpecify local upgrade image to output.\n'
+	printf -- '-i --image <filename>\t\tSpecify stock local upgrade image file of BFW firmware.\n'
+	printf -- '-I --image-dir <dir>\t\tSpecify stock image directory of the basic firmware (must contain bootcore.bin, kernel.bin, and rootfs.img).\n'
+	printf -- '-o --image-out <filename>\tSpecify local upgrade image file to output.\n'
+	printf -- '-O --tar-out <filename>\t\tSpecify local upgrade tar file to output.\n'
+	printf -- '-V --image-version <version>\tSpecify custom image version string.\n'
+	printf -- '-r --image-revision <revision>\tSpecify custom image revision string.\n'
+	printf -- '-w --basic\t\t\tBuild a basic variant image.\n'
+	printf -- '-W --bfw\t\t\tBuild a bfw variant image.\n'
+	printf -- '-k --basic-kernel\t\tBuild image using the basic kernel.\n'
+	printf -- '-K --bfw-kernel\t\t\tBuild image using the bfw kernel.\n'
+	printf -- '-b --basic-bootcore\t\tBuild image using the basic bootcore.\n'
+	printf -- '-B --bfw-bootcore\t\tBuild image using the bfw bootcore.\n'
+
 	printf -- '-h --help\t\t\tThis help text\n'
 }
 
 IMGFILE=
 IMGDIR=
 OUT_DIR=$(realpath "out")
-IMG_OUT="$OUT_DIR/local-upgrade.img"
 LIB_DIR=$(realpath "lib")
-
+IMG_OUT=""
+TAR_OUT=""
 FW_VARIANT="basic"
+BOOTCORE_VARIANT=""
+FW_VER=""
+KERNEL_VARIANT=""
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -31,15 +44,35 @@ while [ $# -gt 0 ]; do
 			IMG_OUT="$2"
 			shift
 		;;
+		-o|--tar-out)
+			TAR_OUT="$2"
+			shift
+		;;
 		-V|--image-version)
 			FW_VER="$2"
 			shift
 		;;
-		-b|--basic)
+		-r|--image-revision)
+			FW_REV="$2"
+			shift
+		;;
+		-w|--basic)
 			FW_VARIANT="basic"
 		;;
-		-w|--bfw)
+		-W|--bfw)
 			FW_VARIANT="bfw"
+		;;
+		-k|--basic-kernel)
+			KERNEL_VARIANT="basic"
+		;;
+		-K|--bfw-kernel)
+			KERNEL_VARIANT="bfw"
+		;;
+		-b|--basic-bootcore)
+			BOOTCORE_VARIANT="basic"
+		;;
+		-B|--bfw-bootcore)
+			BOOTCORE_VARIANT="bfw"
 		;;
 		-h|--help)
 			_help
@@ -59,12 +92,9 @@ _err() {
 }
 
 sha256() {
-	sha256sum "$1" | awk '{print $1}'
+	{ [ -n "$1" ] &&  sha256sum "$1" || sha256sum; } | awk '{print $1}'
 }
 
-file_size() {
-	stat -c '%s' "$1"
-}
 
 check_file() {
 	[ -f "$1" ] && [ "$(sha256 "$1")" = "$2" ]
@@ -78,18 +108,18 @@ expected_hash() {
 	fi
 }
 
+
 GIT_HASH=$(git rev-parse --short HEAD)
-GIT_DIFF=$(git diff HEAD)
+GIT_DIFF="$(git diff HEAD)"
 GIT_TAG=$(git tag --points-at HEAD | grep -P '^v\d+\.\d+\.\d+' | sort -V -r | head -n1)
 
-FW_PREFIX=""
-[ -n "$GIT_DIFF" ] && FW_SUFFIX="~dev"
-[ -n "$GIT_TAG" ] && FW_VERSION="${GIT_TAG}${FW_SUFFIX}" || FW_VERSION="dev"
+FW_FW_SUFFIX=""
+FW_VER="${FW_VER:-${GIT_TAG:-""}}"
+[ -n "$GIT_DIFF" ] && FW_SUFFIX="~$(echo "$GIT_DIFF" | sha256 | head -c 7)"
+[ -n "$FW_VER" ] && FW_VERSION="${FW_VER}${FW_SUFFIX}" || { FW_VER="dev"; FW_VERSION="dev"; }
 
-FW_REV="$GIT_HASH"
-FW_REVISION="$GIT_HASH$FW_SUFFIX"
-
-FW_VER="${FW_VER:-"${GIT_TAG:-"dev"}"}"
+FW_REV="${FW_REV:-$GIT_HASH}"
+FW_REVISION="$FW_REV$FW_SUFFIX"
 
 set -e
 
@@ -121,13 +151,11 @@ BOOTCORE_BASIC="$IMG_DIR/bootcore.bin"
 ROOTFS_BFW="$OUT_DIR/rootfs-bfw.img"
 ROOTFS_BASIC="$IMG_DIR/rootfs.img"
 
-if [ "$FW_VARIANT" = "bfw" ]; then
-	BOOTCORE="$BOOTCORE_BFW"
-	KERNEL="$KERNEL_BFW"
-else
-	BOOTCORE="$BOOTCORE_BASIC"
-	KERNEL="$KERNEL_BASIC"
-fi
+KERNEL_VARIANT="${KERNEL_VARIANT:-$FW_VARIANT}"
+BOOTCORE_VARIANT="${BOOTCORE_VARIANT:-$FW_VARIANT}"
+
+[ "$KERNEL_VARIANT" = "bfw" ] && KERNEL="$KERNEL_BFW" || KERNEL="$KERNEL_BASIC"
+[ "$BOOTCORE_VARIANT" = "bfw" ] && BOOTCORE="$BOOTCORE_BFW" || BOOTCORE="$BOOTCORE_BASIC"
 
 ./extract.sh -i "$IMGFILE" -H "$HEADER" -b "$BOOTCORE_BFW" -k "$KERNEL_BFW" -r "$ROOTFS_BFW" || _err "Error extracting image '$IMG_FILE'"
 
@@ -166,49 +194,40 @@ sudo chown -R "$USER:$GROUP" "$ROOT_BASIC" "$ROOT_BFW"
 FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
 
 
-. mods/common-mods.sh
-
 . mods/binary-mods.sh
 
 . "mods/${FW_VARIANT}-mods.sh"
 
+. mods/common-mods.sh
+
+VERSION_FILE="$ROOT_DIR/etc/8311_version"
+cat > "$VERSION_FILE" <<8311_VER
+FW_VER=$FW_VER
+FW_VERSION=$FW_VERSION
+FW_LONG_VERSION=$FW_LONG_VERSION
+FW_REV=$FW_REV
+FW_REVISION=$FW_REVISION
+FW_VARIANT=$FW_VARIANT
+FW_SUFFIX=$FW_SUFFIX
+8311_VER
+
 
 REAL_OUT=$(realpath "$OUT_DIR")
+
 OUT_BOOTCORE="$REAL_OUT/bootcore.bin"
 [ "$BOOTCORE" = "$OUT_BOOTCORE" ] || cp -fv "$BOOTCORE" "$OUT_BOOTCORE"
 OUT_KERNEL="$REAL_OUT/kernel.bin"
 [ "$KERNEL" = "$OUT_KERNEL" ] || cp -fv "$KERNEL" "$OUT_KERNEL"
 
+IMG_OUT="${IMG_OUT:-"$REAL_OUT/local-upgrade.img"}"
+TAR_OUT="${TAR_OUT:-"$REAL_OUT/local-upgrade.tar"}"
+
 mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -no-xattrs -comp xz -b 256K || _err "Error creating new rootfs image"
-[ -n "$HEADER" ] && [ -f "$HEADER" ] && ./create.sh -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" -b "$OUT_BOOTCORE" -k "$OUT_KERNEL" -r "$ROOTFS"
 
-SHA256_KERNEL=$(sha256 "$OUT_KERNEL")
-SHA256_BOOTCORE=$(sha256 "$OUT_BOOTCORE")
-SHA256_ROOTFS=$(sha256 "$ROOTFS")
+CREATE=("-b" "$OUT_BOOTCORE" "-k" "$OUT_KERNEL" "-r" "$ROOTFS")
+./create.sh --basic -i "$TAR_OUT" -F "$VERSION_FILE" "${CREATE[@]}"
+./create.sh --bfw -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" "${CREATE[@]}"
 
-SIZE_KERNEL=$(file_size "$OUT_KERNEL")
-SIZE_BOOTCORE=$(file_size "$OUT_BOOTCORE")
-SIZE_ROOTFS=$(file_size "$ROOTFS")
-
-VER_8311=$(cat "$ROOT_DIR/etc/8311_version")
-
-CONTROL_FILE="$REAL_OUT/control"
-cat > "$CONTROL_FILE" <<CONTROL
-$VER_8311
-
-SIZE_KERNEL=$SIZE_KERNEL
-SIZE_BOOTCORE=$SIZE_BOOTCORE
-SIZE_ROOTFS=$SIZE_ROOTFS
-
-SHA256_KERNEL=$SHA256_KERNEL
-SHA256_BOOTCORE=$SHA256_BOOTCORE
-SHA256_ROOTFS=$SHA256_ROOTFS
-CONTROL
-
-TAR_UPGRADE="$REAL_OUT/local-upgrade.tar"
-echo -n "Creating local-upgrade TAR file..."
-tar -c --sparse -f "$TAR_UPGRADE" -C "$REAL_OUT" -- "control" "kernel.bin" "bootcore.bin" "rootfs.img"
-echo " Done"
-rm -fv "$CONTROL_FILE" "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW"
+rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW"
 
 echo "Firmware build $FW_LONG_VERSION complete."

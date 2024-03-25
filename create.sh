@@ -1,15 +1,17 @@
 #!/bin/bash
 _help() {
-    printf -- 'Tool for creating new WAS-110 local upgrade images\n\n'
-    printf -- 'Usage: %s [options]\n\n' "$0"
-    printf -- 'Options:\n'
-    printf -- '-i --image <filename>\t\tSpecify local upgrade image file to create (required).\n'
-    printf -- '-H --header <filename>\t\tSpecify filename of image header to base image off of (default: header.bin).\n'
-    printf -- '-b --bootcore <filename>\tSpecify filename of bootcore image to place in created image (default: bootcore.bin).\n'
-    printf -- '-k --kernel <filename>\t\tSpecify filename of kernel image to place in created image (default: kernel.bin).\n'
-    printf -- '-r --rootfs <filename>\t\tSpecify filename of rootfs image to place in created image (default: rootfs.img).\n'
+	printf -- 'Tool for creating new WAS-110 local upgrade images\n\n'
+	printf -- 'Usage: %s [options]\n\n' "$0"
+	printf -- 'Options:\n'
+	printf -- '-i --image <filename>\t\tSpecify local upgrade (img or tar) file to create (required).\n'
+	printf -- '-w --basic\t\t\tBuild a basic local upgrade tar file.\n'
+	printf -- '-W --bfw\t\t\tBuild a bfw local upgrade image file.\n'
+	printf -- '-H --header <filename>\t\tSpecify filename of image header to base image off of (default: header.bin).\n'
+	printf -- '-b --bootcore <filename>\tSpecify filename of bootcore image to place in created (bfw) image (default: bootcore.bin).\n'
+	printf -- '-k --kernel <filename>\t\tSpecify filename of kernel image to place in created image (default: kernel.bin).\n'
+	printf -- '-r --rootfs <filename>\t\tSpecify filename of rootfs image to place in created image (default: rootfs.img).\n'
 	printf -- '-V --image-version <version>\tSpecify version string to set on created image (14 characters max).\n'
-    printf -- '-h --help\t\t\tThis help text\n'
+	printf -- '-h --help\t\t\tThis help text\n'
 }
 
 OUT=
@@ -18,12 +20,21 @@ BOOTCORE="bootcore.bin"
 KERNEL="kernel.bin"
 ROOTFS="rootfs.img"
 VERSION=
+LONGVERSION=
+VARIANT="bfw"
+VERSION_FILE=
 
 while [ $# -gt 0 ]; do
 	case "$1" in
 		-i|--image)
 			OUT="$2"
 			shift
+		;;
+		-w|--basic)
+			VARIANT="basic"
+		;;
+		-W|--bfw)
+			VARIANT="bfw"
 		;;
 		-H|--header)
 			HEADER="$2"
@@ -39,6 +50,10 @@ while [ $# -gt 0 ]; do
 		;;
 		-r|--rootfs)
 			ROOTFS="$2"
+			shift
+		;;
+		-F|--version-file)
+			VERSION_FILE="$2"
 			shift
 		;;
 		-V|--image-version)
@@ -66,28 +81,25 @@ _err() {
 	exit ${2:-1}
 }
 
-set -e
+sha256() {
+	sha256sum "$@" | awk '{print $1}'
+}
 
-[ -n "$OUT" ] || _err "Error: Image file to create must be specified."
-[ -n "$HEADER" ] || _err "Error: header file must be specified."
-[ -f "$HEADER" ] || _err "Error: header file '$HEADER' not found."
-[ -n "$BOOTCORE" ] || _err "Error: bootcore file must be specified."
-[ -f "$BOOTCORE" ] || _err "Error: header file '$BOOTCORE' not found."
-[ -n "$KERNEL" ] || _err "Error: kernel file must be specified."
-[ -f "$KERNEL" ] || _err "Error: header file '$KERNEL' not found."
-[ -n "$ROOTFS" ] || _err "Error: rootfs file must be specified."
-[ -f "$ROOTFS" ] || _err "Error: header file '$ROOTFS' not found."
+file_size() {
+	stat -c '%s' "$1"
+}
 
-NUM=0
-FILE_OFFSET=$((0x100))
-LEN_HDR=$((0xD00))
-DATA_OFFSET=$LEN_HDR
-HW_OFFSET=$((0x10))
-VERSION_OFFSET=$((0x30))
-LONGVERSION_OFFSET=$((0x46))
+sed_escape() {
+	sed 's#\\#\\\\#g' | sed 's/#/\\#/g'
+}
 
-FILES=()
-add_image() {
+tar_trans() {
+	local INPUT="$(echo "$1" | sed_escape)"
+	local NAME="$(echo "$2" | sed_escape)"
+	echo "s#$INPUT#$NAME#"
+}
+
+bfw_add_image() {
 	IMAGE="$1"
 	FILE="${2:-$1}"
 
@@ -112,26 +124,91 @@ add_image() {
 	NUM=$((NUM + 1))
 }
 
-echo "Creating new image '$OUT' from header file '$HEADER'"
-head -c "$LEN_HDR" "$HEADER" > "$OUT"
+set -e
 
-if [ -n "$VERSION" ]; then
-	echo "Setting image version string to '$VERSION'"
-	{ echo -n "$VERSION" | head -c 15; cat /dev/zero; } | dd of="$OUT" seek="$VERSION_OFFSET" bs=1 count=16 conv=notrunc 2>/dev/null
+[ -n "$OUT" ] || _err "Error: Image file to create must be specified."
+[ -n "$BOOTCORE" ] || _err "Error: bootcore file must be specified."
+[ -f "$BOOTCORE" ] || _err "Error: bootcore file '$BOOTCORE' not found."
+[ -n "$KERNEL" ] || _err "Error: kernel file must be specified."
+[ -f "$KERNEL" ] || _err "Error: kernel file '$KERNEL' not found."
+[ -n "$ROOTFS" ] || _err "Error: rootfs file must be specified."
+[ -f "$ROOTFS" ] || _err "Error: rootfs file '$ROOTFS' not found."
+
+if [ "$VARIANT" = "basic" ]; then
+	[ -n "$VERSION_FILE" ] || _err "Error: version file must be specified."
+	[ -f "$VERSION_FILE" ] || _err "Error: version file '$VERSION_FILE' not found."
+
+	SHA256_KERNEL=$(sha256 "$KERNEL")
+	SHA256_BOOTCORE=$(sha256 "$BOOTCORE")
+	SHA256_ROOTFS=$(sha256 "$ROOTFS")
+
+	SIZE_KERNEL=$(file_size "$KERNEL")
+	SIZE_BOOTCORE=$(file_size "$BOOTCORE")
+	SIZE_ROOTFS=$(file_size "$ROOTFS")
+
+	VER_8311=$(cat "$VERSION_FILE")
+
+	CONTROL="$(mktemp)"
+	cat > "$CONTROL" <<CONTROL
+$VER_8311
+
+SIZE_KERNEL=$SIZE_KERNEL
+SIZE_BOOTCORE=$SIZE_BOOTCORE
+SIZE_ROOTFS=$SIZE_ROOTFS
+
+SHA256_KERNEL=$SHA256_KERNEL
+SHA256_BOOTCORE=$SHA256_BOOTCORE
+SHA256_ROOTFS=$SHA256_ROOTFS
+CONTROL
+
+	echo "Creating local upgrade tar file"
+	TAR=("-c" "-P" "-h" "--sparse" "-f" "$OUT")
+	TAR+=("--transform" "$(tar_trans "$CONTROL" "control")")
+	TAR+=("--transform" "$(tar_trans "$KERNEL" "kernel.bin")")
+	TAR+=("--transform" "$(tar_trans "$BOOTCORE" "bootcore.bin")")
+	TAR+=("--transform" "$(tar_trans "$ROOTFS" "rootfs.img")")
+	TAR+=("--" "$CONTROL" "$KERNEL" "$BOOTCORE" "$ROOTFS")
+
+	tar "${TAR[@]}" || { rm -f "$CONTROL"; exit 1; }
+	rm -f "$CONTROL"
+	echo "Local upgrade tar file '$OUT' created successfully."
+else
+	[ -n "$HEADER" ] || _err "Error: header file must be specified."
+	[ -f "$HEADER" ] || _err "Error: header file '$HEADER' not found."
+
+	NUM=0
+	FILE_OFFSET=$((0x100))
+	LEN_HDR=$((0xD00))
+	DATA_OFFSET=$LEN_HDR
+	HW_OFFSET=$((0x10))
+	VERSION_OFFSET=$((0x30))
+	LONGVERSION_OFFSET=$((0x46))
+
+	FILES=()
+
+	echo "Creating local upgrade image file from header file '$HEADER'"
+	head -c "$LEN_HDR" "$HEADER" > "$OUT"
+
+	if [ -n "$VERSION" ]; then
+		echo "Setting image version string to '$VERSION'"
+		{ echo -n "$VERSION" | head -c 15; cat /dev/zero; } | dd of="$OUT" seek="$VERSION_OFFSET" bs=1 count=16 conv=notrunc 2>/dev/null
+	fi
+
+	if [ -n "$LONGVERSION" ]; then
+		echo "Setting long image version string to '$LONGVERSION'"
+		{ echo -n "$LONGVERSION" | head -c 31; cat /dev/zero; } | dd of="$OUT" seek="$LONGVERSION_OFFSET" bs=1 count=32 conv=notrunc 2>/dev/null
+	fi
+
+	bfw_add_image "bootcore.bin" "$BOOTCORE"
+	bfw_add_image "kernel.bin" "$KERNEL"
+	bfw_add_image "rootfs.img" "$ROOTFS"
+
+	CONTENT_CRC_OFFSET=$((0x66))
+	HEADER_CRC_OFFSET=$((0x6A))
+
+	echo "Updating CRCs"
+	{ cat "${FILES[@]}" | ./bfw-crc.pl; cat /dev/zero; } | dd of="$OUT" seek="$CONTENT_CRC_OFFSET" bs=1 count=8 conv=notrunc 2>/dev/null
+	head -c "$LEN_HDR" "$OUT" | ./bfw-crc.pl | dd of="$OUT" seek="$HEADER_CRC_OFFSET" bs=1 count=4 conv=notrunc 2>/dev/null
+
+	echo "Local upgrade image file '$OUT' created successfully."
 fi
-
-if [ -n "$LONGVERSION" ]; then
-	echo "Setting long image version string to '$LONGVERSION'"
-	{ echo -n "$LONGVERSION" | head -c 31; cat /dev/zero; } | dd of="$OUT" seek="$LONGVERSION_OFFSET" bs=1 count=32 conv=notrunc 2>/dev/null
-fi
-
-add_image "bootcore.bin" "$BOOTCORE"
-add_image "kernel.bin" "$KERNEL"
-add_image "rootfs.img" "$ROOTFS"
-
-CONTENT_CRC_OFFSET=$((0x66))
-HEADER_CRC_OFFSET=$((0x6A))
-
-echo "Updating CRCs"
-{ cat "${FILES[@]}" | ./bfw-crc.pl; cat /dev/zero; } | dd of="$OUT" seek="$CONTENT_CRC_OFFSET" bs=1 count=8 conv=notrunc 2>/dev/null
-head -c "$LEN_HDR" "$OUT" | ./bfw-crc.pl | dd of="$OUT" seek="$HEADER_CRC_OFFSET" bs=1 count=4 conv=notrunc 2>/dev/null
