@@ -133,8 +133,10 @@ if ls packages/*.ipk &>/dev/null; then
 	done
 fi
 
+DROPBEAR="$ROOT_DIR/etc/init.d/dropbear"
 # Fix dropbear init script from newer OpenWRT
-sed -r 's/^extra_command "killclients" .+$/EXTRA_COMMANDS="killclients"\nEXTRA_HELP="    killclients Kill ${NAME} processes except servers and yourself"/' -i "$ROOT_DIR/etc/init.d/dropbear"
+sed -r 's/^extra_command "killclients" .+$/EXTRA_COMMANDS="killclients"\nEXTRA_HELP="    killclients Kill ${NAME} processes except servers and yourself"/' -i "$DROPBEAR"
+sed -r 's#(BOOT=1)#\1\n\tprocd_running "urngd" || /etc/init.d/urngd start#g' -i "$DROPBEAR"
 
 # Setup custom dropbear configuration links
 rm -rfv "$ROOT_DIR/etc/dropbear"
