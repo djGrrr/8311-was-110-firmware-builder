@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+
+START=00
+
+NAME=urngd
+PROG=/sbin/urngd
+
+start() {
+	pgrep -x "$PROG" || "$PROG" &
+}
+
+stop() {
+	pkill -x "$PROG"
+}
