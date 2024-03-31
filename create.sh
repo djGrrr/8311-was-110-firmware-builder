@@ -19,6 +19,7 @@ HEADER="header.bin"
 BOOTCORE="bootcore.bin"
 KERNEL="kernel.bin"
 ROOTFS="rootfs.img"
+UPGRADE_SCRIPT="files/common/usr/sbin/8311-firmware-upgrade.sh"
 VERSION=
 LONGVERSION=
 VARIANT="bfw"
@@ -163,11 +164,12 @@ CONTROL
 
 	echo "Creating local upgrade tar file"
 	TAR=("-c" "-P" "-h" "--sparse" "-f" "$OUT")
+	TAR+=("--transform" "$(tar_trans "$UPGRADE_SCRIPT" "upgrade.sh")")
 	TAR+=("--transform" "$(tar_trans "$CONTROL" "control")")
 	TAR+=("--transform" "$(tar_trans "$KERNEL" "kernel.bin")")
 	TAR+=("--transform" "$(tar_trans "$BOOTCORE" "bootcore.bin")")
 	TAR+=("--transform" "$(tar_trans "$ROOTFS" "rootfs.img")")
-	TAR+=("--" "$CONTROL" "$KERNEL" "$BOOTCORE" "$ROOTFS")
+	TAR+=("--" "$UPGRADE_SCRIPT" "$CONTROL" "$KERNEL" "$BOOTCORE" "$ROOTFS")
 
 	tar "${TAR[@]}" || { rm -f "$CONTROL"; exit 1; }
 	rm -f "$CONTROL"

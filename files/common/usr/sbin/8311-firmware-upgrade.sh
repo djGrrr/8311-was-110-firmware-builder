@@ -75,8 +75,6 @@ while [ $# -gt 0 ]; do
 	shift
 done
 
-_lib_8311 2>/dev/null || . /lib/8311.sh
-
 if ! $VALIDATE && ! $INSTALL; then
 	VALIDATE=true
 	INSTALL=true
@@ -103,6 +101,31 @@ control_var() {
 
 sha256() {
 	sha256sum "$@" | awk '{print $1}'
+}
+
+active_fwbank() {
+	grep -E -o '\brootfsname=rootfs[AB]\b' /proc/cmdline | grep -E -o '[AB]$'
+}
+
+inactive_fwbank() {
+	local active_bank=$(active_fwbank)
+	if [ "$active_bank" = "A" ]; then
+		echo "B"
+	elif [ "$active_bank" = "B" ]; then
+		echo "A"
+	else
+		return 1
+	fi
+
+	return 0
+}
+
+fwenv_set() {
+	[ -n "$1" ] || return 1
+
+	for i in 0 1; do
+		fw_setenv "$1" "$2" || return $?
+	done
 }
 
 ubi_default_order() {
