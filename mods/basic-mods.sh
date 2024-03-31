@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if ls packages/basic/*.ipk &>/dev/null; then
+	for IPK in packages/basic/*.ipk; do
+		echo "Extracting '$(basename "$IPK")' to '$ROOT_DIR'."
+		tar xfz "$IPK" -O -- "./data.tar.gz" | tar xvz -C "$ROOT_DIR/"
+	done
+fi
+
 UCI_FW_RULES="$ROOT_DIR/etc/uci-defaults/26-firewall-rules"
 
 UCI_FW_RULES_HEAD=$(grep -B99999999 '/usr/sbin/ptp4l' "$UCI_FW_RULES" | head -n -1)
@@ -11,13 +18,24 @@ cat >> "$UCI_FW_RULES" <<'HTTP_RULES'
 
 if [ -f /usr/sbin/uhttpd ]; then
 	uci batch << EOF
-	add firewall rule
-	set firewall.@rule[-1].name='Allow-HTTP'
-	set firewall.@rule[-1].src='lan'
-	set firewall.@rule[-1].proto='tcp'
-	set firewall.@rule[-1].dest_port='80'
-	set firewall.@rule[-1].target='ACCEPT'
+		add firewall rule
+		set firewall.@rule[-1].name='Allow-HTTP'
+		set firewall.@rule[-1].src='lan'
+		set firewall.@rule[-1].proto='tcp'
+		set firewall.@rule[-1].dest_port='80'
+		set firewall.@rule[-1].target='ACCEPT'
 EOF
+
+	if [ -f /usr/sbin/px5g ]; then
+		uci batch << EOF
+			add firewall rule
+			set firewall.@rule[-1].name='Allow-HTTPs'
+			set firewall.@rule[-1].src='lan'
+			set firewall.@rule[-1].proto='tcp'
+			set firewall.@rule[-1].dest_port='443'
+			set firewall.@rule[-1].target='ACCEPT'
+EOF
+    fi
 fi
 
 HTTP_RULES
@@ -50,21 +68,12 @@ echo "$LUCI_MENUD_SYSTEM" > "$LUCI_MENUD_SYSTEM_JSON"
 
 LUCI_MENUD_STATUS_JSON="$ROOT_DIR/usr/share/luci/menu.d/luci-mod-status.json"
 echo "Patching '$LUCI_MENUD_STATUS_JSON' ..."
-LUCI_MENUD_STATUS=$(jq 'delpaths([["admin/status/iptables"]])' "$LUCI_MENUD_STATUS_JSON")
+LUCI_MENUD_STATUS=$(jq 'delpaths([["admin/status/iptables"], ["admin/status/processes"]])' "$LUCI_MENUD_STATUS_JSON")
 echo "$LUCI_MENUD_STATUS" > "$LUCI_MENUD_STATUS_JSON"
 
 RPCD_LUCI="$ROOT_DIR/usr/libexec/rpcd/luci"
 echo "Patching '$RPCD_LUCI' ..."
 sed -r 's#passwd %s >/dev/null 2>&1#passwd %s \&>/dev/null \&\& /usr/sbin/8311-persist-root-password.sh \&>/dev/null#' -i "$RPCD_LUCI"
-
-rm -fv "$ROOT_DIR/usr/lib/lua/luci/view/opkg.htm"
-rm -fv "$ROOT_DIR/usr/lib/lua/luci/controller/admin/network.lua"
-rm -fv "$ROOT_DIR/usr/lib/lua/luci/controller/opkg.lua"
-rm -fv "$ROOT_DIR/usr/lib/lua/luci/controller/firewall.lua"
-rm -fv "$ROOT_DIR/usr/share/luci/menu.d/luci-app-advanced-reboot.json" "$ROOT_DIR/usr/lib/lua/luci/controller/advanced_reboot.lua"
-rm -fv "$ROOT_DIR/usr/libexec/rpcd/luci.advanced_reboot" "$ROOT_DIR/usr/share/rpcd/acl.d/luci-app-advanced-reboot.json"
-rm -fv "$ROOT_DIR/www/luci-static/resources/view/system/advanced_reboot.js" "$ROOT_DIR/www/luci-static/resources/view/opkg.js"
-rm -rfv "$ROOT_DIR/usr/share/advanced-reboot" "$ROOT_DIR/usr/lib/lua/luci/advanced-reboot" "$ROOT_DIR/usr/lib/lua/luci/view/advanced_reboot"
 
 if [ "$KERNEL_VARIANT" = "bfw" ]; then
 	rm -rfv "$ROOT_DIR/lib/modules" "$ROOT_DIR/lib/firmware"

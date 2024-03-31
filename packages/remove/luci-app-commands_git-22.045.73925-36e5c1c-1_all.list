@@ -1,0 +1,17 @@
+
+usr/
+usr/lib/
+usr/lib/lua/
+usr/lib/lua/luci/
+usr/lib/lua/luci/controller/
+usr/lib/lua/luci/controller/commands.lua
+usr/lib/lua/luci/model/
+usr/lib/lua/luci/model/cbi/
+usr/lib/lua/luci/model/cbi/commands.lua
+usr/lib/lua/luci/view/
+usr/lib/lua/luci/view/commands.htm
+usr/lib/lua/luci/view/commands_public.htm
+usr/share/
+usr/share/rpcd/
+usr/share/rpcd/acl.d/
+usr/share/rpcd/acl.d/luci-app-commands.json

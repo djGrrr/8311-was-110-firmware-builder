@@ -21,6 +21,8 @@ SYS_HOSTNAME=$(get_8311_hostname)
 if [ -n "$SYS_HOSTNAME" ]; then
 	uci set "system.@system[0].hostname"="$SYS_HOSTNAME"
 	uci commit "system"
+else
+	SYS_HOSTNAME="prx126-sfp-pon"
 fi
 
 # Configure WebUI
@@ -68,3 +70,17 @@ if [ -n "$NTP_SERVERS" ]; then
 fi
 uci set "system.ntp.enabled"="$NTP_ENABLED"
 uci commit "system"
+
+if [ -f /usr/sbin/uhttpd ]; then
+	uci batch <<EOF
+		set uhttpd.main.cert="/ptconf/8311/uhttpd/uhttpd.crt"
+		set uhttpd.main.key="/ptconf/8311/uhttpd/uhttpd.key"
+		set uhttpd.defaults.key_type="ec"
+		set uhttpd.defaults.ec_curve="P-384"
+		set uhttpd.defaults.days="3652"
+		set uhttpd.defaults.state="8331"
+		set uhttpd.defaults.commonname="${SYS_HOSTNAME}"
+		set uhttpd.defaults.location="WebUI"
+		commit uhttpd
+EOF
+fi

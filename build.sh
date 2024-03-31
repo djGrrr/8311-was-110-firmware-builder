@@ -196,6 +196,8 @@ FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
 
 . mods/binary-mods.sh
 
+. mods/pre-common-mods.sh
+
 . "mods/${FW_VARIANT}-mods.sh"
 
 . mods/common-mods.sh

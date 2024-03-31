@@ -54,8 +54,8 @@ boot() {
 	DROPBEAR_PUBKEY_BASE64=$(uci -qc /ptconf/8311 get dropbear.public_key.encryflag)
 
 	[ -f "/ptconf/8311/dropbear" ] && rm -fv "/ptconf/8311/dropbear"
-	mkdir -p /ptconf/8311 /ptconf/8311/dropbear /ptconf/8311/.ssh
-	chmod 700 /ptconf/8311/dropbear /ptconf/8311/.ssh
+	mkdir -p /ptconf/8311 /ptconf/8311/dropbear /ptconf/8311/uhttpd /ptconf/8311/.ssh
+	chmod 700 /ptconf/8311/dropbear /ptconf/8311/uhttpd /ptconf/8311/.ssh
 	ln -fsv /ptconf/8311/.ssh/authorized_keys /ptconf/8311/dropbear/authorized_keys
 
 	if [ -n "$DROPBEAR_RSA_KEY" ]; then

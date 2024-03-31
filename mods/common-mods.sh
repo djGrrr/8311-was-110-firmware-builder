@@ -121,13 +121,13 @@ rm -fv "$ROOT_DIR/etc/modules.d/20-pon-sfp-i2c"
 ln -s "/sys/bus/platform/devices/18100000.ponmbox/eeprom50" "$ROOT_DIR/lib/firmware/sfp_eeprom0_hack.bin"
 
 
-if ls packages/busybox_*.ipk &>/dev/null; then
+if ls packages/common/busybox_*.ipk &>/dev/null; then
 	echo "Removing all links to busybox..."
 	find -L "$ROOT_DIR/" -samefile "$ROOT_DIR/bin/busybox" -exec rm -fv {} +
 fi
 
-if ls packages/*.ipk &>/dev/null; then
-	for IPK in packages/*.ipk; do
+if ls packages/common/*.ipk &>/dev/null; then
+	for IPK in packages/common/*.ipk; do
 		echo "Extracting '$(basename "$IPK")' to '$ROOT_DIR'."
 		tar xfz "$IPK" -O -- "./data.tar.gz" | tar xvz -C "$ROOT_DIR/"
 	done

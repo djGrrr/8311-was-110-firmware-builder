@@ -1,0 +1,14 @@
+
+usr/
+usr/lib/
+usr/lib/lua/
+usr/lib/lua/luci/
+usr/lib/lua/luci/controller/
+usr/lib/lua/luci/controller/opkg.lua
+usr/lib/lua/luci/view/
+usr/lib/lua/luci/view/opkg.htm
+www/
+www/luci-static/
+www/luci-static/resources/
+www/luci-static/resources/view/
+www/luci-static/resources/view/opkg.js
