@@ -496,20 +496,21 @@ function action_save()
 	for catid, cat in pairs(fwenvs) do
 		for itemid, item in pairs(cat.items) do
 			value = formvalue(item.id)
-			if value == nil then value = '' end
+			if value ~= nil then
 
-			if item.type == 'checkbox' then
-				if item.value == '' and ((item.default and value == '1') or (not item.default and (value == '0' or value == ''))) then
+				if item.type == 'checkbox' then
+					if item.value == '' and ((item.default and value == '1') or (not item.default and (value == '0' or value == ''))) then
+						value = ''
+					elseif value == '' then
+						value = '0'
+					end
+				elseif item.value == '' and item.default and value == item.default then
 					value = ''
-				elseif value == '' then
-					value = '0'
 				end
-			elseif item.value == '' and item.default and value == item.default then
-				value = ''
-			end
 
-			if item.value ~= value then
-				tools.fw_setenv_8311(item.id, value)
+				if item.value ~= value then
+					tools.fw_setenv_8311(item.id, value)
+				end
 			end
 		end
 	end
