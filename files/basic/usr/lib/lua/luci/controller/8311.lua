@@ -439,6 +439,12 @@ function fwenvs_8311()
 					pattern='^[A-Fa-f0-9]{2}(:[A-Fa-f0-9]{2}){5}$',
 					type="text",
 					default=util.trim(util.exec(". /lib/pon.sh && pon_mac_get lct")):upper()
+				},{
+					id="https_redirect",
+					name="Redirect HTTP to HTTPs",
+					description="Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on.",
+					type="checkbox",
+					default=true
 				}
 			}
 		}
@@ -471,10 +477,11 @@ end
 
 function populate_8311_fwenvs()
 	local fwenvs = fwenvs_8311()
+	local fwenvs_values = tools.fw_getenvs_8311()
 
 	for catid, cat in pairs(fwenvs) do
 		for itemid, item in pairs(cat.items) do
-			fwenvs[catid]["items"][itemid]["value"] = tools.fw_getenv_8311(item.id)
+			fwenvs[catid]["items"][itemid]["value"] = fwenvs_values[item.id] or ''
 		end
 	end
 
@@ -491,12 +498,12 @@ end
 
 function action_save()
 	local value = nil
+	if http.getenv('REQUEST_METHOD') == 'POST' then
+		local fwenvs = populate_8311_fwenvs()
 
-	local fwenvs = populate_8311_fwenvs()
-	for catid, cat in pairs(fwenvs) do
-		for itemid, item in pairs(cat.items) do
-			value = formvalue(item.id)
-			if value ~= nil then
+		for catid, cat in pairs(fwenvs) do
+			for itemid, item in pairs(cat.items) do
+				value = formvalue(item.id) or ''
 
 				if item.type == 'checkbox' then
 					if item.value == '' and ((item.default and value == '1') or (not item.default and (value == '0' or value == ''))) then

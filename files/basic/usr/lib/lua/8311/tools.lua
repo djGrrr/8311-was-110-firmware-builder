@@ -1,5 +1,6 @@
 
 local require = require
+local string = string
 
 module "8311.tools"
 
@@ -23,6 +24,15 @@ end
 
 function fw_getenv_8311(key)
 	return fw_getenv("8311_" .. key)
+end
+
+function fw_getenvs_8311()
+	local fwenvs = {}
+	for k, v in string.gmatch(util.exec('echo ; fw_printenv | grep "^8311_"'), '\n8311_([^\n=]+)=([^\n]+)') do
+		fwenvs[k] = util.trim(v)
+	end
+
+	return fwenvs
 end
 
 function fw_setenv(key, value)

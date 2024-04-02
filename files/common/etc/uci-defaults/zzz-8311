@@ -72,9 +72,13 @@ uci set "system.ntp.enabled"="$NTP_ENABLED"
 uci commit "system"
 
 if [ -f /usr/sbin/uhttpd ]; then
+	REDIR_HTTPS="1"
+	[ "$(get_8311_https_redirect)" -eq 0 ] &>/dev/null && REDIR_HTTPS="0"
+
 	uci batch <<EOF
 		set uhttpd.main.cert="/ptconf/8311/uhttpd/uhttpd.crt"
 		set uhttpd.main.key="/ptconf/8311/uhttpd/uhttpd.key"
+		set uhttpd.main.redirect_https="${REDIR_HTTPS}"
 		set uhttpd.defaults.key_type="ec"
 		set uhttpd.defaults.ec_curve="P-384"
 		set uhttpd.defaults.days="3652"

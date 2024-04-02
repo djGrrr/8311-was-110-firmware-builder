@@ -23,7 +23,7 @@ strtolower() {
 
 
 fwenv_get_8311() {
-	fwenv_get "8311_$1"
+	fwenv_get "8311_$1" "$2"
 }
 
 fwenv_set_8311() {
@@ -278,6 +278,10 @@ get_8311_gateway() {
 set_8311_gateway() {
 	echo "Setting LCT gateway: $1" | to_console
 	_set_8311_gateway "$1"
+}
+
+get_8311_https_redirect() {
+	fwenv_get_8311 'https_redirect' '1'
 }
 
 get_8311_loid() {
