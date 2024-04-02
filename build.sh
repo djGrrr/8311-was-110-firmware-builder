@@ -111,7 +111,7 @@ expected_hash() {
 
 GIT_HASH=$(git rev-parse --short HEAD)
 GIT_DIFF="$(git diff HEAD)"
-GIT_TAG=$(git tag --points-at HEAD | grep -P '^v\d+\.\d+\.\d+' | sort -V -r | head -n1)
+GIT_TAG=$(git tag --points-at HEAD | grep -P '^v\d+\.\d+\.\d+' | tr '-' '~' | sort -V -r | tr '~' '-' | head -n1)
 
 FW_FW_SUFFIX=""
 FW_VER="${FW_VER:-${GIT_TAG:-""}}"
