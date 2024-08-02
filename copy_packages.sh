@@ -8,6 +8,7 @@ COMMON_PACKAGES=(
 	"libc"
 #	"libgpiod"
 	"libncurses6"
+	"libpcre2"
 #	"libsmartcols1"
 	"libzstd"
 	"lrzsz"

@@ -1,4 +1,6 @@
 #!/bin/bash
+mv -fv "$ROOT_DIR/sbin/secure_upgrade.sh" "$ROOT_DIR/sbin/secure_upgrade-original.sh"
+
 if ls packages/remove/*.list &>/dev/null; then
 	for LIST in packages/remove/*.list; do
 		echo "Removing files from '$LIST'"

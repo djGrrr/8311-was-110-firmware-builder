@@ -1,6 +1,57 @@
 #!/bin/sh
-[ -n "$1" ] || return 1
+_help() {
+	{
+		printf -- 'Tool to get fwenv value.\n\n'
+		printf -- 'Usage: %s [options] name [value]\n\n' "$0"
+		printf -- 'Options:\n'
+		printf -- '-8 --8311\tPrefix fwenv name with "8311_".\n'
+		printf -- '-b --base64\tSuffix name with "_b64" and encode value as base64.\n'
+		printf -- '-h --help\tShow this help.\n'
+		printf -- '--\t\tStop all further options processing.\n'
+	} >&2
+
+	exit ${1:-1}
+}
+
+B64=false
+PREFIX=
+SUFFIX=
+NAME=
+VALUE=
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+		--)
+			shift
+			break
+		;;
+		-h|--help)
+			_help 0
+		;;
+		-8|--8311)
+			PREFIX="8311_"
+		;;
+		-b|--base64)
+			B64=true
+			SUFFIX="_b64"
+		;;
+		-*)
+			_help 1
+		;;
+		*)
+			[ -n "$VALUE" ] && _help 1
+			[ -n "$NAME" ] && VALUE="$1" || NAME="$1"
+		;;
+	esac
+	shift
+done
+
+[ -n "$NAME" ] || _help 1
+
+NAME="$PREFIX$NAME$SUFFIX"
+
+$B64 && VALUE="$(echo -n "$VALUE" | base64)"
 
 for i in 0 1; do
-	fw_setenv "$1" "$2" || return $?
+	fw_setenv -- "$NAME" "$VALUE" || return $?
 done

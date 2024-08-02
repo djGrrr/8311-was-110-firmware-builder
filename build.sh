@@ -226,10 +226,19 @@ TAR_OUT="${TAR_OUT:-"$REAL_OUT/local-upgrade.tar"}"
 
 mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -no-xattrs -comp xz -b 256K || _err "Error creating new rootfs image"
 
+OUT_UROOTFS="$REAL_OUT/urootfs.img"
+mkimage -A MIPS -O Linux -T filesystem -C none -n "$FW_LONG_VERSION" -d "$ROOTFS" "$OUT_UROOTFS"
+
+#OUT_UMULTI="$REAL_OUT/uMulti.img"
+#mkimage -A MIPS -O Linux -T multi -C none -n "MC $FW_LONG_VERSION" -d "$OUT_KERNEL:$OUT_BOOTCORE:$OUT_UROOTFS" "$OUT_UMULTI"
+
+OUT_MCUPG="$REAL_OUT/multicast_upgrade.img"
+cat "$OUT_KERNEL" "$OUT_BOOTCORE" "$OUT_UROOTFS" > "$OUT_MCUPG"
+
 CREATE=("-b" "$OUT_BOOTCORE" "-k" "$OUT_KERNEL" "-r" "$ROOTFS")
 ./create.sh --basic -i "$TAR_OUT" -F "$VERSION_FILE" "${CREATE[@]}"
 ./create.sh --bfw -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" "${CREATE[@]}"
 
-rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW"
+rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW" "$OUT_UROOTFS"
 
 echo "Firmware build $FW_LONG_VERSION complete."

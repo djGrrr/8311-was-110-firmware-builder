@@ -23,11 +23,11 @@ strtolower() {
 
 
 fwenv_get_8311() {
-	fwenv_get "8311_$1" "$2"
+	fwenv_get --8311 "$@"
 }
 
 fwenv_set_8311() {
-	fwenv_set "8311_$1" "$2"
+	fwenv_set --8311 "$@"
 }
 
 _8311_check_persistent_root() {
@@ -124,6 +124,27 @@ set_8311_mib_file() {
 	echo "Setting OMCI MIB file: $1" | to_console
 	uci -q set "omci.default.mib_file"="$1"
 	uci commit omci
+}
+
+get_8311_pon_mode() {
+	fwenv_get_8311 "pon_mode" "xgspon" | strtolower | sed 's/-//g' | grep -E '^xgs?pon$' || echo 'xgspon'
+}
+
+set_8311_pon_mode() {
+	local display=$(echo "$1" |strtoupper | sed 's/PON/-PON/g')
+	echo "Setting PON Mode to: $display" | to_console
+	uci -q set "gpon.ponip.pon_mode"="$1"
+	uci -q commit "gpon"
+}
+
+get_8311_omcc_version() {
+	fwenv_get_8311 "omcc_version" "0xA3" | grep -E '^0x[89AB][0-9A-F]$' || echo '0xA3'
+}
+
+set_8311_omcc_version() {
+	echo "Setting OMCC version to: $1" | to_console
+	uci -q set "omci.default.omcc_version"="$1"
+    uci -q commit "omci"
 }
 
 get_8311_reg_id_hex() {
@@ -370,6 +391,8 @@ NETMASK
 				# calculate the 2nd usable ip of the range (1st is the stick)
 				printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$(((i4 & m4) + 2))" > "/tmp/8311-ping-host"
 			fi
+		else
+			echo "$PING_HOST" > "/tmp/8311-ping-host"
 		fi
 	fi
 

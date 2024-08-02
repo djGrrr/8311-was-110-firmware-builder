@@ -7,6 +7,7 @@ local http = require "luci.http"
 local formvalue = http.formvalue
 local dispatcher = require "luci.dispatcher"
 local sys = require "luci.sys"
+local base64 = require "base64"
 
 local firmwareOutput = ''
 
@@ -206,14 +207,29 @@ function fwenvs_8311()
 					description="Image specific software version sent in the Software image MEs [7] (up to 14 characters).",
 					maxlength=14,
 					type="text",
-					default=tools.fw_getenv("img_versionA")
+					default=tools.fw_getenv{"img_versionA"}
 				},{
 					id="sw_verB",
 					name="Software Version B",
 					description="Image specific software version sent in the Software image MEs [7] (up to 14 characters).",
 					maxlength=14,
 					type="text",
-					default=tools.fw_getenv("img_versionB")
+					default=tools.fw_getenv{"img_versionB"}
+				},{
+					id="fw_match_b64",
+					name="Firmware Version Match",
+					description="PCRE pattern match for automatic updating of Software Versions when OLT uploads a firmware upgrade. Must contain a single sub-pattern match.",
+					type="text",
+					maxlength="255",
+					base64=true
+				},{
+					id="fw_match_num",
+					name="Firmware Match Number",
+					description="If there are multiple matches for the Firmware Version Match pattern, use this specific match number.",
+					type="text",
+					default="1",
+					maxlength=2,
+					pattern='^[0-9]+$'
 				},{
 					id="override_active",
 					name="Override active firmware bank",
@@ -236,6 +252,29 @@ function fwenvs_8311()
 						"A",
 						"B"
 					}
+				},{
+					id="pon_mode",
+					name="PON Mode",
+					description="PON mode of operation. This is where you can choose between XGS-PON (the default) or XG-PON.",
+					type="select_named",
+					default="xgspon",
+					options={
+						{
+							name="XGS-PON",
+							value="xgspon"
+						},{
+							name="XG-PON",
+							value="xgpon"
+						}
+					}
+				},{
+					id="omcc_version",
+					name="OMCC Version",
+					description="The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3",
+					type="text",
+					default="0xA3",
+					maxlength=4,
+					pattern='^0x[89AB][0-9A-F]$'
 				},{
 					id="reg_id_hex",
 					name="Registration ID (HEX)",
@@ -331,6 +370,28 @@ function fwenvs_8311()
 			id="device",
 			category="Device",
 			items={ {
+					id="bootdelay",
+					name="Boot Delay",
+					description="Set the boot delay in seconds in which you can interupt the boot process over the serial console. With the Azores U-Boot, this also controls the number of times multicast upgrade is attempted and thus can have a significant impact in boot time. Default: 3, Recommended: 1",
+					type="select_named",
+					default="3",
+					base=true,
+					options={
+						{
+							name="0 (Fastest, disables multicast upgrade, not recommended)",
+							value="0"
+						},{
+							name="1 (Fast Boot)",
+							value="1"
+						},{
+							name="2",
+							value="2"
+						},{
+							name="3 (Default)",
+							value="3"
+						}
+					}
+				},{
 					id="console_en",
 					name="Serial console",
 					description="Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin.",
@@ -481,7 +542,16 @@ function populate_8311_fwenvs()
 
 	for catid, cat in pairs(fwenvs) do
 		for itemid, item in pairs(cat.items) do
-			fwenvs[catid]["items"][itemid]["value"] = fwenvs_values[item.id] or ''
+			if item.base then
+				value = tools.fw_getenv{item.id}
+			else
+				value = fwenvs_values[item.id] or ''
+			end
+			if item.base64 and value ~= '' then
+				value = base64.dec(value)
+			end
+
+			fwenvs[catid]["items"][itemid]["value"] = value
 		end
 	end
 
@@ -516,7 +586,15 @@ function action_save()
 				end
 
 				if item.value ~= value then
-					tools.fw_setenv_8311(item.id, value)
+					if item.base64 and value ~= '' then
+						value = base64.enc(value)
+					end
+
+					if item.base then
+						tools.fw_setenv{item.id, value}
+					else
+						tools.fw_setenv_8311{item.id, value}
+					end
 				end
 			end
 		end

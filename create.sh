@@ -3,15 +3,17 @@ _help() {
 	printf -- 'Tool for creating new WAS-110 local upgrade images\n\n'
 	printf -- 'Usage: %s [options]\n\n' "$0"
 	printf -- 'Options:\n'
-	printf -- '-i --image <filename>\t\tSpecify local upgrade (img or tar) file to create (required).\n'
-	printf -- '-w --basic\t\t\tBuild a basic local upgrade tar file.\n'
-	printf -- '-W --bfw\t\t\tBuild a bfw local upgrade image file.\n'
-	printf -- '-H --header <filename>\t\tSpecify filename of image header to base image off of (default: header.bin).\n'
-	printf -- '-b --bootcore <filename>\tSpecify filename of bootcore image to place in created (bfw) image (default: bootcore.bin).\n'
-	printf -- '-k --kernel <filename>\t\tSpecify filename of kernel image to place in created image (default: kernel.bin).\n'
-	printf -- '-r --rootfs <filename>\t\tSpecify filename of rootfs image to place in created image (default: rootfs.img).\n'
-	printf -- '-V --image-version <version>\tSpecify version string to set on created image (14 characters max).\n'
-	printf -- '-h --help\t\t\tThis help text\n'
+	printf -- '-i --image <filename>\t\t\tSpecify local upgrade (img or tar) file to create (required).\n'
+	printf -- '-w --basic\t\t\t\tBuild a basic local upgrade tar file.\n'
+	printf -- '-W --bfw\t\t\t\tBuild a bfw local upgrade image file.\n'
+	printf -- '-H --header <filename>\t\t\tSpecify filename of image header to base image off of (default: header.bin).\n'
+	printf -- '-b --bootcore <filename>\t\tSpecify filename of bootcore image to place in created (bfw) image (default: bootcore.bin).\n'
+	printf -- '-k --kernel <filename>\t\t\tSpecify filename of kernel image to place in created image (default: kernel.bin).\n'
+	printf -- '-r --rootfs <filename>\t\t\tSpecify filename of rootfs image to place in created image (default: rootfs.img).\n'
+	printf -- '-F --version-file <filename>\t\tSpecify 8311 version file of basic firmeware image.\n'
+	printf -- '-V --image-version <version>\t\tSpecify version string to set on created image (15 characters max).\n'
+	printf -- '-L --image-long-version <version>\tSpecify detailed version string to set on created bfw image (31 characters max).\n'
+	printf -- '-h --help\t\t\t\tThis help text\n'
 }
 
 OUT=

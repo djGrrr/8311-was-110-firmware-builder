@@ -42,13 +42,22 @@ else
 end
 
 if item.type == "select" then %>
-					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-<%= item.type %>">
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-select">
 <%
 for _, option in pairs(item.options) do
 	local option_html = esc(option)
 %>
 						<option value="<%= option_html %>"
 <%- if option == value or value == '' and option == item.default then %> selected="selected"<% end %>>&nbsp;<%= option_html %></option>
+<% end %>
+					</select>
+<%- elseif item.type == "select_named" then %>
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-select">
+<%
+for _, option in pairs(item.options) do
+%>
+						<option value="<%= esc(option.value) %>"
+<%- if option.value == value or value == '' and option.value == item.default then %> selected="selected"<% end %>>&nbsp;<%= esc(option.name) %></option>
 <% end %>
 					</select>
 <%- else %>

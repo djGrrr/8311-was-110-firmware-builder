@@ -35,6 +35,14 @@ start() {
 	DEVICE_SN=$(get_8311_device_sn)
 	[ -n "$DEVICE_SN" ] && set_8311_device_sn "$DEVICE_SN"
 
+	# PON Mode (XGS-PON / XG-PON)
+	PON_MODE=$(get_8311_pon_mode)
+	set_8311_pon_mode "$PON_MODE"
+
+	# OMCC Version (0x80 - 0xBF)
+	OMCC_VERSION=$(get_8311_omcc_version)
+	set_8311_omcc_version "$OMCC_VERSION"
+
 	# 8311 MOD: Set Registration ID
 	REG_ID_HEX=$(get_8311_reg_id_hex)
 	set_8311_reg_id_hex "$REG_ID_HEX"
@@ -74,6 +82,20 @@ boot() {
 		uci set "optic.common.tx_en_mode"="0"
 	fi
 	uci commit "optic"
+
+	# Active fw bank is always valid
+	ACTIVE=$(active_fwbank)
+	VALID="img_valid$ACTIVE"
+	[ "$(fwenv_get "$VALID")" != "true" ] && fwenv_set "$VALID" "true"
+
+	# Check validity of inactive fw bank
+	INACTIVE=$(inactive_fwbank)
+	VALID="img_valid$INACTIVE"
+	[ "$(fwenv_get "$VALID")" != "true" ] && {
+		alternate_firmware_info &>/dev/null &&
+		fwenv_set "$VALID" "true" ||
+		fwenv_set "$VALID" "false"
+	}
 
 	start "$@"
 

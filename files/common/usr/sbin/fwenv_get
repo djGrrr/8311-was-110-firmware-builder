@@ -1,7 +1,63 @@
 #!/bin/sh
-[ -n "$1" ] || exit 1
+_help() {
+	{
+		printf -- 'Tool to get fwenv value.\n\n'
+		printf -- 'Usage: %s [options] name [default-value]\n\n' "$0"
+		printf -- 'Options:\n'
+		printf -- '-8 --8311\tPrefix fwenv name with "8311_".\n'
+		printf -- '-b --base64\tSuffix name with "_b64" and decode value as base64.\n'
+		printf -- '-h --help\tShow this help.\n'
+		printf -- '--\t\tStop all further options processing.\n'
+	} >&2
 
-fw_printenv -n "$1" 2>/dev/null || {
-	[ -n "$2" ] && echo "$2"
-	false
+	exit ${1:-1}
 }
+
+B64=false
+PREFIX=
+SUFFIX=
+NAME=
+DEFAULT=
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+		--)
+			shift
+			break
+		;;
+		-h|--help)
+			_help 0
+		;;
+		-8|--8311)
+			PREFIX="8311_"
+		;;
+		-b|--base64)
+			B64=true
+			SUFFIX="_b64"
+		;;
+		-*)
+			_help 1
+		;;
+		*)
+			[ -n "$DEFAULT" ] && _help 1
+			[ -n "$NAME" ] && DEFAULT="$1" || NAME="$1"
+		;;
+	esac
+	shift
+done
+
+[ -n "$NAME" ] || _help 1
+
+NAME="$PREFIX$NAME$SUFFIX"
+
+if VALUE=$(fw_printenv -n -- "$NAME" 2>/dev/null) && [ -n "$VALUE" ] && $B64; then
+	VALUE=$(echo "$VALUE" | base64 -d 2>/dev/null) || VALUE=
+fi
+
+if [ -n "$VALUE" ]; then
+	echo "$VALUE"
+	true
+else
+	[ -n "$DEFAULT" ] && echo "$DEFAULT"
+	false
+fi
