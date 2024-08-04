@@ -7,7 +7,9 @@ LCT_IFNAME=$(uci get "network.lct.ifname" || echo "eth0_0_1_lct")
 LCT_MAC="$(get_8311_lct_mac)"
 
 LCT_VLAN=$(get_8311_lct_vlan)
+DB_INT="lct"
 if [ "$LCT_VLAN" -gt 0 ] && [ "$LCT_VLAN" -le 4095 ]; then
+	DB_INT="mgmt"
 	uci set "network.lct_vlan"="device"
 	uci set "network.lct_vlan.ifname"="$LCT_IFNAME"
 	uci set "network.lct_vlan.name"="mgmt"
@@ -72,7 +74,7 @@ add dropbear dropbear
 set dropbear.@dropbear[0].PasswordAuth='on'
 set dropbear.@dropbear[0].RootPasswordAuth='on'
 set dropbear.@dropbear[0].Port='22'
-set dropbear.@dropbear[0].DirectInterface='lct'
+set dropbear.@dropbear[0].DirectInterface='$DB_INT'
 commit dropbear
 BATCH
 fi
