@@ -241,4 +241,6 @@ CREATE=("-b" "$OUT_BOOTCORE" "-k" "$OUT_KERNEL" "-r" "$ROOTFS")
 
 rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW" "$OUT_UROOTFS"
 
+./wholeImage.sh
+
 echo "Firmware build $FW_LONG_VERSION complete."

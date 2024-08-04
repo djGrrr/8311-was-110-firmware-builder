@@ -461,6 +461,14 @@ function fwenvs_8311()
 			id="manage",
 			category="Management",
 			items={	{
+					id="lct_vlan",
+					name="Management VLAN",
+					description="Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged).",
+					maxlength=4,
+					pattern='^[0-9]+$',
+					type="text",
+					default="0"
+				},{
 					id="ipaddr",
 					name="IP Address",
 					description="Management IP address. Defaults to 192.168.11.1",

@@ -3,4 +3,4 @@ rootfs
 rootfs-bfw/
 rootfs-basic/
 stock/
-whole_image/
+whole_image/system_sw.img

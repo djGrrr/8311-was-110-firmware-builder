@@ -95,7 +95,6 @@ PONSHMAC
 echo "$LIB_PON_SH_FOOT" >> "$LIB_PON_SH"
 
 
-cp -fv "libs/8311_${FW_VARIANT}.sh"  "$ROOT_DIR/lib/8311_backend.sh"
 cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/usr/sbin/"
 ln -fsv "/usr/sbin/8311-detect-config.sh" "$ROOT_DIR/root/8311-detect-config.sh"
 ln -fsv "/usr/sbin/8311-fix-vlans.sh" "$ROOT_DIR/root/8311-fix-vlans.sh"

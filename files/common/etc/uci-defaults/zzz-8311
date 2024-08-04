@@ -3,11 +3,43 @@ _lib_8311 2>/dev/null || . /lib/8311.sh
 
 
 # Configure LCT Interface
+LCT_IFNAME=$(uci get "network.lct.ifname" || echo "eth0_0_1_lct")
+LCT_MAC="$(get_8311_lct_mac)"
+
+LCT_VLAN=$(get_8311_lct_vlan)
+if [ "$LCT_VLAN" -gt 0 ] && [ "$LCT_VLAN" -le 4095 ]; then
+	uci set "network.lct_vlan"="device"
+	uci set "network.lct_vlan.ifname"="$LCT_IFNAME"
+	uci set "network.lct_vlan.name"="mgmt"
+	uci set "network.lct_vlan.type"="8021q"
+	uci set "network.lct_vlan.vid"="$LCT_VLAN"
+
+	uci set "network.mgmt"="interface"
+	uci set "network.mgmt.ifname"="mgmt"
+	uci set "network.mgmt.auto"="1"
+	uci set "network.mgmt.macaddr"="$LCT_MAC"
+	uci set "network.mgmt.proto"="static"
+	uci set "network.mgmt.ipaddr"="$(get_8311_ipaddr)"
+    uci set "network.mgmt.netmask"="$(get_8311_netmask)"
+    uci set "network.mgmt.gateway"="$(get_8311_gateway)"
+
+	uci del "network.lct.ipaddr"
+	uci del "network.lct.netmask"
+	uci del "network.lct.gateway"
+
+	uci add_list "firewall.@zone[0].network"="mgmt"
+else
+	uci set "network.lct.ipaddr"="$(get_8311_ipaddr)"
+	uci set "network.lct.netmask"="$(get_8311_netmask)"
+	uci set "network.lct.gateway"="$(get_8311_gateway)"
+fi
+
 uci set "network.lct.auto"="1"
-uci set "network.lct.ipaddr"="$(get_8311_ipaddr)"
-uci set "network.lct.netmask"="$(get_8311_netmask)"
-uci set "network.lct.gateway"="$(get_8311_gateway)"
-uci set "network.lct.macaddr"="$(get_8311_lct_mac)"
+uci set "network.lct.macaddr"="$LCT_MAC"
+
+uci del_list "firewall.@zone[0].network"="lan"
+uci commit "firewall"
+
 
 # Configure IP Host Interface
 uci set "network.iphost1.macaddr"="$(get_8311_iphost_mac)"

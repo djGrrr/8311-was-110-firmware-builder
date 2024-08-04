@@ -268,6 +268,15 @@ set_8311_iphost_domain() {
 	echo "$1" > "/tmp/8311-iphost-domainname"
 }
 
+get_8311_lct_vlan() {
+	local lct_vlan=$(($(fwenv_get_8311 "lct_vlan" "0"))) 2>/dev/null
+	[ -n "$lct_vlan" ] && [ "$lct_vlan" -ge 0 ] && [ "$lct_vlan" -le 4095 ] && echo "$lct_vlan" || echo "0"
+}
+
+set_8311_lct_vlan() {
+	echo "Setting LCT VLAN: $1" | to_console
+}
+
 get_8311_ipaddr() {
 	[ -f "/tmp/8311-ipaddr" ] || { fwenv_get_8311 "ipaddr" || echo "192.168.11.1"; } > "/tmp/8311-ipaddr"
 
