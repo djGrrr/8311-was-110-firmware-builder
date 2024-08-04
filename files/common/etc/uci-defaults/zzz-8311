@@ -6,6 +6,7 @@ _lib_8311 2>/dev/null || . /lib/8311.sh
 LCT_IFNAME=$(uci get "network.lct.ifname" || echo "eth0_0_1_lct")
 LCT_MAC="$(get_8311_lct_mac)"
 
+LCT_DNS=$(get_8311_dns_server)
 LCT_VLAN=$(get_8311_lct_vlan)
 DB_INT="lct"
 if [ "$LCT_VLAN" -gt 0 ] && [ "$LCT_VLAN" -le 4095 ]; then
@@ -25,6 +26,8 @@ if [ "$LCT_VLAN" -gt 0 ] && [ "$LCT_VLAN" -le 4095 ]; then
     uci set "network.mgmt.netmask"="$(get_8311_netmask)"
     uci set "network.mgmt.gateway"="$(get_8311_gateway)"
 
+	[ -n "$LCT_DNS" ] && uci set "network.mgmt.dns"="$LCT_DNS"
+
 	uci del "network.lct.ipaddr"
 	uci del "network.lct.netmask"
 	uci del "network.lct.gateway"
@@ -34,6 +37,7 @@ else
 	uci set "network.lct.ipaddr"="$(get_8311_ipaddr)"
 	uci set "network.lct.netmask"="$(get_8311_netmask)"
 	uci set "network.lct.gateway"="$(get_8311_gateway)"
+	[ -n "$LCT_DNS" ] && uci set "network.lct.dns"="$LCT_DNS"
 fi
 
 uci set "network.lct.auto"="1"
@@ -48,6 +52,7 @@ uci set "network.iphost1.macaddr"="$(get_8311_iphost_mac)"
 
 # Get rid of warnings about delegated IPv6 prefixes
 uci delete "network.globals.ula_prefix"
+
 
 uci commit "network"
 

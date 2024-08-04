@@ -165,6 +165,8 @@ function fwenvs_8311()
 		table.insert(timezones, zone)
 	end
 
+	local ipv4_regex = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
+
 	return {{
 			id="pon",
 			category="PON",
@@ -226,10 +228,10 @@ function fwenvs_8311()
 					id="fw_match_num",
 					name="Firmware Match Number",
 					description="If there are multiple matches for the Firmware Version Match pattern, use this specific match number.",
-					type="text",
-					default="1",
-					maxlength=2,
-					pattern='^[0-9]+$'
+					type="number",
+					min=1,
+					max=99,
+					default="1"
 				},{
 					id="override_active",
 					name="Override active firmware bank",
@@ -314,9 +316,9 @@ function fwenvs_8311()
 					id="pon_slot",
 					name="PON Slot",
 					description="Change the slot number that the UNI port is presented on, needed on some ISPs.",
-					maxlength=3,
-					pattern='^[0-9]*$',
-					type="text"
+					type="number",
+					min=1,
+					max=255
 				},{
 					id="iphost_mac",
 					name="IP Host MAC Address",
@@ -352,17 +354,17 @@ function fwenvs_8311()
 					id="internet_vlan",
 					name="Internet VLAN",
 					description="Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged).",
-					maxlength=4,
-					pattern='^[0-9]+$',
-					type="text",
+					type="number",
+					min=0,
+					max=4095,
 					default="0"
 				},{
 					id="services_vlan",
 					name="Services VLAN",
 					description="Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095). This fixes multi-service on Bell.",
-					maxlength=4,
-					pattern='^[0-9]+$',
-					type="text",
+					type="number",
+					min=1,
+					max=4095,
 					default="34|36"
 				}
 			}
@@ -425,9 +427,9 @@ function fwenvs_8311()
 					id="failsafe_delay",
 					name="Failsafe Delay",
 					description="Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds",
-					maxlength=3,
-					pattern='^[0-9]+$',
-					type="text",
+					type="number",
+					min=10,
+					max=300,
 					default="15"
 				},{
 					id="hostname",
@@ -464,16 +466,16 @@ function fwenvs_8311()
 					id="lct_vlan",
 					name="Management VLAN",
 					description="Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged).",
-					maxlength=4,
-					pattern='^[0-9]+$',
-					type="text",
+					type="number",
+					min=0,
+					max=4095,
 					default="0"
 				},{
 					id="ipaddr",
 					name="IP Address",
 					description="Management IP address. Defaults to 192.168.11.1",
 					maxlength=15,
-					pattern='^[0-9]{1,3}(\\.[0-9]{1,3}){3}$',
+					pattern=ipv4_regex,
 					type="text",
 					default="192.168.11.1"
 				},{
@@ -481,7 +483,7 @@ function fwenvs_8311()
 					name="Subnet Mask",
 					description="Management subnet mask. Defaults to 255.255.255.0",
 					maxlength=15,
-					pattern='^[0-9]{1,3}(\\.[0-9]{1,3}){3}$',
+					pattern=ipv4_regex,
 					type="text",
 					default="255.255.255.0"
 				},{
@@ -489,15 +491,22 @@ function fwenvs_8311()
 					name="Gateway",
 					description="Management gateway. Defaults to the IP address (ie. no default gateway)",
 					maxlength=15,
-					pattern='^[0-9]{1,3}(\\.[0-9]{1,3}){3}$',
+					pattern=ipv4_regex,
 					type="text",
 					default="192.168.11.1"
+				},{
+					id="dns_server",
+					name="DNS Server",
+					description="Management DNS server.",
+					maxlength=15,
+					pattern=ipv4_regex,
+					type="text"
 				},{
 					id="ping_ip",
 					name="Ping IP",
 					description="IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2).",
 					maxlength=15,
-					pattern='^[0-9]{1,3}(\\.[0-9]{1,3}){3}$',
+					pattern=ipv4_regex,
 					type="text",
 					default="192.168.11.2"
 				},{

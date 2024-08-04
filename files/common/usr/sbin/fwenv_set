@@ -1,7 +1,7 @@
 #!/bin/sh
 _help() {
 	{
-		printf -- 'Tool to get fwenv value.\n\n'
+		printf -- 'Tool to set fwenv value.\n\n'
 		printf -- 'Usage: %s [options] name [value]\n\n' "$0"
 		printf -- 'Options:\n'
 		printf -- '-8 --8311\tPrefix fwenv name with "8311_".\n'

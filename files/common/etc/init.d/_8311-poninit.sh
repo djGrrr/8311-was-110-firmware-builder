@@ -75,8 +75,9 @@ start() {
 }
 
 boot() {
-	if [ "$(get_8311_module_type)" = "potron" ]; then
-		echo "Potrontec module detected, setting optic.common.tx_en_mode to 3" | to_console
+	MODULE_TYPE=$(get_8311_module_type)
+	if [ "$MODULE_TYPE" = "potron" ] || [ "$MODULE_TYPE" = "fullvision" ]; then
+		echo "Potrontec or Full Vision module detected, setting optic.common.tx_en_mode to 3" | to_console
 		uci set "optic.common.tx_en_mode"="3"
 	else
 		uci set "optic.common.tx_en_mode"="0"

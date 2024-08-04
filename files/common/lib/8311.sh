@@ -21,6 +21,9 @@ strtolower() {
 	tr '[A-Z]' '[a-z]'
 }
 
+ipv4() {
+	grep -E '^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$'
+}
 
 fwenv_get_8311() {
 	fwenv_get --8311 "$@"
@@ -278,7 +281,7 @@ set_8311_lct_vlan() {
 }
 
 get_8311_ipaddr() {
-	[ -f "/tmp/8311-ipaddr" ] || { fwenv_get_8311 "ipaddr" || echo "192.168.11.1"; } > "/tmp/8311-ipaddr"
+	[ -f "/tmp/8311-ipaddr" ] || { fwenv_get_8311 "ipaddr" | ipv4 || echo "192.168.11.1"; } > "/tmp/8311-ipaddr"
 
 	cat "/tmp/8311-ipaddr"
 }
@@ -289,7 +292,7 @@ set_8311_ipaddr() {
 }
 
 get_8311_netmask() {
-	[ -f "/tmp/8311-netmask" ] || { fwenv_get_8311 "netmask" || echo "255.255.255.0"; } > "/tmp/8311-netmask"
+	[ -f "/tmp/8311-netmask" ] || { fwenv_get_8311 "netmask" | ipv4 || echo "255.255.255.0"; } > "/tmp/8311-netmask"
 
 	cat "/tmp/8311-netmask"
 }
@@ -300,7 +303,7 @@ set_8311_netmask() {
 }
 
 get_8311_gateway() {
-	[ -f "/tmp/8311-gateway" ] || { fwenv_get_8311 "gateway" || get_8311_ipaddr; } > "/tmp/8311-gateway"
+	[ -f "/tmp/8311-gateway" ] || { fwenv_get_8311 "gateway" | ipv4 || get_8311_ipaddr; } > "/tmp/8311-gateway"
 
 	cat "/tmp/8311-gateway"
 }
@@ -308,6 +311,16 @@ get_8311_gateway() {
 set_8311_gateway() {
 	echo "Setting LCT gateway: $1" | to_console
 	_set_8311_gateway "$1"
+}
+
+get_8311_dns_server() {
+	[ -f "/tmp/8311-dns" ] || fwenv_get_8311 "dns_server" | ipv4 > "/tmp/8311-dns"
+
+	cat "/tmp/8311-dns"
+}
+
+set_8311_dns_server() {
+	echo "Setting LCT dns: $1" | to_console
 }
 
 get_8311_https_redirect() {
@@ -380,7 +393,7 @@ set_8311_hostname() {
 
 get_8311_ping_host() {
 	if [ ! -f "/tmp/8311-ping-host" ]; then
-		local PING_HOST=$(fwenv_get_8311 "ping_ip")
+		local PING_HOST=$(fwenv_get_8311 "ping_ip" | ipv4)
 
 		if [ -z "$PING_HOST" ]; then
 			local ipaddr=$(get_8311_ipaddr)
@@ -420,6 +433,9 @@ get_8311_module_type() {
 			MODULE_TYPE='bfw'
 		elif [ "$SFP_HASH" = "cbd13cd3cea10e799c3ae93733f0ab5d7f1f3f48598111164e46634b2aaccb40" ]; then
 			MODULE_TYPE='potron'
+		# Full Vision FV-NS10S
+		elif [ "$SFP_HASH" =  "e5804f95828218c3ed61ce649bfdc9ed7eb41364a81ad900a08050e3fc77b21d" ]; then
+			MODULE_TYPE='fullvision'
 		elif [ "$FLASH_VOLTS" = "3.3v" ] &&
 			 [ "$MTDPARTS" = 'mtdparts=nand.0:1m(uboot),256k(ubootconfigA),256k(ubootconfigB),256k(gphyfirmware),1m(calibration),16m(bootcore),108m(system_sw),-(res)' ]; then
 			MODULE_TYPE='potron'

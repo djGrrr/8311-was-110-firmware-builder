@@ -25,6 +25,10 @@ boot() {
 	# LCT MAC
 	set_8311_lct_mac "$(get_8311_lct_mac)"
 
+	# LCT DNS
+	DNS_SERVER=$(get_8311_dns_server)
+	[ -n "$DNS_SERVER" ] && set_8311_dns_server "$DNS_SERVER"
+
 	# IP Host MAC
 	set_8311_iphost_mac "$(get_8311_iphost_mac)"
 

@@ -28,7 +28,11 @@ local esc = tools.html_escape
 <%-
 local value = nil
 local placeholder = nil
-local checked = nil
+local checked = ""
+local minv = ""
+local maxv = ""
+local maxlength = ""
+
 if item.type == "checkbox" then
 	value = "1"
 	if item.value == '1' or (item.default and item.value ~= '0') then
@@ -36,10 +40,24 @@ if item.type == "checkbox" then
 	end
 else
 	value = item.value
-	if item.default and (item.type == 'text' or item.type == 'password') then
+	if item.default and (item.type == 'text' or item.type == 'password' or item.type == 'number') then
 		placeholder = item.default
 	end
+
+	if item.maxlength then
+		maxlength = '  maxlength="' .. esc(item.maxlength) .. '"'
+	end
+
+	if item.type == 'number' then
+		if item.min then
+			minv = ' min="' .. esc(item.min) .. '"'
+		end
+		if item.max then
+			maxv = ' max="' .. esc(item.max) .. '"'
+		end
+	end
 end
+
 
 if item.type == "select" then %>
 					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-select">
@@ -63,9 +81,9 @@ for _, option in pairs(item.options) do
 <%- else %>
 					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-<%= item.type %>"
 						type="<%= item.type %>" value="<%= esc(value) %>"<% if item.required then %> required="required"<% end %>
-						<% if item.maxlength then %> maxlength="<%= item.maxlength %>"<% end %>
-						<%= checked %><% if placeholder then %> placeholder="<%= esc(placeholder) %>"<% end %>
-						<% if item.type == 'text' and item.pattern then %> pattern="<%= item.pattern %>"<% end %> />
+						<%= maxlength %><%= checked %><%= minv %><%= maxv %>
+						<% if placeholder then %>  placeholder="<%= esc(placeholder) %>"<% end %>
+						<% if item.type == 'text' and item.pattern then %> pattern="<%= esc(item.pattern) %>"<% end %> />
 <% end %>
 				</div>
 <% if item.description then %>

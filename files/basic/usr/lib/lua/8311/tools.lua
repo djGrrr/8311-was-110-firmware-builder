@@ -9,6 +9,7 @@ local util = require "luci.util"
 
 function html_escape(text)
 	if text == nil then text = "" end
+	text = "" .. text
 
 	return text:gsub("%S+", {
 		["&"] = "&amp;",
