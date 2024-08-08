@@ -395,30 +395,30 @@ get_8311_ping_host() {
 	if [ ! -f "/tmp/8311-ping-host" ]; then
 		local PING_HOST=$(fwenv_get_8311 "ping_ip" | ipv4)
 
-		if [ -z "$PING_HOST" ]; then
-			local ipaddr=$(get_8311_ipaddr)
-			local netmask=$(get_8311_netmask)
-			local gateway=$(get_8311_gateway)
-
-			if [ "$ipaddr" != "$gateway" ]; then
-				echo "$gateway" > "/tmp/8311-ping-host"
-			else
-				IFS='.' read -r i1 i2 i3 i4 <<IPADDR
-${ipaddr}
-IPADDR
-				IFS='.' read -r m1 m2 m3 m4 <<NETMASK
-${netmask}
-NETMASK
-
-				# calculate the 2nd usable ip of the range (1st is the stick)
-				printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$(((i4 & m4) + 2))" > "/tmp/8311-ping-host"
-			fi
-		else
-			echo "$PING_HOST" > "/tmp/8311-ping-host"
-		fi
+		echo "${PING_HOST:-$(get_8311_default_ping_host)}" > "/tmp/8311-ping-host"
 	fi
 
 	cat "/tmp/8311-ping-host"
+}
+
+get_8311_default_ping_host() {
+	local ipaddr=$(get_8311_ipaddr)
+	local netmask=$(get_8311_netmask)
+	local gateway=$(get_8311_gateway)
+
+	if [ "$ipaddr" != "$gateway" ]; then
+		echo "$gateway"
+	else
+		IFS='.' read -r i1 i2 i3 i4 <<IPADDR
+${ipaddr}
+IPADDR
+		IFS='.' read -r m1 m2 m3 m4 <<NETMASK
+${netmask}
+NETMASK
+
+		# calculate the 2nd usable ip of the range (1st is the stick)
+		printf "%d.%d.%d.%d\n" "$((i1 & m1))" "$((i2 & m2))" "$((i3 & m3))" "$(((i4 & m4) + 2))"
+	fi
 }
 
 

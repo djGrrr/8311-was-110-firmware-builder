@@ -493,7 +493,7 @@ function fwenvs_8311()
 					maxlength=15,
 					pattern=ipv4_regex,
 					type="text",
-					default="192.168.11.1"
+					default=util.trim(util.exec(". /lib/8311.sh && get_8311_ipaddr"))
 				},{
 					id="dns_server",
 					name="DNS Server",
@@ -508,7 +508,7 @@ function fwenvs_8311()
 					maxlength=15,
 					pattern=ipv4_regex,
 					type="text",
-					default="192.168.11.2"
+					default=util.trim(util.exec(". /lib/8311.sh && get_8311_default_ping_host"))
 				},{
 					id="lct_mac",
 					name="LCT MAC Address",
