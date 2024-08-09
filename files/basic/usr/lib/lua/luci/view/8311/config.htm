@@ -4,6 +4,7 @@ local esc = tools.html_escape
 -%>
 
 <%+header%>
+<link rel="stylesheet" href="<%=resource%>/view/8311.css" />
 <script type="text/javascript" src="<%=resource%>/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/view/8311.js"></script>
 
@@ -16,7 +17,7 @@ local esc = tools.html_escape
 <% end -%>
 </ul>
 
-<form action="save" method="post">
+<form id="8311-config" action="save" onsubmit="return saveConfig()"  method="post" novalidate="novalidate">
 <div id="cbi-system-poncfg" class="cbi-section-node cbi-section-node-tabbed" data-section-id="poncfg" data-initialized="true">
 <%- for catid, cat in pairs(fwenvs) do -%>
 	<div id="container.system.poncfg.<%= cat.id %>" data-tab="<%= cat.id %>" data-tab-title="<%= esc(cat.category) %>" <% if catid < 2 then %>data-tab-active="true"<% end %>>
@@ -60,7 +61,7 @@ end
 
 
 if item.type == "select" then %>
-					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-select">
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" data-cat-id="<%= cat.id %>" class="cbi-input-select">
 <%
 for _, option in pairs(item.options) do
 	local option_html = esc(option)
@@ -70,7 +71,7 @@ for _, option in pairs(item.options) do
 <% end %>
 					</select>
 <%- elseif item.type == "select_named" then %>
-					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-select">
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" data-cat-id="<%= cat.id %>" class="cbi-input-select">
 <%
 for _, option in pairs(item.options) do
 %>
@@ -82,9 +83,10 @@ for _, option in pairs(item.options) do
 					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-<%= item.type %>"
 						type="<%= item.type %>" value="<%= esc(value) %>"<% if item.required then %> required="required"<% end %>
 						<%= maxlength %><%= checked %><%= minv %><%= maxv %>
-						<% if placeholder then %>  placeholder="<%= esc(placeholder) %>"<% end %>
+						<% if placeholder then %>  placeholder="<%= esc(placeholder) %>"<% end %> data-cat-id="<%= cat.id %>"
 						<% if item.type == 'text' and item.pattern then %> pattern="<%= esc(item.pattern) %>"<% end %> />
 <% end %>
+					<label class="cbi-value-error error" for="widget.cbid.system.poncfg.<%= item.id %>" style="display: none"></label>
 				</div>
 <% if item.description then %>
 				<div class="cbi-value-description"><%= esc(item.description) %></div>
@@ -96,6 +98,7 @@ for _, option in pairs(item.options) do
 <% end %>
 </div>
 <input type="submit" value="Save" />
+<!-- input type="button" onclick="return saveConfig()" value="Save" / -->
 </form>
 
 <%+footer%>

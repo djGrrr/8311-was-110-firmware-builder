@@ -1,0 +1,8 @@
+select.error, input.error {
+	border-color: red !important;
+	background-color: lightpink !important;
+}
+
+label.error {
+	color: red !important;
+}

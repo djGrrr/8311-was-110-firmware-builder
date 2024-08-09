@@ -16,6 +16,38 @@ function switchTab(tab) {
 		selectContainer.attr('data-tab-active', 'true');
 }
 
+function saveConfig(e) {
+	console.log("save");
+	jForm = $('#8311-config');
+	const form = jForm.get(0);
+	const field = Array.from(form.elements);
+
+	var valid = true;
+	field.forEach(i => {
+		var element = $(i);
+		var element_id = element.attr('id');
+		var error_label = $('label.error[for="' + element_id  + '"]');
+
+		if (!i.checkValidity()) {
+			valid = false;
+			error_label.text(i.validationMessage);
+			error_label.show();
+
+			element.addClass("error");
+
+			switchTab(element.data("cat-id"));
+			element.focus();
+		}
+		else {
+			element.removeClass("error");
+			error_label.text("");
+			error_label.hide();
+		}
+	});
+
+	return valid;
+}
+
 function switchTabPonStatus(tab) {
 	switchTab(tab);
 
