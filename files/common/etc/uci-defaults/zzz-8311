@@ -64,6 +64,14 @@ else
 	SYS_HOSTNAME="prx126-sfp-pon"
 fi
 
+SYS_LANG=$(get_8311_syslang)
+if [ -n "$SYS_LANG" ]; then
+	uci set "luci.main.lang"="$SYS_LANG"
+	uci commit "luci"
+else
+	SYS_LANG="auto"
+fi
+
 # Configure WebUI
 if [ -d "/www/luci-static/bootstrap" ]; then
 	uci set "luci.main.mediaurlbase"="/luci-static/bootstrap"

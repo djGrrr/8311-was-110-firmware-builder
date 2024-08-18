@@ -1,0 +1,243 @@
+#
+# Missing <ms@missing233.com>, 2024.
+#
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ja\n"
+
+msgid "Translator"
+msgstr "Missing"
+
+msgid "TranslatorURL"
+msgstr "https://github.com/missing233"
+
+msgid "Status"
+msgstr "ステータス"
+
+msgid "Capability"
+msgstr "機能"
+
+msgid "LAN Info"
+msgstr "LAN情報"
+
+msgid "Alarms"
+msgstr "アラーム"
+
+msgid "GEM Status"
+msgstr "GEMステータス"
+
+msgid "GEM Stats"
+msgstr "GEM統計"
+
+msgid "GEM DS"
+msgstr "GEMダウンストリーム"
+
+msgid "GEM US"
+msgstr "GEMアップストリーム"
+
+msgid "ETH DS Stats"
+msgstr "イーサネットダウンストリーム統計"
+
+msgid "ETH US Stats"
+msgstr "イーサネットアップストリーム統計"
+
+msgid "FEC Info"
+msgstr "FEC情報"
+
+msgid "GTC Info"
+msgstr "GTC情報"
+
+msgid "PS Status"
+msgstr "電源ステータス"
+
+msgid "PSM"
+msgstr "電源管理"
+
+msgid "Alloc Stats"
+msgstr "割り当て統計"
+
+msgid "PLOAM DS"
+msgstr "PLOAMダウンストリーム"
+
+msgid "PLOAM US"
+msgstr "PLOAMアップストリーム"
+
+msgid "Optical Status"
+msgstr "光ステータス"
+
+msgid "Optical Info"
+msgstr "光情報"
+
+msgid "Burst Profile"
+msgstr "バーストプロファイル"
+
+msgid "CQM"
+msgstr "CQM"
+
+msgid "CQM Q Map"
+msgstr "CQMキューマップ"
+
+msgid "DP Ports"
+msgstr "データパスポート"
+
+msgid "DP QoS"
+msgstr "データパスQoS"
+
+msgid "PPv4 Buffers"
+msgstr "PPv4バッファ"
+
+msgid "PPv4 PPS"
+msgstr "PPv4 PPS"
+
+msgid "PPv4 Stats"
+msgstr "PPv4統計"
+
+msgid "PPv4 Tree"
+msgstr "PPv4ツリー"
+
+msgid "PPv4 QStats"
+msgstr "PPv4キュー統計"
+
+msgid "PON Serial Number (ONT ID)"
+msgstr "PONシリアル番号（ONT ID）"
+
+msgid "GPON Serial Number sent to the OLT in various MEs (4 alphanumeric characters, followed by 8 hex digits)."
+msgstr "GPONシリアル番号（4つの英数字の文字と8つの16進数字）"
+
+msgid "Vendor ID"
+msgstr "ベンダーID"
+
+msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."
+msgstr "PONベンダーID、PONシリアル番号から自動的に派生（設定されていない場合は4つの英数字）"
+
+msgid "Equipment ID"
+msgstr "機器ID"
+
+msgid "PON Equipment ID field in the ONU2-G ME [257] (up to 20 characters)."
+msgstr "ONU2-G ME [257] のPON機器IDフィールド（最大20文字）"
+
+msgid "Hardware Version"
+msgstr "ハードウェアバージョン"
+
+msgid "Hardware version string sent in various MEs (up to 14 characters)."
+msgstr "ハードウェアバージョン（最大14文字）"
+
+msgid "Sync Circuit Pack Version"
+msgstr "同期回路パックバージョン"
+
+msgid "Modify the configured MIB file to set the Version field of any Circuit Pack MEs [6] to match the Hardware Version (if set)."
+msgstr "MIBファイルを変更し、回路パックME [6]のバージョンフィールドをハードウェアバージョンに一致させる（設定されている場合）"
+
+msgid "Software Version A"
+msgstr "ソフトウェアバージョンA"
+
+msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
+msgstr "ソフトウェアイメージME [7] に送信される特定のソフトウェアバージョンA（最大14文字）"
+
+msgid "Software Version B"
+msgstr "ソフトウェアバージョンB"
+
+msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
+msgstr "ソフトウェアイメージME [7] に送信される特定のソフトウェアバージョンB（最大14文字）"
+
+msgid "PON Mode"
+msgstr "PONモード"
+
+msgid "OMCC Version"
+msgstr "OMCCバージョン"
+
+msgid "Registration ID (HEX)"
+msgstr "Registration ID（16進数）"
+
+msgid "Logical ONU ID"
+msgstr "Logical ONU ID(LOID)"
+
+msgid "Logical ONU ID presented in the ONU-G ME [256] (up to 24 characters)."
+msgstr "ONU-G ME [256] に表示されるLogical ONU ID（最大24文字）"
+
+msgid "Logical Password"
+msgstr "LOIDパスワード"
+
+msgid "Logical Password presented in the ONU-G ME [256] (up to 12 characters)."
+msgstr "ONU-G ME [256] に表示されるLOIDパスワード（最大12文字）"
+
+msgid "MIB File"
+msgstr "MIBファイル"
+
+msgid "PON Slot"
+msgstr "PONスロット"
+
+msgid "IP Host MAC Address"
+msgstr "IPホストMACアドレス"
+
+msgid "IP Host Hostname"
+msgstr "IPホスト名"
+
+msgid "IP Host Domain Name"
+msgstr "IPホストドメイン名"
+
+msgid "Fix VLANs"
+msgstr "VLAN修正"
+
+msgid "Internet VLAN"
+msgstr "インターネットVLAN"
+
+msgid "Services VLAN"
+msgstr "サービスVLAN"
+
+msgid "Boot Delay"
+msgstr "ブート遅延"
+
+msgid "Serial console"
+msgstr "シリアルコンソール"
+
+msgid "Dying Gasp"
+msgstr "Dying Gasp"
+
+msgid "RX Loss of Signal"
+msgstr "RX Loss"
+
+msgid "Root password hash"
+msgstr "Rootパスワードハッシュ"
+
+msgid "Failsafe Delay"
+msgstr "フェイルセーフ遅延"
+
+msgid "System Hostname"
+msgstr "システムホスト名"
+
+msgid "Set the system hostname visible over SSH/Console/WebUI."
+msgstr "SSH/コンソール/WebUIで表示されるシステムホスト名"
+
+msgid "Time Zone"
+msgstr "タイムゾーン"
+
+msgid "System Time Zone"
+msgstr "システムタイムゾーン"
+
+msgid "NTP Servers"
+msgstr "NTPサーバー"
+
+msgid "Management VLAN"
+msgstr "管理VLAN"
+
+msgid "IP Address"
+msgstr "IPアドレス"
+
+msgid "Subnet Mask"
+msgstr "サブネットマスク"
+
+msgid "Gateway"
+msgstr "ゲートウェイ"
+
+msgid "DNS Server"
+msgstr "DNSサーバー"
+
+msgid "Ping IP"
+msgstr "Ping IP"
+
+msgid "LCT MAC Address"
+msgstr "LCT MACアドレス"
+
+msgid "Redirect HTTP to HTTPs"
+msgstr "HTTPSリダイレクト"

@@ -1,0 +1,454 @@
+#
+# Missing <ms@missing233.com>, 2024.
+# KillerZ <killerz@killerz.tech>, 2024
+#
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: zh-cn\n"
+
+msgid "8311 Community Firmware MOD"
+msgstr "8311社区固件 MOD"
+
+msgid "8311 Community Discord Server"
+msgstr "8311社区Discord服务器"
+
+msgid "Translator"
+msgstr "Missing"
+
+msgid "TranslatorURL"
+msgstr "https://github.com/missing233"
+
+msgid "8311 Configuration"
+msgstr "8311社区固件配置"
+
+msgid "Save"
+msgstr "保存"
+
+msgid "PON Status"
+msgstr "PON状态"
+
+msgid "PON ME Explorer"
+msgstr "ME浏览"
+
+msgid "Firmware"
+msgstr "固件"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Capability"
+msgstr "功能"
+
+msgid "LAN Info"
+msgstr "LAN信息"
+
+msgid "Alarms"
+msgstr "警报"
+
+msgid "GEM Status"
+msgstr "GEM状态"
+
+msgid "GEM Stats"
+msgstr "GEM统计"
+
+msgid "GEM DS"
+msgstr "GEM下行"
+
+msgid "GEM US"
+msgstr "GEM上行"
+
+msgid "ETH DS Stats"
+msgstr "以太网下行统计"
+
+msgid "ETH US Stats"
+msgstr "以太网上行统计"
+
+msgid "FEC Info"
+msgstr "FEC信息"
+
+msgid "GTC Info"
+msgstr "GTC信息"
+
+msgid "PS Status"
+msgstr "节能状态"
+
+msgid "PSM"
+msgstr "节能模式"
+
+msgid "Alloc Stats"
+msgstr "分配统计"
+
+msgid "PLOAM DS"
+msgstr "PLOAM下行"
+
+msgid "PLOAM US"
+msgstr "PLOAM上行"
+
+msgid "Optical Status"
+msgstr "光状态"
+
+msgid "Optical Info"
+msgstr "光信息"
+
+msgid "Burst Profile"
+msgstr "突发配置文件"
+
+msgid "CQM"
+msgstr "CQM"
+
+msgid "CQM Q Map"
+msgstr "CQM队列映射"
+
+msgid "DP Ports"
+msgstr "数据路径端口"
+
+msgid "DP QoS"
+msgstr "数据路径QoS"
+
+msgid "PPv4 Buffers"
+msgstr "PPv4缓冲区"
+
+msgid "PPv4 PPS"
+msgstr "PPv4 PPS"
+
+msgid "PPv4 Stats"
+msgstr "PPv4统计"
+
+msgid "PPv4 Tree"
+msgstr "PPv4树"
+
+msgid "PPv4 QStats"
+msgstr "PPv4队列统计"
+
+msgid "PON"
+msgstr "PON"
+
+msgid "ISP Fixes"
+msgstr "ISP配置"
+
+msgid "Device"
+msgstr "设备"
+
+msgid "Management"
+msgstr "管理"
+
+msgid "PON Serial Number (ONT ID)"
+msgstr "PON SN (ONT ID)"
+
+msgid "GPON Serial Number sent to the OLT in various MEs (4 alphanumeric characters, followed by 8 hex digits)."
+msgstr "设置GPON SN（4个字母或数字字符，后跟8个16进制数字）"
+
+msgid "Vendor ID"
+msgstr "供应商ID"
+
+msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."
+msgstr "设置PON供应商ID。如果未设置则自动从PON序列号中派生（4个字母或数字字符）"
+
+msgid "Equipment ID"
+msgstr "设备ID"
+
+msgid "PON Equipment ID field in the ONU2-G ME [257] (up to 20 characters)."
+msgstr "设置ONU2-G（ME[257]）中的PON设备ID字段（最多20个字符）"
+
+msgid "Hardware Version"
+msgstr "硬件版本"
+
+msgid "Hardware version string sent in various MEs (up to 14 characters)."
+msgstr "硬件版本（最多14个字符）"
+
+msgid "Sync Circuit Pack Version"
+msgstr "同步Circuit Pack版本"
+
+msgid "Modify the configured MIB file to set the Version field of any Circuit Pack MEs [6] to match the Hardware Version (if set)."
+msgstr "修改当前配置的MIB文件中Circuit Pack（ME[6]）的Version字段以匹配硬件版本（如果已设置）"
+
+msgid "Software Version A"
+msgstr "软件版本A"
+
+msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
+msgstr "设置Software image（ME[7]）版本A（最多14个字符）"
+
+msgid "Software Version B"
+msgstr "软件版本B"
+
+msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
+msgstr "设置Software image（ME[7]）版本B（最多14个字符）"
+
+msgid "Firmware Version Match"
+msgstr "固件版本匹配"
+
+msgid "PCRE pattern match for automatic updating of Software Versions when OLT uploads a firmware upgrade. Must contain a single sub-pattern match."
+msgstr "在OLT上传固件升级时，用于自动更新软件版本的PCRE模式匹配。必须包含一个子模式匹配"
+
+msgid "Firmware Match Number"
+msgstr "固件匹配编号"
+
+msgid "If there are multiple matches for the Firmware Version Match pattern, use this specific match number."
+msgstr "如果固件版本匹配模式有多个匹配项，使用此配置项指定匹配编号"
+
+msgid "Override active firmware bank"
+msgstr "覆盖活动的固件分区"
+
+msgid "Override which software bank is marked as active in the Software image MEs [7]."
+msgstr "设置Software Image（ME[7]）中标记为Active的软件分区"
+
+msgid "Override committed firmware bank"
+msgstr "覆盖已确认的固件分区"
+
+msgid "Override which software bank is marked as committed in the Software image MEs [7]."
+msgstr "设置Software Image（ME[7]）中标记为Committed的软件分区"
+
+msgid "PON Mode"
+msgstr "PON模式"
+
+msgid "PON mode of operation. This is where you can choose between XGS-PON (the default) or XG-PON."
+msgstr "设置PON操作模式。XGS-PON（默认）或XG-PON"
+
+msgid "OMCC Version"
+msgstr "OMCC版本"
+
+msgid "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
+msgstr "设置使用的OMCC版本（16进制格式，范围0x80-0xBF）默认0xA3"
+
+msgid "Registration ID (HEX)"
+msgstr "Registration ID（16进制）"
+
+msgid "Registration ID (up to 36 bytes) sent to the OLT, in hex format. This is where you would set a ploam password (which is contained in the last 12 bytes)."
+msgstr "设置Registration ID（最多36字节，16进制格式）最后12字节为PLOAM密码"
+
+msgid "Logical ONU ID"
+msgstr "逻辑ID（LOID）"
+
+msgid "Logical ONU ID presented in the ONU-G ME [256] (up to 24 characters)."
+msgstr "设置ONU-G（ME[256]）中的逻辑ONU ID（最多24个字符）"
+
+msgid "Logical Password"
+msgstr "LOID密码"
+
+msgid "Logical Password presented in the ONU-G ME [256] (up to 12 characters)."
+msgstr "设置ONU-G（ME[256]）中的LOID密码（最多12个字符）"
+
+msgid "MIB File"
+msgstr "MIB文件"
+
+msgid "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini"
+msgstr "设置omcid使用的MIB文件。默认 /etc/mibs/prx300_1U.ini"
+
+msgid "PON Slot"
+msgstr "PON槽位"
+
+msgid "Change the slot number that the UNI port is presented on, needed on some ISPs."
+msgstr "设置UNI槽位。某些ISP所需"
+
+msgid "IP Host MAC Address"
+msgstr "IP主机MAC地址"
+
+msgid "MAC address sent in the IP host config data ME [134] (XX:XX:XX:XX:XX:XX format)."
+msgstr "设置IP host config data（ME[134]）中的MAC地址（格式XX:XX:XX:XX:XX:XX）"
+
+msgid "IP Host Hostname"
+msgstr "IP主机主机名"
+
+msgid "Hostname sent in the IP host config data ME [134] (up to 25 characters)."
+msgstr "设置IP host config data（ME[134]）中的主机名（最多25个字符）"
+
+msgid "IP Host Domain Name"
+msgstr "IP主机域名"
+
+msgid "Domain name sent in the IP host config data ME [134] (up to 25 characters)."
+msgstr "设置IP host config data（ME[134]）中的域名（最多25个字符）"
+
+msgid "Fix VLANs"
+msgstr "修复VLAN"
+
+msgid "Apply automatic fixes to the VLAN configuration from the OLT."
+msgstr "启用从OLT自动修复VLAN配置"
+
+msgid "Internet VLAN"
+msgstr "上网VLAN"
+
+msgid "Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged)."
+msgstr "设置!本地!上网业务VLAN ID。0代表指定上网业务为Untagged，同时移除VLAN 0。默认0-Untagged（范围0-4095）"
+
+msgid "Services VLAN"
+msgstr "业务VLAN"
+
+msgid "Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095). This fixes multi-service on Bell."
+msgstr "设置本地IPTV/语音等业务VLAN ID（范围1-4095）"
+
+msgid "Boot Delay"
+msgstr "启动延迟"
+
+msgid "Set the boot delay in seconds in which you can interupt the boot process over the serial console. With the Azores U-Boot, this also controls the number of times multicast upgrade is attempted and thus can have a significant impact in boot time. Default: 3, Recommended: 1"
+msgstr "设置启动延迟时间（秒），在此时间内可以通过串行控制台中断启动。使用Azores U-Boot时此参数控制组播升级的尝试次数。默认：3，推荐：1"
+
+msgid "0 (Fastest, disables multicast upgrade, not recommended)"
+msgstr "0 （最快，关闭组播升级，不推荐）"
+
+msgid "1 (Fast Boot)"
+msgstr "1 （快速启动）"
+
+msgid "3 (Default)"
+msgstr "3 （默认）"
+
+msgid "Serial console"
+msgstr "串行控制台"
+
+msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
+msgstr "启用串行控制台。由于引脚复用，启用时TX_FAULT被置为高电平"
+
+msgid "Dying Gasp"
+msgstr "断电告警"
+
+msgid "Enable dying gasp. This will cause the serial console input to break as it shares the same SFP pin."
+msgstr "启用断电告警。由于引脚复用，启用时会导致串行控制台无法中断"
+
+msgid "RX Loss of Signal"
+msgstr "RX Loss"
+
+msgid "Enable the RX_LOS pin. Disable to allow stick to be accessible without the fiber connected in all devices."
+msgstr "启用RX_LOS引脚。禁用以允许无光时访问ONU Stick"
+
+msgid "Root password hash"
+msgstr "Root密码"
+
+msgid "Custom password hash for the root user. This can be set from System > Administration"
+msgstr "为root用户自定义密码。可以从[系统] > [管理权]设置此配置项"
+
+msgid "Ethtool Speed Settings"
+msgstr "Ethtool速率设置"
+
+msgid "Ethtool speed settings on the eth0_0 interface (ethtool -s)."
+msgstr "使用ethtool配置eth0_0接口速率（ethtool -s）"
+
+msgid "Failsafe Delay"
+msgstr "故障保护延迟"
+
+msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
+msgstr "启动时延迟启动omcid的秒数。默认15秒（范围10-300）"
+
+msgid "System Hostname"
+msgstr "主机名"
+
+msgid "Set the system hostname visible over SSH/Console/WebUI."
+msgstr "设置通过串行控制台/SSH/WebUI可见的主机名"
+
+msgid "Time Zone"
+msgstr "时区"
+
+msgid "System Time Zone"
+msgstr "系统时区"
+
+msgid "NTP Servers"
+msgstr "NTP服务器"
+
+msgid "NTP server(s) to sync time from (space separated)."
+msgstr "用于同步时间的NTP服务器（用空格分隔）"
+
+msgid "Persist RootFS"
+msgstr "持久化RootFS"
+
+msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
+msgstr "RootFS持久化，须同时修改bootcmd fwenv（仅用于调试，不推荐启用）"
+
+msgid "Management VLAN"
+msgstr "管理VLAN"
+
+msgid "Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged)."
+msgstr "设置管理VLAN ID。默认0-Untagged（范围0-4095）"
+
+msgid "IP Address"
+msgstr "IP地址"
+
+msgid "Management IP address. Defaults to 192.168.11.1"
+msgstr "设置管理IP地址。默认192.168.11.1"
+
+msgid "Subnet Mask"
+msgstr "子网掩码"
+
+msgid "Management subnet mask. Defaults to 255.255.255.0"
+msgstr "设置管理子网掩码。默认255.255.255.0"
+
+msgid "Gateway"
+msgstr "网关"
+
+msgid "Management gateway. Defaults to the IP address (ie. no default gateway)"
+msgstr "设置管理网关。默认为IP地址（无默认网关）"
+
+msgid "DNS Server"
+msgstr "DNS服务器"
+
+msgid "Management DNS server."
+msgstr "设置管理DNS服务器"
+
+msgid "Ping IP"
+msgstr "Ping IP"
+
+msgid "IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
+msgstr "设置每5秒Ping一次的IP地址，用于确认ONU Stick的可访问性。默认为管理子网中的第2个IP地址（192.168.11.2）"
+
+msgid "LCT MAC Address"
+msgstr "LCT MAC地址"
+
+msgid "MAC address of the LCT management interface (XX:XX:XX:XX:XX:XX format)."
+msgstr "设置LCT管理接口的MAC地址（格式XX:XX:XX:XX:XX:XX）"
+
+msgid "Redirect HTTP to HTTPs"
+msgstr "将HTTP重定向到HTTPS"
+
+msgid "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
+msgstr "自动将WebUI的HTTP请求重定向到HTTPS。默认开启"
+
+msgid "Active Firmware"
+msgstr "活动固件分区"
+
+msgid "Version"
+msgstr "版本"
+
+msgid "Revision"
+msgstr "修订"
+
+msgid "Variant"
+msgstr "变体"
+
+msgid "Inactive Firmware"
+msgstr "非活动固件分区"
+
+msgid "Firmware Upgrade"
+msgstr "固件升级"
+
+msgid "Upload firmware file here, typically named local-upgrade.tar"
+msgstr "在此处上传固件包，包名通常为local-upgrade.tar"
+
+msgid "Upload firmware"
+msgstr "上传固件"
+
+msgid "Upload"
+msgstr "上传"
+
+msgid "Install firmware"
+msgstr "安装固件"
+
+msgid "Install"
+msgstr "安装"
+
+msgid "Install firmware and reboot"
+msgstr "安装固件并重启"
+
+msgid "Install and Reboot"
+msgstr "安装并重启"
+
+msgid "Cancel firmware upgrade and cleanup"
+msgstr "取消固件升级并清理"
+
+msgid "Cancel"
+msgstr "取消"
+
+msgid "Reboot to new firmware"
+msgstr "重启至新固件"
+
+msgid "Reboot"
+msgstr "重启"
+
+msgid "Rebooting..."
+msgstr "重启中..."
