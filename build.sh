@@ -193,6 +193,7 @@ sudo chown -R "$USER:$GROUP" "$ROOT_BASIC" "$ROOT_BFW"
 
 FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
 
+. build_i18n.sh
 
 . mods/binary-mods.sh
 

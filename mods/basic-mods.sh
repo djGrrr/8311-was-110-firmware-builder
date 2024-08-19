@@ -1,12 +1,5 @@
 #!/bin/bash
 
-LANG_OPTIONS=(
-	"en 'English'"
-	"zh_cn 'Chinese Simplified'"
-	"ja 'Japanese'"
-	# "fr 'French'"
-)
-
 if ls packages/basic/*.ipk &>/dev/null; then
 	for IPK in packages/basic/*.ipk; do
 		echo "Extracting '$(basename "$IPK")' to '$ROOT_DIR'."
@@ -78,16 +71,14 @@ echo "Patching '$LUCI_MENUD_STATUS_JSON' ..."
 LUCI_MENUD_STATUS=$(jq 'delpaths([["admin/status/iptables"], ["admin/status/processes"]])' "$LUCI_MENUD_STATUS_JSON")
 echo "$LUCI_MENUD_STATUS" > "$LUCI_MENUD_STATUS_JSON"
 
+LUCI_BASE_JSON="$ROOT_DIR/usr/share/rpcd/acl.d/luci-base.json"
+echo "Patching '$LUCI_BASE_JSON' ..."
+LUCI_BASE=$(jq '.["luci-access"]["write"]["file"] +={"usr/sbin/fwenv_get":["exec"], "usr/sbin/fwenv_set":["exec"]}' "$LUCI_BASE_JSON")
+echo "$LUCI_BASE" > "$LUCI_BASE_JSON"
+
 RPCD_LUCI="$ROOT_DIR/usr/libexec/rpcd/luci"
 echo "Patching '$RPCD_LUCI' ..."
 sed -r 's#passwd %s >/dev/null 2>&1#passwd %s \&>/dev/null \&\& /usr/sbin/8311-persist-root-password.sh \&>/dev/null#' -i "$RPCD_LUCI"
-
-LUCI_CONFIG="$ROOT_DIR/etc/config/luci"
-echo "Patching '$LUCI_CONFIG' ..."
-for lang_option in "${LANG_OPTIONS[@]}"; do
-	sed -i "/config internal 'languages'/a\\
-	option $lang_option" "$LUCI_CONFIG"
-done
 
 if [ "$KERNEL_VARIANT" = "bfw" ]; then
 	rm -rfv "$ROOT_DIR/lib/modules" "$ROOT_DIR/lib/firmware"

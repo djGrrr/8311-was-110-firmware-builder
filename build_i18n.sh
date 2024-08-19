@@ -34,3 +34,5 @@ echo "Copy lmo to output directory..."
 cp -v "$LMO_DIR"/*.lmo "$OUTPUT_DIR/"
 
 echo "Success."
+
+cd "$WORK_DIR"

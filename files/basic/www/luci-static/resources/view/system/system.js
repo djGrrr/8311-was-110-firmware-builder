@@ -21,10 +21,10 @@ function createElementConfig(classType, idName, envVar, defaultValue = '', allow
 }
 
 var elements = [
-	createElementConfig('.cbi-input-select', '_lang', 'lang', 'auto'),
-	createElementConfig('.cbi-input-text', 'hostname', 'hostname', 'OpenWrt'),
+	createElementConfig('.cbi-input-text', 'hostname', 'hostname', 'prx126-sfp-pon'),
 	createElementConfig('.cbi-input-select', 'zonename', 'timezone', 'UTC'),
-	createElementConfig('.cbi-input-text', 'description', 'description', '', true),  // allowEmpty: true
+	createElementConfig('.cbi-input-select', '_lang', 'syslang', 'auto'),
+	// createElementConfig('.cbi-input-text', 'description', 'description', '', true),  // allowEmpty: true
 	// Add more..
 ];
 
@@ -118,13 +118,35 @@ return view.extend({
 			callGetLocaltime(),
 			uci.load('luci'),
 			uci.load('system')
-		]);
+		]);/*.then(async (rpc_replies) => {
+			let configValues = {};
+			for (let i = 0; i < elements.length; i++) {
+				let envVar = elements[i].envVar;
+
+				try {
+					let result = (await fs.exec("/usr/sbin/fwenv_get", ["--8311", `${envVar}`])).stdout;
+
+					console.log(`fwenv_get --8311 '${envVar}':`, result);
+					if (result != null && typeof result === 'string') {
+						configValues[envVar] = result.trim();
+					} else {
+						console.warn(`No value retrieved for ${envVar}, using default value.`);
+						configValues[envVar] = elements[i].defaultValue;
+					}
+				} catch (error) {
+					console.warn(`Failed to retrieve value for ${envVar}:`, error);
+					configValues[envVar] = elements[i].defaultValue;
+				}
+			}
+			return [...rpc_replies, configValues];
+		});*/ // WIP
 	},
 
 	render: function(rpc_replies) {
 		var ntpd_enabled = rpc_replies[0],
 		    timezones = rpc_replies[1],
-		    localtime = rpc_replies[2],
+			localtime = rpc_replies[2],
+			// configValues = rpc_replies[5],
 		    m, s, o;
 
 		m = new form.Map('system',
@@ -138,8 +160,8 @@ return view.extend({
 		s.addremove = false;
 
 		s.tab('general', _('General Settings'));
-		s.tab('logging', _('Logging'));
-		s.tab('timesync', _('Time Synchronization'));
+		// s.tab('logging', _('Logging'));
+		// s.tab('timesync', _('Time Synchronization'));
 		s.tab('language', _('Language and Style'));
 
 		/*
@@ -153,12 +175,12 @@ return view.extend({
 		o = s.taboption('general', form.Value, 'hostname', _('Hostname'));
 		o.datatype = 'hostname';
 
-		/* could be used also as a default for LLDP, SNMP "system description" in the future */
+		/* could be used also as a default for LLDP, SNMP "system description" in the future 
 		o = s.taboption('general', form.Value, 'description', _('Description'), _('An optional, short description for this device'));
 		o.optional = true;
 
 		o = s.taboption('general', form.TextValue, 'notes', _('Notes'), _('Optional, free-form notes about this device'));
-		o.optional = true;
+		o.optional = true;*/
 
 		o = s.taboption('general', form.ListValue, 'zonename', _('Timezone'));
 		o.value('UTC');
@@ -175,7 +197,7 @@ return view.extend({
 
 		/*
 		 * Logging
-		 */
+		 
 
 		o = s.taboption('logging', form.Value, 'log_size', _('System log buffer size'), "kiB")
 		o.optional    = true
@@ -215,7 +237,7 @@ return view.extend({
 		o.value(5, _('Debug'))
 		o.value(8, _('Normal'))
 		o.value(9, _('Warning'))
-
+		*/
 		/*
 		 * Zram Properties
 		 */
@@ -264,7 +286,7 @@ return view.extend({
 
 		/*
 		 * NTP
-		 */
+		 
 
 		if (L.hasSystemFeature('sysntpd')) {
 			var default_servers = [
@@ -322,7 +344,7 @@ return view.extend({
 			o.load = function(section_id) {
 				return uci.get('system', 'ntp', 'server');
 			};
-		}
+		}*/
 
 		return m.render().then(function(mapEl) {
 			poll.add(function() {
@@ -343,10 +365,12 @@ return view.extend({
 				var value = el ? el.value : elements[i].defaultValue;
 
 				if (value || elements[i].allowEmpty) {
-					console.log(`${elements[i].envVar}: ${value}`);
-					await fs.exec("/sbin/testrun", ['fw_setenv', elements[i].envVar, value]);
+					var envVar = elements[i].envVar;
+					var cmdArgs = ["--8311", `${envVar}`, `${value}`];
+					await fs.exec("/usr/sbin/fwenv_set", cmdArgs);
+					console.log(`fwenv_set ${cmdArgs.join(' ')}`);
 				} else {
-					console.warn(`Failed to retrieve the value for ${elements[i].envVar}.`);
+					console.warn(`Failed to retrieve value: ${envVar}`);
 				}
 			}
 			ui.addNotification(null, E('p', _('[8311] Save cfg to uboot.')), 'info');
