@@ -4,3 +4,6 @@ rootfs-bfw/
 rootfs-basic/
 stock/
 whole_image/system_sw.img
+i18n/po2lmo/src/po2lmo
+i18n/po2lmo/src/po2lmo.o
+i18n/po2lmo/src/template_lmo.o

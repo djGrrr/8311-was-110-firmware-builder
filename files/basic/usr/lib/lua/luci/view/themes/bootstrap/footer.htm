@@ -7,13 +7,17 @@
 
 <% local ver = require "luci.version" %>
 <% local ver8311 = require "8311.version" %>
+<% local lang = luci.i18n.context.lang %>
 
    <footer>
     <div style="margin: auto; text-align: center">
       <a href="https://github.com/openwrt/luci">Powered by <%= ver.luciname %> (<%= ver.luciversion %>)</a> / <%= ver.distversion %><br />
 
-      <a href="https://github.com/djGrrr/8311-was-110-firmware-builder">8311 Community Firmware MOD</a> by <a href="https://github.com/djGrrr">djGrrr</a> -
-      [<%= ver8311.variant %>] - <%= ver8311.version %> (<%= ver8311.revision %>) - <a href="https://discord.com/servers/8311-886329492438671420">8311 Community Discord Server</a>
+      <a href="https://github.com/djGrrr/8311-was-110-firmware-builder"><%:8311 Community Firmware MOD%></a> by <a href="https://github.com/djGrrr">djGrrr</a> -
+      [<%= ver8311.variant %>] - <%= ver8311.version %> (<%= ver8311.revision %>) - <a href="https://discord.com/servers/8311-886329492438671420"><%:8311 Community Discord Server%></a>
+      <% if lang ~="en" then %>
+        <br /><%= lang %>: Translated by <a href="<%:TranslatorURL%>"><%:Translator%></a>
+      <% end %>
     </div>
     <div style="margin-top: 10px">
       <a href="https://discord.com/servers/8311-886329492438671420"><img src="<%=resource%>/logo_8311.png" alt="8311 Logo" style="display: block; margin-left: auto; margin-right: auto;" /></a>

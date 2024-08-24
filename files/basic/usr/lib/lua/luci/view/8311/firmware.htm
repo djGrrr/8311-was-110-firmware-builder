@@ -14,43 +14,43 @@ local reboot_enable = false
 <script type="text/javascript" src="<%=resource%>/jquery.validate.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/view/8311.js"></script>
 
-<h2 name="content">Firmware</h2>
+<h2 name="content"><%:Firmware%></h2>
 <br />
 
 <div class="cbi-section fade-in" style="">
-	<h3>Active Firmware (<%= esc(version.bank) %>)</h3>
+	<h3><%:Active Firmware%> (<%= esc(version.bank) %>)</h3>
 	<div>
 		<div class="table">
 			<div class="tr">
-				<div class="td left" width="33%">Version</div>
+				<div class="td left" width="33%"><%:Version%></div>
 				<div class="td left"><%= esc(version.version) %></div>
 			</div>
 			<div class="tr">
-				<div class="td left">Revision</div>
+				<div class="td left"><%:Revision%></div>
 				<div class="td left"><%= esc(version.revision) %></div>
 			</div>
 			<div class="tr">
-				<div class="td left">Variant</div>
+				<div class="td left"><%:Variant%></div>
 				<div class="td left"><%= esc(version.variant) %></div>
 			</div>
-		</div<
+		</div>
 	</div>
 </div>
 
 <div class="cbi-section fade-in" style="">
-	<h3>Inactive Firmware (<%= esc(altversion.bank) %>)</h3>
+	<h3><%:Inactive Firmware%> (<%= esc(altversion.bank) %>)</h3>
 	<div>
 		<div class="table">
 			<div class="tr">
-				<div class="td left" width="33%">Version</div>
+				<div class="td left" width="33%"><%:Version%></div>
 				<div class="td left"><%= esc(altversion.version) %></div>
 			</div>
 			<div class="tr">
-				<div class="td left">Revision</div>
+				<div class="td left"><%:Revision%></div>
 				<div class="td left"><%= esc(altversion.revision) %></div>
 			</div>
 			<div class="tr">
-				<div class="td left">Variant</div>
+				<div class="td left"><%:Variant%></div>
 				<div class="td left"><%= esc(altversion.variant) %></div>
 			</div>
 		</div>
@@ -58,7 +58,7 @@ local reboot_enable = false
 </div>
 
 <div class="cbi-section fade-in">
-	<h3>Firmware Upgrade</h3>
+	<h3><%:Firmware Upgrade%></h3>
 
 	<form id="firmware-form" method="post" action="<%=REQUEST_URI%>" enctype="multipart/form-data">
 		<div id="zone-content-wrapper">
@@ -67,7 +67,7 @@ local reboot_enable = false
 				<div class="cbi-value">
 					<input class="cbi-input-file" type="file" name="firmware_file" id="firmware-file" required="required" />
 					<div class="upload-description">
-						Upload firmware file here, typically named local-upgrade.tar
+						<%:Upload firmware file here, typically named local-upgrade.tar%>
 					</div>
 				</div>
 <% end %>
@@ -86,7 +86,7 @@ local reboot_enable = false
 			cancel_enable = false
 		elseif firmware_action == "reboot" then
 			cancel_enable = false
-			firmware_output = "Rebooting..."
+			firmware_output = i18n.translate("Rebooting...")
 		end
 	end
 %>
@@ -96,17 +96,17 @@ local reboot_enable = false
 			</div>
 		</div>
 <% if upload_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="Upload firmware" value="Upload" onclick="uploadFirmware();" />
+		<input class="cbi-input-button firmware-button" type="button" title="<%:Upload firmware%>" value="<%:Upload%>" onclick="uploadFirmware();" />
 <% end %>
 <% if install_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="Install firmware" value="Install" onclick="installFirmware(false);" />
-		<input class="cbi-input-button firmware-button" type="button" title="Install firmware and reboot"value="Install and Reboot" onclick="installFirmware(true);" />
+		<input class="cbi-input-button firmware-button" type="button" title="<%:Install firmware%>" value="<%:Install%>" onclick="installFirmware(false);" />
+		<input class="cbi-input-button firmware-button" type="button" title="<%:Install firmware and reboot%>" value="<%:Install and Reboot%>" onclick="installFirmware(true);" />
 <% end %>
 <% if cancel_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="Cancel firmware upgrade and cleanup" value="Cancel" onclick="cancelFirmware();" />
+		<input class="cbi-input-button firmware-button" type="button" title="<%:Cancel firmware upgrade and cleanup%>" value="<%:Cancel%>" onclick="cancelFirmware();" />
 <% end %>
 <% if reboot_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="Reboot to new firmware" value="Reboot" onclick="rebootFirmware();" />
+		<input class="cbi-input-button firmware-button" type="button" title="<%:Reboot to new firmware%>" value="<%:Reboot%>" onclick="rebootFirmware();" />
 <% end %>
 
 		<input id="firmware-action" type="hidden" name="action" value="<%= action %>" />

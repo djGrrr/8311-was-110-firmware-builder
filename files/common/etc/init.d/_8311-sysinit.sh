@@ -39,6 +39,10 @@ start() {
 	SYS_HOSTNAME=$(get_8311_hostname)
 	[ -n "$SYS_HOSTNAME" ] && set_8311_hostname "$SYS_HOSTNAME"
 
+	# LuCI i18n support
+	SYS_LANG=$(get_8311_syslang)
+	[ -n "$SYS_LANG" ] && set_8311_syslang "$SYS_LANG"
+
 	# fwenv for setting the root account password hash
 	ROOT_PWHASH=$(get_8311_root_pwhash)
 	[ -n "$ROOT_PWHASH" ] && set_8311_root_pwhash "$ROOT_PWHASH"

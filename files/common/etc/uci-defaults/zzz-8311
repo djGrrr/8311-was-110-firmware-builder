@@ -56,12 +56,27 @@ uci delete "network.globals.ula_prefix"
 
 uci commit "network"
 
+# Add LuCI languages
+uci set "luci.languages.en"="English"
+uci set "luci.languages.zh_cn"="简体中文 (Chinese Simplified)"
+uci set "luci.languages.ja"="日本語 (Japanese)"
+
+uci commit "luci"
+
 SYS_HOSTNAME=$(get_8311_hostname)
 if [ -n "$SYS_HOSTNAME" ]; then
 	uci set "system.@system[0].hostname"="$SYS_HOSTNAME"
 	uci commit "system"
 else
 	SYS_HOSTNAME="prx126-sfp-pon"
+fi
+
+SYS_LANG=$(get_8311_syslang)
+if [ -n "$SYS_LANG" ]; then
+	uci set "luci.main.lang"="$SYS_LANG"
+	uci commit "luci"
+else
+	SYS_LANG="auto"
 fi
 
 # Configure WebUI

@@ -391,6 +391,17 @@ set_8311_hostname() {
 	echo "$1" > "/proc/sys/kernel/hostname"
 }
 
+get_8311_syslang() {
+	fwenv_get_8311 "syslang"
+}
+
+set_8311_syslang() {
+	echo "Setting LuCI language to: $1" | to_console
+	fwenv_set_8311 'syslang' "$1"
+	uci set "luci.main.lang"="$1"
+	uci commit "luci.main.lang"
+}
+
 get_8311_ping_host() {
 	if [ ! -f "/tmp/8311-ping-host" ]; then
 		local PING_HOST=$(fwenv_get_8311 "ping_ip" | ipv4)
