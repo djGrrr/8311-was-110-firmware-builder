@@ -13,6 +13,7 @@ _help() {
 	printf -- '-F --version-file <filename>\t\tSpecify 8311 version file of basic firmeware image.\n'
 	printf -- '-V --image-version <version>\t\tSpecify version string to set on created image (15 characters max).\n'
 	printf -- '-L --image-long-version <version>\tSpecify detailed version string to set on created bfw image (31 characters max).\n'
+	printf -- '-D --date <date>\t\tSpecify date to use on all files. Helps with reproducability.\n'
 	printf -- '-h --help\t\t\t\tThis help text\n'
 }
 
@@ -26,6 +27,7 @@ VERSION=
 LONGVERSION=
 VARIANT="bfw"
 VERSION_FILE=
+DATE="@$(date '+%s')"
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -65,6 +67,10 @@ while [ $# -gt 0 ]; do
 		;;
 		-L|--image-long-version)
 			LONGVERSION="$2"
+			shift
+		;;
+		-D|--date)
+			DATE="$2"
 			shift
 		;;
 		--help|-h)
@@ -137,6 +143,8 @@ set -e
 [ -n "$ROOTFS" ] || _err "Error: rootfs file must be specified."
 [ -f "$ROOTFS" ] || _err "Error: rootfs file '$ROOTFS' not found."
 
+touch -d "$DATE" "$BOOTCORE" "$KERNEL" "$ROOTFS"
+
 if [ "$VARIANT" = "basic" ]; then
 	[ -n "$VERSION_FILE" ] || _err "Error: version file must be specified."
 	[ -f "$VERSION_FILE" ] || _err "Error: version file '$VERSION_FILE' not found."
@@ -164,6 +172,8 @@ SHA256_BOOTCORE=$SHA256_BOOTCORE
 SHA256_ROOTFS=$SHA256_ROOTFS
 CONTROL
 
+	touch -d "$DATE" "$UPGRADE_SCRIPT" "$CONTROL"
+
 	echo "Creating local upgrade tar file"
 	TAR=("-c" "-P" "-h" "--sparse" "-f" "$OUT")
 	TAR+=("--transform" "$(tar_trans "$UPGRADE_SCRIPT" "upgrade.sh")")
@@ -175,6 +185,7 @@ CONTROL
 
 	tar "${TAR[@]}" || { rm -f "$CONTROL"; exit 1; }
 	rm -f "$CONTROL"
+	touch -d "$DATE" "$OUT"
 	echo "Local upgrade tar file '$OUT' created successfully."
 else
 	[ -n "$HEADER" ] || _err "Error: header file must be specified."
@@ -214,5 +225,6 @@ else
 	{ cat "${FILES[@]}" | ./bfw-crc.pl; cat /dev/zero; } | dd of="$OUT" seek="$CONTENT_CRC_OFFSET" bs=1 count=8 conv=notrunc 2>/dev/null
 	head -c "$LEN_HDR" "$OUT" | ./bfw-crc.pl | dd of="$OUT" seek="$HEADER_CRC_OFFSET" bs=1 count=4 conv=notrunc 2>/dev/null
 
+	touch -d "$DATE" "$OUT"
 	echo "Local upgrade image file '$OUT' created successfully."
 fi

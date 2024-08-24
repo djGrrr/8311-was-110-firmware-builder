@@ -112,6 +112,8 @@ expected_hash() {
 GIT_HASH=$(git rev-parse --short HEAD)
 GIT_DIFF="$(git diff HEAD)"
 GIT_TAG=$(git tag --points-at HEAD | grep -P '^v\d+\.\d+\.\d+' | tr '-' '~' | sort -V -r | tr '~' '-' | head -n1)
+GIT_EPOCH=$(git log -1 --format="%at")
+GIT_EPOCH=${GIT_EPOCH:-$(date '+%s')}
 
 FW_FW_SUFFIX=""
 FW_VER="${FW_VER:-${GIT_TAG:-""}}"
@@ -163,6 +165,7 @@ BOOTCORE_VARIANT="${BOOTCORE_VARIANT:-$FW_VARIANT}"
 echo
 
 ROOTFS="$OUT_DIR/rootfs.img"
+ROOTFS_RESET="$OUT_DIR/rootfs-reset.img"
 
 [ -f "$HEADER" ] || _err "Header file '$HEADER' does not exist."
 [ -f "$BOOTCORE" ] || _err "Bootcore file '$BOOTCORE' does not exist."
@@ -224,10 +227,17 @@ OUT_KERNEL="$REAL_OUT/kernel.bin"
 IMG_OUT="${IMG_OUT:-"$REAL_OUT/local-upgrade.img"}"
 TAR_OUT="${TAR_OUT:-"$REAL_OUT/local-upgrade.tar"}"
 
-mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -no-xattrs -comp xz -b 256K || _err "Error creating new rootfs image"
+mksquashfs "$ROOT_DIR" "$ROOTFS" -all-root -noappend -no-xattrs -comp xz -b 256K -all-time "$GIT_EPOCH" -mkfs-time "$GIT_EPOCH" || _err "Error creating new rootfs image"
 
+. mods/reset-mods.sh
+
+mksquashfs "$ROOT_DIR" "$ROOTFS_RESET" -all-root -noappend -no-xattrs -comp xz -b 256K -all-time "$GIT_EPOCH" -mkfs-time "$GIT_EPOCH" || _err "Error creating new factory reset rootfs image"
+
+touch -d "@$GIT_EPOCH" "$ROOTFS" "$ROOTFS_RESET"
 OUT_UROOTFS="$REAL_OUT/urootfs.img"
-mkimage -A MIPS -O Linux -T filesystem -C none -n "$FW_LONG_VERSION" -d "$ROOTFS" "$OUT_UROOTFS"
+OUT_UROOTFS_RESET="$REAL_OUT/urootfs-reset.img"
+SOURCE_DATE_EPOCH="$GIT_EPOCH" mkimage -A MIPS -O Linux -T filesystem -C none -n "$FW_LONG_VERSION" -d "$ROOTFS" "$OUT_UROOTFS"
+SOURCE_DATE_EPOCH="$GIT_EPOCH" mkimage -A MIPS -O Linux -T filesystem -C none -n "MC Factory Reset $FW_VER" -d "$ROOTFS_RESET" "$OUT_UROOTFS_RESET"
 
 #OUT_UMULTI="$REAL_OUT/uMulti.img"
 #mkimage -A MIPS -O Linux -T multi -C none -n "MC $FW_LONG_VERSION" -d "$OUT_KERNEL:$OUT_BOOTCORE:$OUT_UROOTFS" "$OUT_UMULTI"
@@ -235,12 +245,17 @@ mkimage -A MIPS -O Linux -T filesystem -C none -n "$FW_LONG_VERSION" -d "$ROOTFS
 OUT_MCUPG="$REAL_OUT/multicast_upgrade.img"
 cat "$OUT_KERNEL" "$OUT_BOOTCORE" "$OUT_UROOTFS" > "$OUT_MCUPG"
 
-CREATE=("-b" "$OUT_BOOTCORE" "-k" "$OUT_KERNEL" "-r" "$ROOTFS")
+OUT_MCRESET="$REAL_OUT/multicast_reset.img"
+cat "$OUT_KERNEL" "$OUT_BOOTCORE" "$OUT_UROOTFS_RESET" > "$OUT_MCRESET"
+
+touch -d "@$GIT_EPOCH" "$OUT_MCUPG" "$OUT_MCRESET"
+
+CREATE=("-b" "$OUT_BOOTCORE" "-k" "$OUT_KERNEL" "-r" "$ROOTFS" -D "@$GIT_EPOCH")
 ./create.sh --basic -i "$TAR_OUT" -F "$VERSION_FILE" "${CREATE[@]}"
 ./create.sh --bfw -i "$IMG_OUT" -V "$FW_VER" -L "$FW_LONG_VERSION" -H "$HEADER" "${CREATE[@]}"
 
-rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW" "$OUT_UROOTFS"
+rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW" "$OUT_UROOTFS" "$OUT_UROOTFS_RESET" "$ROOTFS_RESET"
 
-./wholeImage.sh
+./wholeImage.sh "$GIT_EPOCH"
 
 echo "Firmware build $FW_LONG_VERSION complete."
