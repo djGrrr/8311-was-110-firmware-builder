@@ -241,3 +241,9 @@ msgstr "LCT MACアドレス"
 
 msgid "Redirect HTTP to HTTPs"
 msgstr "HTTPSリダイレクト"
+
+msgid "Language"
+msgstr "言語"
+
+msgid "Set the language used in the WebUI"
+msgstr "WebUIで使用する言語を設定します"

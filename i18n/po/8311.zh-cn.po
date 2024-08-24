@@ -452,3 +452,9 @@ msgstr "重启"
 
 msgid "Rebooting..."
 msgstr "重启中..."
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Set the language used in the WebUI"
+msgstr "设置WebUI中使用的语言"

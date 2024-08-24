@@ -63,18 +63,13 @@ rm -fv "$ROOT_DIR/etc/mibs/prx300_1U.ini.bk"
 
 LUCI_MENUD_SYSTEM_JSON="$ROOT_DIR/usr/share/luci/menu.d/luci-mod-system.json"
 echo "Patching '$LUCI_MENUD_SYSTEM_JSON' ..."
-LUCI_MENUD_SYSTEM=$(jq 'delpaths([["admin/system/flash"], ["admin/system/crontab"], ["admin/system/startup"], ["admin/system/admin/dropbear"]])' "$LUCI_MENUD_SYSTEM_JSON")
+LUCI_MENUD_SYSTEM=$(jq 'delpaths([["admin/system/flash"], ["admin/system/crontab"], ["admin/system/startup"], ["admin/system/admin/dropbear"], ["admin/system/system"]])' "$LUCI_MENUD_SYSTEM_JSON")
 echo "$LUCI_MENUD_SYSTEM" > "$LUCI_MENUD_SYSTEM_JSON"
 
 LUCI_MENUD_STATUS_JSON="$ROOT_DIR/usr/share/luci/menu.d/luci-mod-status.json"
 echo "Patching '$LUCI_MENUD_STATUS_JSON' ..."
 LUCI_MENUD_STATUS=$(jq 'delpaths([["admin/status/iptables"], ["admin/status/processes"]])' "$LUCI_MENUD_STATUS_JSON")
 echo "$LUCI_MENUD_STATUS" > "$LUCI_MENUD_STATUS_JSON"
-
-LUCI_BASE_JSON="$ROOT_DIR/usr/share/rpcd/acl.d/luci-base.json"
-echo "Patching '$LUCI_BASE_JSON' ..."
-LUCI_BASE=$(jq '.["luci-access"]["write"]["file"] +={"usr/sbin/fwenv_get":["exec"], "usr/sbin/fwenv_set":["exec"]}' "$LUCI_BASE_JSON")
-echo "$LUCI_BASE" > "$LUCI_BASE_JSON"
 
 RPCD_LUCI="$ROOT_DIR/usr/libexec/rpcd/luci"
 echo "Patching '$RPCD_LUCI' ..."

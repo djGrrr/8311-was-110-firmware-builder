@@ -357,7 +357,7 @@ set_8311_ethtool() {
 }
 
 get_8311_root_pwhash() {
-	fwenv_get_8311 "root_pwhash"
+	fwenv_get_8311 "root_pwhash" | grep -E '^\$[0-9a-z]+\$.+\$[A-Za-z0-9./]+$'
 }
 
 set_8311_root_pwhash() {
@@ -391,15 +391,14 @@ set_8311_hostname() {
 	echo "$1" > "/proc/sys/kernel/hostname"
 }
 
-get_8311_syslang() {
-	fwenv_get_8311 "syslang"
+get_8311_lang() {
+	local lang=$(fwenv_get_8311 "lang" "auto")
+	local LANG=$(echo "$lang" | tr '_' '-')
+	[ "$lang" = "auto" ] || [ "$lang" = "en" ] || [ -f "/usr/lib/lua/luci/i18n/8311.$LANG.lmo" ] && echo "$lang" || echo "auto"
 }
 
-set_8311_syslang() {
+set_8311_lang() {
 	echo "Setting LuCI language to: $1" | to_console
-	fwenv_set_8311 'syslang' "$1"
-	uci set "luci.main.lang"="$1"
-	uci commit "luci.main.lang"
 }
 
 get_8311_ping_host() {

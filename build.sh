@@ -21,6 +21,7 @@ _help() {
 
 IMGFILE=
 IMGDIR=
+BASE_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
 OUT_DIR=$(realpath "out")
 LIB_DIR=$(realpath "lib")
 IMG_OUT=""
@@ -196,13 +197,12 @@ sudo chown -R "$USER:$GROUP" "$ROOT_BASIC" "$ROOT_BFW"
 
 FW_LONG_VERSION="${FW_VER}_${FW_VARIANT}_${FW_REV}${FW_SUFFIX}"
 
-. build_i18n.sh
-
 . mods/binary-mods.sh
 
 . mods/pre-common-mods.sh
 
 . "mods/${FW_VARIANT}-mods.sh"
+[ "$FW_VARIANT" = "basic" ] && . mods/basic-i18n.sh
 
 . mods/common-mods.sh
 

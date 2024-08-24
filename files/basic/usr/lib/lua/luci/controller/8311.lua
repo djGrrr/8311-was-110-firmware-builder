@@ -161,11 +161,27 @@ function pontop_pages()
 	return pages
 end
 
+function language_change(value)
+	util.exec("uci set luci.main.lang=" .. util.shellquote(value) .. " && uci commit luci")
+end
+
 function fwenvs_8311()
 	local zones = util.trim(util.exec("grep -v '^#' /usr/share/zoneinfo/zone.tab  | awk '{print $3}' | sort -uV ; echo UTC"))
 	local timezones = {}
 	for zone in zones:gmatch("[^\r\n]+") do
 		table.insert(timezones, zone)
+	end
+
+	local languages = {{
+		name="auto",
+		value="auto"
+	}}
+	local langs = util.trim(util.exec("uci show luci.languages | pcre2grep -o1 '^luci\.languages\.([^=]+)='"))
+	for lang in langs:gmatch("[^\r\n]+") do
+		table.insert(languages, {
+			name=util.trim(util.exec("uci get luci.languages." .. util.shellquote(lang))),
+			value=lang
+		})
 	end
 
 	local ipv4_regex = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
@@ -375,6 +391,14 @@ function fwenvs_8311()
 			id="device",
 			category=translate("Device"),
 			items={ {
+					id="lang",
+					name=translate("Language"),
+					description=translate("Set the language used in the WebUI"),
+					type="select_named",
+					default="auto",
+					options=languages,
+					change=language_change
+				},{
 					id="bootdelay",
 					name=translate("Boot Delay"),
 					description=translate("Set the boot delay in seconds in which you can interupt the boot process over the serial console. With the Azores U-Boot, this also controls the number of times multicast upgrade is attempted and thus can have a significant impact in boot time. Default: 3, Recommended: 1"),
@@ -419,7 +443,8 @@ function fwenvs_8311()
 					name=translate("Root password hash"),
 					description=translate("Custom password hash for the root user. This can be set from System > Administration"),
 					maxlength=255,
-					type="text",
+					pattern="^\\$[0-9a-z]+\\$.+\\$[A-Za-z0-9./]+\$",
+					type="text"
 				},{
 					id="ethtool_speed",
 					name=translate("Ethtool Speed Settings"),
@@ -606,6 +631,10 @@ function action_save()
 				end
 
 				if item.value ~= value then
+					if item.change then
+						item.change(value)
+					end
+
 					if item.base64 and value ~= '' then
 						value = base64.enc(value)
 					end

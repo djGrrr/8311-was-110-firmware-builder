@@ -1,16 +1,17 @@
 #!/bin/bash
 
-WORK_DIR=$(pwd)
-I18N_DIR="$WORK_DIR/i18n"
+
+I18N_DIR="$BASE_DIR/i18n"
 PO_DIR="$I18N_DIR/po"
 LMO_DIR="$I18N_DIR/lmo"
 PO2LMO_SRC_DIR="$I18N_DIR/po2lmo"
-OUTPUT_DIR="$WORK_DIR/files/basic/usr/lib/lua/luci/i18n"
+OUTPUT_DIR="$ROOT_DIR/usr/lib/lua/luci/i18n"
 
 echo "Compiling po2lmo..."
-cd "$PO2LMO_SRC_DIR" || exit
-make clean
-make
+[ -d "$PO2LMO_SRC_DIR" ] || exit
+rm -fv $LMO_DIR/*.lmo
+make -C "$PO2LMO_SRC_DIR" clean
+make -C "$PO2LMO_SRC_DIR"
 
 if [ ! -f "$PO2LMO_SRC_DIR/src/po2lmo" ]; then
     echo "Compilation failed. Exiting."
@@ -31,8 +32,7 @@ for po_file in "$PO_DIR"/*.po; do
 done
 
 echo "Copy lmo to output directory..."
-cp -v "$LMO_DIR"/*.lmo "$OUTPUT_DIR/"
+mkdir -pv "$OUTPUT_DIR"
+cp -fv "$LMO_DIR"/*.lmo "$OUTPUT_DIR/"
 
 echo "Success."
-
-cd "$WORK_DIR"
