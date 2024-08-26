@@ -15,6 +15,7 @@ _help() {
 	printf -- '-K --bfw-kernel\t\t\tBuild image using the bfw kernel.\n'
 	printf -- '-b --basic-bootcore\t\tBuild image using the basic bootcore.\n'
 	printf -- '-B --bfw-bootcore\t\tBuild image using the bfw bootcore.\n'
+	printf -- '-R --release\t\tCreate release archive files.\n'
 
 	printf -- '-h --help\t\t\tThis help text\n'
 }
@@ -30,6 +31,7 @@ FW_VARIANT="basic"
 BOOTCORE_VARIANT=""
 FW_VER=""
 KERNEL_VARIANT=""
+RELEASE=false
 
 while [ $# -gt 0 ]; do
 	case "$1" in
@@ -74,6 +76,9 @@ while [ $# -gt 0 ]; do
 		;;
 		-B|--bfw-bootcore)
 			BOOTCORE_VARIANT="bfw"
+		;;
+		-R|--release)
+			RELEASE=true
 		;;
 		-h|--help)
 			_help
@@ -258,5 +263,13 @@ CREATE=("-b" "$OUT_BOOTCORE" "-k" "$OUT_KERNEL" "-r" "$ROOTFS" -D "@$GIT_EPOCH")
 rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW" "$OUT_UROOTFS" "$OUT_UROOTFS_RESET" "$ROOTFS_RESET"
 
 ./wholeImage.sh "$GIT_EPOCH"
+
+if $RELEASE; then
+	cd "$REAL_OUT"
+	REL_NAME="WAS-110_8311_firmware_mod_${FW_VERSION}_${FW_VARIANT}"
+	7z a -md=128m -mx=9 -ms=on -mmt=on -mmtf=on -m0=LZMA2 "$REL_NAME.7z" -- "local-upgrade.tar" "local-upgrade.img" "multicast_upgrade.img" "multicast_reset.img" "bootcore.bin" "kernel.bin" "rootfs.img" "whole-8311.img" "whole-azores.img"
+	cd "$BASE_DIR"
+	cat "files/7z/7zsd_LZMA2_upx.sfx" "files/7z/was-110.cfg" "$REAL_OUT/$REL_NAME.7z" > "$REAL_OUT/$REL_NAME.exe"
+fi
 
 echo "Firmware build $FW_LONG_VERSION complete."
