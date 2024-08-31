@@ -391,14 +391,6 @@ function fwenvs_8311()
 			id="device",
 			category=translate("Device"),
 			items={ {
-					id="lang",
-					name=translate("Language"),
-					description=translate("Set the language used in the WebUI"),
-					type="select_named",
-					default="auto",
-					options=languages,
-					change=language_change
-				},{
 					id="bootdelay",
 					name=translate("Boot Delay"),
 					description=translate("Set the boot delay in seconds in which you can interupt the boot process over the serial console. With the Azores U-Boot, this also controls the number of times multicast upgrade is attempted and thus can have a significant impact in boot time. Default: 3, Recommended: 1"),
@@ -459,6 +451,14 @@ function fwenvs_8311()
 					min=10,
 					max=300,
 					default="15"
+				},{
+					id="lang",
+					name=translate("Language"),
+					description=translate("Set the language used in the WebUI"),
+					type="select_named",
+					default="auto",
+					options=languages,
+					change=language_change
 				},{
 					id="hostname",
 					name=translate("System Hostname"),

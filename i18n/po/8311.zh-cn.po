@@ -6,17 +6,17 @@
 "Content-Transfer-Encoding: 8bit\n"
 "Language: zh-cn\n"
 
-msgid "8311 Community Firmware MOD"
-msgstr "8311社区固件 MOD"
-
-msgid "8311 Community Discord Server"
-msgstr "8311社区Discord服务器"
-
 msgid "Translator"
 msgstr "Missing"
 
 msgid "TranslatorURL"
 msgstr "https://github.com/missing233"
+
+msgid "8311 Community Firmware MOD"
+msgstr "8311社区固件 MOD"
+
+msgid "8311 Community Discord Server"
+msgstr "8311社区Discord服务器"
 
 msgid "8311 Configuration"
 msgstr "8311社区固件配置"
@@ -85,10 +85,10 @@ msgid "PLOAM US"
 msgstr "PLOAM上行"
 
 msgid "Optical Status"
-msgstr "光状态"
+msgstr "光模块状态"
 
 msgid "Optical Info"
-msgstr "光信息"
+msgstr "光模块信息"
 
 msgid "Burst Profile"
 msgstr "突发配置文件"
@@ -124,7 +124,7 @@ msgid "PON"
 msgstr "PON"
 
 msgid "ISP Fixes"
-msgstr "ISP配置"
+msgstr "ISP修复"
 
 msgid "Device"
 msgstr "设备"
@@ -268,7 +268,7 @@ msgid "Internet VLAN"
 msgstr "上网VLAN"
 
 msgid "Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged)."
-msgstr "设置!本地!上网业务VLAN ID。0代表指定上网业务为Untagged，同时移除VLAN 0。默认0-Untagged（范围0-4095）"
+msgstr "设置本地上网业务VLAN ID。0代表指定上网业务为Untagged，同时移除VLAN 0。默认0-Untagged（范围0-4095）"
 
 msgid "Services VLAN"
 msgstr "业务VLAN"
@@ -326,6 +326,12 @@ msgstr "故障保护延迟"
 
 msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
 msgstr "启动时延迟启动omcid的秒数。默认15秒（范围10-300）"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Set the language used in the WebUI"
+msgstr "设置WebUI中使用的语言"
 
 msgid "System Hostname"
 msgstr "主机名"
@@ -452,9 +458,3 @@ msgstr "重启"
 
 msgid "Rebooting..."
 msgstr "重启中..."
-
-msgid "Language"
-msgstr "语言"
-
-msgid "Set the language used in the WebUI"
-msgstr "设置WebUI中使用的语言"
