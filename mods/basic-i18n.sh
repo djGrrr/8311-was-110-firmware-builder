@@ -23,7 +23,7 @@ mkdir -p "$OUTPUT_DIR"
 
 echo "Compiling lmo..."
 for po_file in "$PO_DIR"/*.po; do
-    if [ -f "$po_file" ]; then
+    if [ -f "$po_file" ] && ! grep -Pq '\.en\.po$' <<< "$po_file"; then
         po_filename=$(basename "$po_file" .po)
         lmo_file="$LMO_DIR/$po_filename.lmo"
         echo "Compiling $po_file to $lmo_file"
