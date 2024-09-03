@@ -22,7 +22,7 @@ msgid "Save"
 msgstr "Sauvegarde"
 
 msgid "PON Status"
-msgstr "Status PON"
+msgstr "Statut PON"
 
 msgid "PON ME Explorer"
 msgstr "PON ME Explorer"
@@ -46,7 +46,7 @@ msgid "GEM Status"
 msgstr "Statut GEM"
 
 msgid "GEM Stats"
-msgstr "Stats GEM"
+msgstr "Statistiques GEM"
 
 msgid "GEM DS"
 msgstr "GEM DS"
@@ -55,10 +55,10 @@ msgid "GEM US"
 msgstr "GEM US"
 
 msgid "ETH DS Stats"
-msgstr "Stats ETH DS"
+msgstr "Statistiques ETH DS"
 
 msgid "ETH US Stats"
-msgstr "Stats ETH US"
+msgstr "Statistiques ETH US"
 
 msgid "FEC Info"
 msgstr "Info FEC"
@@ -73,7 +73,7 @@ msgid "PSM"
 msgstr "PSM"
 
 msgid "Alloc Stats"
-msgstr "Stats D'allocation"
+msgstr "Statistiques D'allocation"
 
 msgid "PLOAM DS"
 msgstr "PLOAM DS"
@@ -100,7 +100,7 @@ msgid "DP Ports"
 msgstr "Ports DP"
 
 msgid "DP QoS"
-msgstr "QoS D"
+msgstr "QoS DP"
 
 msgid "PPv4 Buffers"
 msgstr "Buffers PPv4"
@@ -109,13 +109,13 @@ msgid "PPv4 PPS"
 msgstr "PPS PPv4"
 
 msgid "PPv4 Stats"
-msgstr "Stats PPv4"
+msgstr "Statistiques PPv4"
 
 msgid "PPv4 Tree"
-msgstr "Tree PPv4"
+msgstr "Arbre PPv4"
 
 msgid "PPv4 QStats"
-msgstr "QStats PPv4"
+msgstr "Q-Statistiques PPv4"
 
 msgid "PON"
 msgstr "PON"
@@ -133,31 +133,31 @@ msgid "PON Serial Number (ONT ID)"
 msgstr "Numéro Série PON (ONT ID)"
 
 msgid "GPON Serial Number sent to the OLT in various MEs (4 alphanumeric characters, followed by 8 hex digits)."
-msgstr "Numéro Série GPON envoyé à l'OLT dans différents MS (4 caractères alphanumériques, suivis de 8 chiffres hex)."
+msgstr "Numéro Série GPON envoyé à l'OLT dans différents MEs (4 caractères alphanumériques, suivis de 8 chiffres hex)."
 
 msgid "Vendor ID"
-msgstr "ID du Vendeur"
+msgstr "ID du Vendeur (Vendor ID)"
 
 msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."
-msgstr "ID du Vendeur PON envoyé dans différents ME, automatiquement dérivé du numéro série PON si non défini (4 caractères alphanumériques.)"
+msgstr "ID du Vendeur PON envoyé dans différents MEs, automatiquement dérivé du numéro série PON si non défini (4 caractères alphanumériques.)"
 
 msgid "Equipment ID"
-msgstr "ID de L'Equipement"
+msgstr "ID de L'Equipement (Equipment ID)"
 
 msgid "PON Equipment ID field in the ONU2-G ME [257] (up to 20 characters)."
 msgstr "Définit l'ID de l'Equipement PON pour ONU2-G ME [257] (20 caractères max)."
 
 msgid "Hardware Version"
-msgstr "Version Hardware"
+msgstr "Version Hardware (Hardware Version)"
 
 msgid "Hardware version string sent in various MEs (up to 14 characters)."
-msgstr "Version hardware envoyé dans différents ME (14 caractères max)."
+msgstr "Version hardware envoyé dans différents MEs (14 caractères max)."
 
 msgid "Sync Circuit Pack Version"
 msgstr "Version de Circuit Pack Synchronisée"
 
 msgid "Modify the configured MIB file to set the Version field of any Circuit Pack MEs [6] to match the Hardware Version (if set)."
-msgstr "Modifier le fisher MIB configuré pour que la version de chaque Circuit Pack ME corresponde à la version hardware (si définie)."
+msgstr "Modifier le fisher MIB configuré pour que la version de chaque Circuit Pack MEs corresponde à la version hardware (si définie)."
 
 msgid "Software Version A"
 msgstr "Version Logicielle A"
@@ -172,7 +172,7 @@ msgid "Firmware Version Match"
 msgstr "Correspondence de la Version du Firmware"
 
 msgid "PCRE pattern match for automatic updating of Software Versions when OLT uploads a firmware upgrade. Must contain a single sub-pattern match."
-msgstr "Correspondance de modèle PCRE pour les mise à jour automatique des version de logicielle quand l'OLT envoie une mise à jour. Doit contenir un seul Correspondancede sous-modèle."
+msgstr "Correspondance de modèle PCRE pour les mise à jour automatique des versions de logicielle quand l'OLT envoie une mise à jour. Doit contenir un seul Correspondancede sous-modèle."
 
 msgid "Firmware Match Number"
 msgstr "Numéro de Correspondance du Dirmware"
@@ -196,13 +196,13 @@ msgid "PON Mode"
 msgstr "Mode PON"
 
 msgid "PON mode of operation. This is where you can choose between XGS-PON (the default) or XG-PON."
-msgstr "Mode PON en opération. Choisis entre XGS-PON (par défaut) ou XG-PON."
+msgstr "Mode PON en opération. Choisir entre XGS-PON (par défaut) ou XG-PON."
 
 msgid "OMCC Version"
 msgstr "Version OMCC"
 
 msgid "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
-msgstr "La version de OMCC à utiliser en format hexadécimal entre 0x80 et 0xBF. Par défaut c'est 0xA3"
+msgstr "La version de OMCC à utiliser en format hexadécimal entre 0x80 et 0xBF. Par défaut 0xA3 "
 
 msgid "Registration ID (HEX)"
 msgstr "ID D'enregistrement (HEX)"
@@ -217,7 +217,7 @@ msgid "Logical ONU ID presented in the ONU-G ME [256] (up to 24 characters)."
 msgstr "ID logique de l'ONU présenté dans l'ONU-G ME [256] (24 caractères max)."
 
 msgid "Logical Password"
-msgstr "Mot de Passe Logique"
+msgstr "Mot de Passe Logique (Logical Password)"
 
 msgid "Logical Password presented in the ONU-G ME [256] (up to 12 characters)."
 msgstr "Mot de passe logique présenté dans l'ONU-G ME [256] (12 caractères max)."
@@ -226,13 +226,13 @@ msgid "MIB File"
 msgstr "Fichier MIB"
 
 msgid "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini"
-msgstr "Fichier MIB utilisé par omcid. Par défaut c'est /etc/mibs/prx300_1U.ini"
+msgstr "Fichier MIB utilisé par omcid. Par défaut /etc/mibs/prx300_1U.ini"
 
 msgid "PON Slot"
-msgstr "Fente PON"
+msgstr "Emplacement PON (PON Slot)"
 
 msgid "Change the slot number that the UNI port is presented on, needed on some ISPs."
-msgstr "Change le numéro de fente sur lequel le port UNI est présenté, nécessaire pour certains FAI."
+msgstr "Change le numéro de l'emplacement sur lequel le port UNI est présenté, nécessaire pour certains FAI."
 
 msgid "IP Host MAC Address"
 msgstr "Adresse MAC de L'hôte IP"
@@ -253,16 +253,16 @@ msgid "Domain name sent in the IP host config data ME [134] (up to 25 characters
 msgstr "Nom de domaine envoyé dans la configuration de L' IP ME [134] (25 caractères max)."
 
 msgid "Fix VLANs"
-msgstr "Corriger les VLAN"
+msgstr "Correction des VLAN"
 
 msgid "Apply automatic fixes to the VLAN configuration from the OLT."
-msgstr "Appliquer les corrections automatiques pour la configuration des VLAN de l'OLT"
+msgstr "Applique des corrections automatiques pour la configuration des VLAN de l'OLT"
 
 msgid "Internet VLAN"
 msgstr "VLAN de l'Internet"
 
 msgid "Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged)."
-msgstr "Définit l'ID du VLAN local à utiliser pour l'Internet ou 0 pour que l'Internet n'ait pas de VLAN (et enlever VLAN 0) (0 à 4095). 0 par défaut (pas de VLAN)"
+msgstr "Définit l'ID du VLAN local à utiliser pour l'Internet ou 0 pour que l'Internet n'ait pas de VLAN (et enlever VLAN 0) (0 à 4095). Par défaut 0 (pas de VLAN)"
 
 msgid "Services VLAN"
 msgstr "VLAN de services"
@@ -271,7 +271,7 @@ msgid "Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095).
 msgstr "Configurer les ID de VLAN locaux à utiliser pour les services (ex. Télé/téléphone). Ceci résout le problème du multi-service avec Bell."
 
 msgid "Boot Delay"
-msgstr "Délai de démarrage"
+msgstr "Délai de démarrage (Boot Delay)"
 
 msgid "Set the boot delay in seconds in which you can interupt the boot process over the serial console. With the Azores U-Boot, this also controls the number of times multicast upgrade is attempted and thus can have a significant impact in boot time. Default: 3, Recommended: 1"
 msgstr "Définit le délai de démarrage en secondes pendant lequel il est possible d'interrompre le processus de démarrage via la console série. Avec Azores U-Boot, ceci contrôle le nombre de fois que la mise à jour multicast est tentée et peut donc avoir un impact significatif sur le temps de démarrage. Défaut : 3, Recommandé : 1"
@@ -289,19 +289,19 @@ msgid "Serial console"
 msgstr "Console série"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
-msgstr "Activer la console série. Ceci va causer TX_FAULT à être affirmé puisque ça partage le même pin SFP."
+msgstr "Activer la console série. Ceci va causer TX_FAULT à être vérifier puisqu'ils partagent le même pin SFP."
 
 msgid "Dying Gasp"
 msgstr "Dying Gasp"
 
 msgid "Enable dying gasp. This will cause the serial console input to break as it shares the same SFP pin."
-msgstr "Activer dying gasp. Ceci causerait les commandes envoyées à la console série d'etre interopmie puisque ça partage le même pin SFP."
+msgstr "Activer dying gasp. Ceci va désactiver la console série puisqu'ils partage le même pin SFP."
 
 msgid "RX Loss of Signal"
 msgstr "Perte du Signal RX"
 
 msgid "Enable the RX_LOS pin. Disable to allow stick to be accessible without the fiber connected in all devices."
-msgstr "Activer le pin RX_LOS. Désactivée pour que le stick soit accessible sans que la fibre soit connectée"
+msgstr "Activer le pin RX_LOS. Désactiver pour que le stick soit accessible sans que la fibre soit connectée"
 
 msgid "Root password hash"
 msgstr "Hash du mot de passe root"
@@ -316,10 +316,10 @@ msgid "Ethtool speed settings on the eth0_0 interface (ethtool -s)."
 msgstr "Réglages de Vitesse Ethtool sur l'interface eth0_0 (ethtool -s)."
 
 msgid "Failsafe Delay"
-msgstr "Délai Sécurité-Défaut"
+msgstr "Délai du Failsafe"
 
 msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
-msgstr "Nombre de secondes avant que le démarrage d'omcid commence au démarrage (10 à 300). Par défaut c'est 15 secondes"
+msgstr "Nombre de secondes avant que le démarrage d'omcid commence au démarrage (10 à 300). Par défaut 15 secondes"
 
 msgid "Language"
 msgstr "Langue"
@@ -352,22 +352,22 @@ msgid "Allow the root file system to stay persistent (would also require that yo
 msgstr "Permet au système de fishiers root de rester persistant (il faut aussi que tu modifie le bootcmd fwenv). Ceci n'est pas recommandé et devrait être seulement utilisé pour des tests ou des débogages."
 
 msgid "Management VLAN"
-msgstr "VLAN de Gestion"
+msgstr "VLAN de Gestion (Management VLAN)"
 
 msgid "Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged)."
-msgstr "Définit l'ID du VLAN de gestion (0 à 4095). Par défaut c'est 15 secondes" (pas de VLAN)/"
+msgstr "Définit l'ID du VLAN de gestion (0 à 4095). Par défaut 15 secondes" (pas de VLAN)"
 
 msgid "IP Address"
 msgstr "Adresse IP"
 
 msgid "Management IP address. Defaults to 192.168.11.1"
-msgstr "Adresse IP de gestion. Par défaut c'est 192.168.11.1"
+msgstr "Adresse IP de gestion. Par défaut 192.168.11.1"
 
 msgid "Subnet Mask"
 msgstr "Masque de Sous-Réseau"
 
 msgid "Management subnet mask. Defaults to 255.255.255.0"
-msgstr "Masque de sous-réseau de gestion. Par défaut c'est 255.255.255.0"
+msgstr "Masque de sous-réseau de gestion. Par défaut 255.255.255.0"
 
 msgid "Gateway"
 msgstr "Passerelle"
@@ -406,7 +406,7 @@ msgid "Version"
 msgstr "Version"
 
 msgid "Revision"
-msgstr "RevRévisionision"
+msgstr "Révision"
 
 msgid "Variant"
 msgstr "Variante"
@@ -421,34 +421,34 @@ msgid "Upload firmware file here, typically named local-upgrade.tar"
 msgstr "Télécharge le fichier firmware ici, typiquement nommé local-upgrade.tar"
 
 msgid "Upload firmware"
-msgstr "Télécharge le firmware"
+msgstr "Envoyer le firmware"
 
 msgid "Upload"
-msgstr "Télécharge"
+msgstr "Envoyer"
 
 msgid "Install firmware"
-msgstr "Installe le firmware"
+msgstr "Installer le firmware"
 
 msgid "Install"
-msgstr "Installe"
+msgstr "Installer"
 
 msgid "Install firmware and reboot"
-msgstr "Installe le firmware et redémarre"
+msgstr "Installer le firmware et redémarrer"
 
 msgid "Install and Reboot"
-msgstr "Installe et redémarre"
+msgstr "Installer et redémarrer"
 
 msgid "Cancel firmware upgrade and cleanup"
-msgstr "Annule la mise à jour du firmware et nettoie"
+msgstr "Annuler la mise à jour du firmware et nettoier"
 
 msgid "Cancel"
-msgstr "Annule"
+msgstr "Annuler"
 
 msgid "Reboot to new firmware"
-msgstr "Redémarre au nouveau firmware"
+msgstr "Redémarrage sur le nouveau firmware"
 
 msgid "Reboot"
-msgstr "Redémarre"
+msgstr "Redémarrer"
 
 msgid "Rebooting..."
 msgstr "En Train de Redémarrer..."
