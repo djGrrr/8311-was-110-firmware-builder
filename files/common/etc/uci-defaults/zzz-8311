@@ -63,6 +63,7 @@ if [ -d "$LUCI_DIR" ]; then
 
 	uci set "luci.languages.en"="English"
 	[ -f "$TRANS_DIR/8311.zh-cn.lmo" ] && uci set "luci.languages.zh_cn"="简体中文 (Chinese Simplified)"
+	[ -f "$TRANS_DIR/8311.fr.lmo" ] && uci set "luci.languages.fr"="Français (French)"
 	[ -f "$TRANS_DIR/8311.ja.lmo" ] && uci set "luci.languages.ja"="日本語 (Japanese)"
 
 	SYS_LANG=$(get_8311_lang)
