@@ -140,7 +140,7 @@ msgstr "GPONシリアル番号を設定（4文字の英数字＋8文字の16進�
 msgid "Vendor ID"
 msgstr "ベンダーID"
 
-msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."
+msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters)."
 msgstr "PONベンダーIDを設定。未設定の場合は、PONシリアル番号から自動的に派生（4文字の英数字）"
 
 msgid "Equipment ID"

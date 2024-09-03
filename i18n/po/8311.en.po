@@ -138,8 +138,8 @@ msgstr "GPON Serial Number sent to the OLT in various MEs (4 alphanumeric charac
 msgid "Vendor ID"
 msgstr "Vendor ID"
 
-msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."
-msgstr "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."
+msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters)."
+msgstr "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters)."
 
 msgid "Equipment ID"
 msgstr "Equipment ID"

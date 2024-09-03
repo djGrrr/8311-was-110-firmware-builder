@@ -200,7 +200,7 @@ function fwenvs_8311()
 				},{
 					id="vendor_id",
 					name=translate("Vendor ID"),
-					description=translate("PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters."),
+					description=translate("PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters)."),
 					maxlength=4,
 					pattern='^[A-Za-z0-9]{4}$',
 					type="text"
