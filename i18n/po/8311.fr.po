@@ -10,7 +10,7 @@ msgid "8311 Community Discord Server"
 msgstr "8311 Serveur Discord Communautaire"
 
 msgid "Translator"
-msgstr "TeaRex-coder"
+msgstr "TeaRex-coder+mastah_fr"
 
 msgid "TranslatorURL"
 msgstr "https://github.com/TeaRex-coder/8311-was-110-firmware-builder"
