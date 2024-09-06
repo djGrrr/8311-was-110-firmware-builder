@@ -150,6 +150,17 @@ set_8311_omcc_version() {
     uci -q commit "omci"
 }
 
+get_8311_iop_mask() {
+	# 0 - 127
+	fwenv_get_8311 "iop_mask" "18" | grep -E '^(\d|[1-9]\d|1[01]\d|12[0-7])$' || echo '18'
+}
+
+set_8311_iop_mask() {
+	echo "Setting OMCI Interoperability Mask to: $1" | to_console
+	uci -q set "gpon.ponip.iop_mask"="$1"
+	uci -q commit "gpon"
+}
+
 get_8311_reg_id_hex() {
 	{ { fwenv_get_8311 "reg_id_hex" | hex2str; } || echo -n "$(fwenv_get_8311 "reg_id")"; cat /dev/zero; } 2>/dev/null | head -c 36 | str2hex | strtoupper
 }

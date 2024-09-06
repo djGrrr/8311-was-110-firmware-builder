@@ -1,6 +1,7 @@
 <%-
 local tools = require "8311.tools"
 local esc = tools.html_escape
+local nl2br = tools.nl2br
 -%>
 
 <%+header%>
@@ -89,7 +90,7 @@ for _, option in pairs(item.options) do
 					<label class="cbi-value-error error" for="widget.cbid.system.poncfg.<%= item.id %>" style="display: none"></label>
 				</div>
 <% if item.description then %>
-				<div class="cbi-value-description"><%= esc(item.description) %></div>
+				<div class="cbi-value-description"><%= nl2br(esc(item.description)) %></div>
 <% end %>
 			</div>
 		</div>

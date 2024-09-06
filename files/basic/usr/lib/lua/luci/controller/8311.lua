@@ -297,6 +297,23 @@ function fwenvs_8311()
 					maxlength=4,
 					pattern='^0x[89AB][0-9A-F]$'
 				},{
+					id="iop_mask",
+					name=translate("OMCI Interoperability Mask"),
+					description=translate(
+						"The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:\n" ..
+						"  1 - Force Unauthorized IGMP/MLD behavior\n" ..
+						"  2 - Skip Alloc-IDs termination upon T-CONT deactivation\n" ..
+						"  4 - Drop all packets on default Downstream Extended VLAN rules\n" ..
+						"  8 - Ignore Downstream Extended VLAN rules priority matching\n" ..
+						" 16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s\n" ..
+						" 32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets\n" ..
+						" 64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
+					),
+					type="number",
+					default="18",
+					min=0,
+					max=127
+				},{
 					id="reg_id_hex",
 					name=translate("Registration ID (HEX)"),
 					description=translate("Registration ID (up to 36 bytes) sent to the OLT, in hex format. This is where you would set a ploam password (which is contained in the last 12 bytes)."),

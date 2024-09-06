@@ -7,6 +7,8 @@ local upload_enable = true
 local install_enable = false
 local cancel_enable = false
 local reboot_enable = false
+local i18n = require "luci.i18n"
+local translate = i18n.translate
 -%>
 
 <%+header%>
@@ -86,7 +88,7 @@ local reboot_enable = false
 			cancel_enable = false
 		elseif firmware_action == "reboot" then
 			cancel_enable = false
-			firmware_output = i18n.translate("Rebooting...")
+			firmware_output = translate("Rebooting...")
 		end
 	end
 %>

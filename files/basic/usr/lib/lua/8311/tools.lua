@@ -20,6 +20,11 @@ function html_escape(text)
 	})
 end
 
+function nl2br(text)
+	if text == nil then text = "" end
+	return string.gsub("" .. text, "\n", "<br />\n")
+end
+
 function fw_getenv(t)
 	setmetatable(t, {__index={key=nil, default=nil, base64=false}})
 
