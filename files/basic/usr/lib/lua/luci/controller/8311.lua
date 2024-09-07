@@ -300,13 +300,13 @@ function fwenvs_8311()
 					id="iop_mask",
 					name=translate("OMCI Interoperability Mask"),
 					description = translate("The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:") .. "\n" ..
-              		translate("1 - Force Unauthorized IGMP/MLD behavior") .. "\n" ..
-              		translate("2 - Skip Alloc-IDs termination upon T-CONT deactivation") .. "\n" ..
-              		translate("4 - Drop all packets on default Downstream Extended VLAN rules") .. "\n" ..
-              		translate("8 - Ignore Downstream Extended VLAN rules priority matching") .. "\n" ..
-              		translate("16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s") .. "\n" ..
-              		translate("32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets") .. "\n" ..
-              		translate("64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."),
+              				translate("1 - Force Unauthorized IGMP/MLD behavior") .. "\n" ..
+              				translate("2 - Skip Alloc-IDs termination upon T-CONT deactivation") .. "\n" ..
+              				translate("4 - Drop all packets on default Downstream Extended VLAN rules") .. "\n" ..
+              				translate("8 - Ignore Downstream Extended VLAN rules priority matching") .. "\n" ..
+              				translate("16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s") .. "\n" ..
+              				translate("32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets") .. "\n" ..
+              				translate("64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."),
 					type="number",
 					default="18",
 					min=0,
@@ -333,7 +333,7 @@ function fwenvs_8311()
 				},{
 					id="mib_file",
 					name=translate("MIB File"),
-					description=translate("MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini"),
+					description=translate("MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini (U:SFU, V:HGU)"),
 					type="select",
 					default="/etc/mibs/prx300_1U.ini",
 					options={

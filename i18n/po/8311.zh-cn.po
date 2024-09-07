@@ -258,8 +258,8 @@ msgstr "设置ONU-G（ME[256]）中的LOID密码（最多12个字符）"
 msgid "MIB File"
 msgstr "MIB文件"
 
-msgid "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini"
-msgstr "设置omcid使用的MIB文件。默认 /etc/mibs/prx300_1U.ini"
+msgid "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini (U:SFU, V:HGU)"
+msgstr "设置omcid使用的MIB文件。默认 /etc/mibs/prx300_1U.ini（U:SFU, V:HGU）"
 
 msgid "PON Slot"
 msgstr "PON槽位"

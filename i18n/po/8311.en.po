@@ -255,8 +255,8 @@ msgstr "Logical Password presented in the ONU-G ME [256] (up to 12 characters)."
 msgid "MIB File"
 msgstr "MIB File"
 
-msgid "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini"
-msgstr "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini"
+msgid "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini (U:SFU, V:HGU)"
+msgstr "MIB file used by omcid. Defaults to /etc/mibs/prx300_1U.ini (U:SFU, V:HGU)"
 
 msgid "PON Slot"
 msgstr "PON Slot"
