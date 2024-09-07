@@ -202,7 +202,34 @@ msgid "OMCC Version"
 msgstr "Version OMCC"
 
 msgid "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
-msgstr "La version de OMCC à utiliser en format hexadécimal entre 0x80 et 0xBF. Par défaut 0xA3 "
+msgstr "La version de OMCC à utiliser en format hexadécimal entre 0x80 et 0xBF. Par défaut 0xA3"
+
+msgid "OMCI Interoperability Mask"
+msgstr "Masque d’interopérabilité OMCI"
+
+msgid "The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:"
+msgstr "Le masque d'interopérabilité OMCI est un masque de bits d'options de compatibilité permettant de travailler avec divers OLT. Les options sont :"
+
+msgid "1 - Force Unauthorized IGMP/MLD behavior"
+msgstr "1 - Forcer le comportement IGMP/MLD non autorisé"
+
+msgid "2 - Skip Alloc-IDs termination upon T-CONT deactivation"
+msgstr "2 - Ignorer la terminaison des Alloc-IDs lors de la désactivation des T-CONT"
+
+msgid "4 - Drop all packets on default Downstream Extended VLAN rules"
+msgstr "4 - Supprimez tous les paquets, du canal par defaut descendant, pour les règles VLAN étendues"
+
+msgid "8 - Ignore Downstream Extended VLAN rules priority matching"
+msgstr "8 - Ignorer la correspondance de priorité des règles VLAN étendues du canal descendant"
+
+msgid "16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s"
+msgstr "16 - Convertir les valeurs PIR/CIR du descripteur de trafic de koctets/s en kbit/s"
+
+msgstr "32 - Forcer la gestion IP commune - appliquer l'Ethertype IPv4 0x0800 à la règle VLAN étendue correspondant aux paquets IPv6"
+msgid "32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets"
+
+msgid "64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
+msgstr "64 - L'effet exact de cette option est inconnue, mais elle semble affecter la longueur du message dans omci_msg_send"
 
 msgid "Registration ID (HEX)"
 msgstr "ID D'enregistrement (HEX)"
