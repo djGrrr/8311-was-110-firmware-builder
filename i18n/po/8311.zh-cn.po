@@ -210,6 +210,33 @@ msgstr "OMCC版本"
 msgid "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
 msgstr "设置使用的OMCC版本（16进制格式，范围0x80-0xBF）默认0xA3"
 
+msgid "OMCI Interoperability Mask"
+msgstr "OMCI互操作性掩码"
+
+msgid "The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:"
+msgstr "OMCI互操作性掩码是用于与不同OLT协同工作的兼容性选项位掩码。选项包括："
+
+msgid "1 - Force Unauthorized IGMP/MLD behavior"
+msgstr "1 - 强制未经授权的IGMP/MLD行为"
+
+msgid "2 - Skip Alloc-IDs termination upon T-CONT deactivation"
+msgstr "2 - 在T-CONT停用时跳过Alloc-ID资源分配终止"
+
+msgid "4 - Drop all packets on default Downstream Extended VLAN rules"
+msgstr "4 - 在默认的下行扩展VLAN规则下丢弃所有数据包"
+
+msgid "8 - Ignore Downstream Extended VLAN rules priority matching"
+msgstr "8 - 忽略下行扩展VLAN规则中的优先级匹配"
+
+msgid "16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s"
+msgstr "16 - 将流量描述符中的PIR/CIR值从kbyte/s转换为kbit/s"
+
+msgid "32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets"
+msgstr "32 - 强制通用IP处理 - 将IPv4 Ethertype 0x0800应用于IPv6数据包的扩展VLAN规则匹配"
+
+msgid "64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
+msgstr "64 - 此选项的具体作用不明，但似乎会影响omci_msg_send中的消息长度"
+
 msgid "Registration ID (HEX)"
 msgstr "Registration ID（16进制）"
 

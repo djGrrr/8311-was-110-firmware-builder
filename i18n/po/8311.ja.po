@@ -207,19 +207,46 @@ msgid "OMCC Version"
 msgstr "OMCCバージョン"
 
 msgid "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
-msgstr "使用するOMCCバージョンを設定（16進数、範囲0x80～0xBF）。デフォルトは0xA3。"
+msgstr "OMCCバージョンを設定（16進数、範囲0x80～0xBF）。デフォルトは0xA3。"
+
+msgid "OMCI Interoperability Mask"
+msgstr "OMCI相互運用マスク"
+
+msgid "The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:"
+msgstr "OMCI相互運用マスクは、さまざまなOLTとの互換性オプションを表すビットマスクです。オプションは以下の通りです："
+
+msgid "1 - Force Unauthorized IGMP/MLD behavior"
+msgstr "1 - 未承認のIGMP/MLD動作を強制"
+
+msgid "2 - Skip Alloc-IDs termination upon T-CONT deactivation"
+msgstr "2 - T-CONT無効化時にAlloc-IDの終了をスキップ"
+
+msgid "4 - Drop all packets on default Downstream Extended VLAN rules"
+msgstr "4 - デフォルトの下り拡張VLANルールで全パケットを破棄"
+
+msgid "8 - Ignore Downstream Extended VLAN rules priority matching"
+msgstr "8 - 下り拡張VLANルールの優先順位マッチングを無視"
+
+msgid "16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s"
+msgstr "16 - トラフィックディスクリプタのPIR/CIR値をkbyte/sからkbit/sに変換"
+
+msgid "32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets"
+msgstr "32 - 共通IP処理を強制 - IPv6パケットの拡張VLANルールにIPv4のEthertype 0x0800を適用"
+
+msgid "64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
+msgstr "64 - このオプションの具体的な動作は不明ですが、omci_msg_sendのメッセージ長に影響を与える可能性があります。"
 
 msgid "Registration ID (HEX)"
-msgstr "登録ID（16進数）"
+msgstr "Registration ID（16進数）"
 
 msgid "Registration ID (up to 36 bytes) sent to the OLT, in hex format. This is where you would set a ploam password (which is contained in the last 12 bytes)."
-msgstr "登録IDを設定（最大36バイト、16進数形式）。最後の12バイトにPLOAMパスワードを設定します。"
+msgstr "Registration IDを設定（最大36バイト、16進数形式）。最後の12バイトにPLOAMパスワードを設定します。"
 
 msgid "Logical ONU ID"
-msgstr "論理ONU ID（LOID）"
+msgstr "Logical ONU ID（LOID）"
 
 msgid "Logical ONU ID presented in the ONU-G ME [256] (up to 24 characters)."
-msgstr "ONU-G（ME[256]）で提示される論理ONU IDを設定（最大24文字）"
+msgstr "ONU-G（ME[256]）で提示されるLogical ONU IDを設定（最大24文字）"
 
 msgid "Logical Password"
 msgstr "LOIDパスワード"
@@ -243,19 +270,19 @@ msgid "IP Host MAC Address"
 msgstr "IPホストMACアドレス"
 
 msgid "MAC address sent in the IP host config data ME [134] (XX:XX:XX:XX:XX:XX format)."
-msgstr "IPホスト設定データ（ME[134]）で送信されるMACアドレスを設定（形式：XX:XX:XX:XX:XX:XX）"
+msgstr "IP host config data（ME[134]）で送信されるMACアドレスを設定（形式：XX:XX:XX:XX:XX:XX）"
 
 msgid "IP Host Hostname"
 msgstr "IPホストホスト名"
 
 msgid "Hostname sent in the IP host config data ME [134] (up to 25 characters)."
-msgstr "IPホスト設定データ（ME[134]）で送信されるホスト名を設定（最大25文字）"
+msgstr "IP host config data（ME[134]）で送信されるホスト名を設定（最大25文字）"
 
 msgid "IP Host Domain Name"
 msgstr "IPホストドメイン名"
 
 msgid "Domain name sent in the IP host config data ME [134] (up to 25 characters)."
-msgstr "IPホスト設定データ（ME[134]）で送信されるドメイン名を設定（最大25文字）"
+msgstr "IP host config data（ME[134]）で送信されるドメイン名を設定（最大25文字）"
 
 msgid "Fix VLANs"
 msgstr "VLAN修正"
@@ -267,13 +294,13 @@ msgid "Internet VLAN"
 msgstr "インターネットVLAN"
 
 msgid "Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged)."
-msgstr "インターネット用に使用するローカルVLAN IDを設定します。また、0を設定するとインターネットをタグなしにします（VLAN 0も削除されます）。デフォルトは0（タグなし）。"
+msgstr "インターネット用ローカルVLAN IDを設定します。また、0を設定するとインターネットをタグなしにします（VLAN 0も削除されます）。デフォルトは0（タグなし）。"
 
 msgid "Services VLAN"
 msgstr "サービスVLAN"
 
 msgid "Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095). This fixes multi-service on Bell."
-msgstr "サービス（例：TV/ホームフォン）用に使用するローカルVLAN IDを設定します（範囲1～4095）。Bellでのマルチサービスを修正します。"
+msgstr "サービス（TV/ひかり電話など）用ローカルVLAN IDを設定します（範囲1～4095）。Bellでのマルチサービスを修正します。"
 
 msgid "Boot Delay"
 msgstr "起動遅延"
@@ -297,22 +324,22 @@ msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it 
 msgstr "シリアルコンソールを有効にします。同じSFPピンを共有するため、TX_FAULTがアサートされます。"
 
 msgid "Dying Gasp"
-msgstr "断電アラーム"
+msgstr "Dying Gasp"
 
 msgid "Enable dying gasp. This will cause the serial console input to break as it shares the same SFP pin."
-msgstr "断電アラームを有効にします。同じSFPピンを共有するため、シリアルコンソール入力が中断されます。"
+msgstr "Dying Gaspを有効にします。同じSFPピンを共有するため、シリアルコンソール入力が中断されます。"
 
 msgid "RX Loss of Signal"
-msgstr "RX信号損失"
+msgstr "RX Loss"
 
 msgid "Enable the RX_LOS pin. Disable to allow stick to be accessible without the fiber connected in all devices."
 msgstr "RX_LOSピンを有効にします。全デバイスでファイバーを接続せずにスティックにアクセスできるようにするには無効にします。"
 
 msgid "Root password hash"
-msgstr "ルートパスワード"
+msgstr "Rootパスワードハッシュ"
 
 msgid "Custom password hash for the root user. This can be set from System > Administration"
-msgstr "ルートユーザー用のカスタムパスワードハッシュを設定します。[システム] > [管理]から設定できます。"
+msgstr "Rootユーザー用カスタムパスワードハッシュを設定します。[システム] > [管理]から設定できます。"
 
 msgid "Ethtool Speed Settings"
 msgstr "Ethtool速度設定"
@@ -330,7 +357,7 @@ msgid "Language"
 msgstr "言語"
 
 msgid "Set the language used in the WebUI"
-msgstr "WebUIで使用する言語を設定"
+msgstr "WebUI言語を設定"
 
 msgid "System Hostname"
 msgstr "システムホスト名"
@@ -351,10 +378,10 @@ msgid "NTP server(s) to sync time from (space separated)."
 msgstr "時刻を同期するNTPサーバー（スペースで区切って複数指定可能）"
 
 msgid "Persist RootFS"
-msgstr "RootFSの永続化"
+msgstr "RootFS永続化"
 
 msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
-msgstr "ルートファイルシステムを永続化します（bootcmd fwenvの変更も必要）。これは推奨されず、デバッグ/テスト目的でのみ使用する必要があります。"
+msgstr "ルートファイルシステムを永続化します（bootcmd fwenvの変更も必要）。推奨されず、デバッグ/テスト目的でのみ。"
 
 msgid "Management VLAN"
 msgstr "管理VLAN"

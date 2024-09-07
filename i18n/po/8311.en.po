@@ -207,6 +207,33 @@ msgstr "OMCC Version"
 msgid "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
 msgstr "The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"
 
+msgid "OMCI Interoperability Mask"
+msgstr "OMCI Interoperability Mask"
+
+msgid "The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:"
+msgstr "The OMCI Interoperability Mask is a bitmask of compatibility options for working with various OLTs. The options are:"
+
+msgid "1 - Force Unauthorized IGMP/MLD behavior"
+msgstr "1 - Force Unauthorized IGMP/MLD behavior"
+
+msgid "2 - Skip Alloc-IDs termination upon T-CONT deactivation"
+msgstr "2 - Skip Alloc-IDs termination upon T-CONT deactivation"
+
+msgid "4 - Drop all packets on default Downstream Extended VLAN rules"
+msgstr "4 - Drop all packets on default Downstream Extended VLAN rules"
+
+msgid "8 - Ignore Downstream Extended VLAN rules priority matching"
+msgstr "8 - Ignore Downstream Extended VLAN rules priority matching"
+
+msgid "16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s"
+msgstr "16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s"
+
+msgid "32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets"
+msgstr "32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets"
+
+msgid "64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
+msgstr "64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
+
 msgid "Registration ID (HEX)"
 msgstr "Registration ID (HEX)"
 
