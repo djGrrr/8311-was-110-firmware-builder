@@ -291,6 +291,9 @@ msgstr "修复VLAN"
 msgid "Apply automatic fixes to the VLAN configuration from the OLT."
 msgstr "启用从OLT自动修复VLAN配置"
 
+msgid "Hook script only"
+msgstr "仅限钩子脚本"
+
 msgid "Internet VLAN"
 msgstr "上网VLAN"
 

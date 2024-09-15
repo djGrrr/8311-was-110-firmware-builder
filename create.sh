@@ -222,8 +222,8 @@ else
 	HEADER_CRC_OFFSET=$((0x6A))
 
 	echo "Updating CRCs"
-	{ cat "${FILES[@]}" | ./bfw-crc.pl; cat /dev/zero; } | dd of="$OUT" seek="$CONTENT_CRC_OFFSET" bs=1 count=8 conv=notrunc 2>/dev/null
-	head -c "$LEN_HDR" "$OUT" | ./bfw-crc.pl | dd of="$OUT" seek="$HEADER_CRC_OFFSET" bs=1 count=4 conv=notrunc 2>/dev/null
+	{ cat "${FILES[@]}" | tools/bfw-crc.pl; cat /dev/zero; } | dd of="$OUT" seek="$CONTENT_CRC_OFFSET" bs=1 count=8 conv=notrunc 2>/dev/null
+	head -c "$LEN_HDR" "$OUT" | tools/bfw-crc.pl | dd of="$OUT" seek="$HEADER_CRC_OFFSET" bs=1 count=4 conv=notrunc 2>/dev/null
 
 	touch -d "$DATE" "$OUT"
 	echo "Local upgrade image file '$OUT' created successfully."

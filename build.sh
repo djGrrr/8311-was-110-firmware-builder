@@ -187,6 +187,9 @@ ROOT_DIR="${ROOT_BASE}-${FW_VARIANT}"
 
 rm -rfv "$ROOT_BASE" "$ROOT_BFW" "$ROOT_BASIC"
 
+TOOLS_DIR="tools"
+make -C "$TOOLS_DIR"
+
 sudo unsquashfs -d "$ROOT_BFW" "$ROOTFS_BFW" || _err "Error unsquashifying bfw RootFS image '$ORIG_ROOTFS'"
 sudo unsquashfs -d "$ROOT_BASIC" "$ROOTFS_BASIC" || _err "Error unsquashifying basic RootFS image '$ORIG_ROOTFS'"
 
@@ -267,7 +270,7 @@ rm -fv "$HEADER" "$KERNEL_BFW" "$BOOTCORE_BFW" "$ROOTFS_BFW" "$OUT_UROOTFS" "$OU
 if $RELEASE; then
 	cd "$REAL_OUT"
 	REL_NAME="WAS-110_8311_firmware_mod_${FW_VERSION}_${FW_VARIANT}"
-	7z a -md=128m -mx=9 -ms=on -mmt=on -mmtf=on -m0=LZMA2 "$REL_NAME.7z" -- "local-upgrade.tar" "local-upgrade.img" "multicast_upgrade.img" "multicast_reset.img" "bootcore.bin" "kernel.bin" "rootfs.img" "whole-8311.img" "whole-azores.img"
+	7z a -md=128m -mx=9 -ms=on -mmt=on -mmtf=on -m0=LZMA2 "$REL_NAME.7z" -- "local-upgrade.tar" "local-upgrade.img" "multicast_upgrade.img" "multicast_reset.img" "bootcore.bin" "kernel.bin" "rootfs.img" "whole-image.img"
 	cd "$BASE_DIR"
 	cat "files/7z/7zsd_LZMA2_upx.sfx" "files/7z/was-110.cfg" "$REAL_OUT/$REL_NAME.7z" > "$REAL_OUT/$REL_NAME.exe"
 fi

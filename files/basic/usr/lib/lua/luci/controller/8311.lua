@@ -383,8 +383,22 @@ function fwenvs_8311()
 					id="fix_vlans",
 					name=translate("Fix VLANs"),
 					description=translate("Apply automatic fixes to the VLAN configuration from the OLT."),
-					type="checkbox",
-					default=true
+					type="select_named",
+					default=1,
+					options={
+						{
+							name=translate("Disabled"),
+							value="0"
+						},
+						{
+							name=translate("Enabled"),
+							value="1"
+						},
+						{
+							name=translate("Hook script only"),
+							value="2"
+						}
+					}
 				},{
 					id="internet_vlan",
 					name=translate("Internet VLAN"),

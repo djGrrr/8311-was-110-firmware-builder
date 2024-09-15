@@ -290,6 +290,9 @@ msgstr "VLAN修正"
 msgid "Apply automatic fixes to the VLAN configuration from the OLT."
 msgstr "OLTからVLAN設定の自動修正を適用します。"
 
+msgid "Hook script only"
+msgstr "フックスクリプトのみ"
+
 msgid "Internet VLAN"
 msgstr "インターネットVLAN"
 

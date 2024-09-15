@@ -288,6 +288,9 @@ msgstr "Fix VLANs"
 msgid "Apply automatic fixes to the VLAN configuration from the OLT."
 msgstr "Apply automatic fixes to the VLAN configuration from the OLT."
 
+msgid "Hook script only"
+msgstr "Hook script only"
+
 msgid "Internet VLAN"
 msgstr "Internet VLAN"
 

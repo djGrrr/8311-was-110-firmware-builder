@@ -10,7 +10,6 @@ OUTPUT_DIR="$ROOT_DIR/usr/lib/lua/luci/i18n"
 echo "Compiling po2lmo..."
 [ -d "$PO2LMO_SRC_DIR" ] || exit
 rm -fv $LMO_DIR/*.lmo
-make -C "$PO2LMO_SRC_DIR" clean
 make -C "$PO2LMO_SRC_DIR"
 
 if [ ! -f "$PO2LMO_SRC_DIR/src/po2lmo" ]; then
