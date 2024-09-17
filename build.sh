@@ -23,8 +23,9 @@ _help() {
 IMGFILE=
 IMGDIR=
 BASE_DIR=$(dirname "$(realpath "${BASH_SOURCE[0]}")")
-OUT_DIR=$(realpath "out")
-LIB_DIR=$(realpath "lib")
+TOOLS_DIR="$BASE_DIR/tools"
+OUT_DIR="$BASE_DIR/out"
+LIB_DIR="$BASE_DIR/lib"
 IMG_OUT=""
 TAR_OUT=""
 FW_VARIANT="basic"
@@ -186,9 +187,6 @@ ROOT_BASIC="${ROOT_BASE}-basic"
 ROOT_DIR="${ROOT_BASE}-${FW_VARIANT}"
 
 rm -rfv "$ROOT_BASE" "$ROOT_BFW" "$ROOT_BASIC"
-
-TOOLS_DIR="tools"
-make -C "$TOOLS_DIR"
 
 sudo unsquashfs -d "$ROOT_BFW" "$ROOTFS_BFW" || _err "Error unsquashifying bfw RootFS image '$ORIG_ROOTFS'"
 sudo unsquashfs -d "$ROOT_BASIC" "$ROOTFS_BASIC" || _err "Error unsquashifying basic RootFS image '$ORIG_ROOTFS'"

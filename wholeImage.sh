@@ -50,10 +50,9 @@ cat_data -m	0x06600000 "whole_image/system_sw.img"				>> "$OUTIMG" 	# system_sw
 echo " done"
 
 FLSIMG="out/whole-image-endian.img"
-[ -x "tools/endianess_swap" ] || make -C "tools"
 
 echo -n "Creating endian reversed flash image '$FLSIMG'..."
-tools/endianess_swap "$OUTIMG" "$FLSIMG"
+tools/endianess_swap.sh "$OUTIMG" "$FLSIMG"
 echo " done"
 
 touch -d "@$TIMESTAMP" "$OUTIMG" "$FLSIMG"

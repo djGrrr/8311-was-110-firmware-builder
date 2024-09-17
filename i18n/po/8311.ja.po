@@ -170,9 +170,6 @@ msgstr "ソフトウェアイメージ（ME[7]）バージョンAを設定（最
 msgid "Software Version B"
 msgstr "ソフトウェアバージョンB"
 
-msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
-msgstr "ソフトウェアイメージ（ME[7]）バージョンBを設定（最大14文字）"
-
 msgid "Firmware Version Match"
 msgstr "ファームウェアバージョンマッチ"
 

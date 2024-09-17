@@ -291,11 +291,11 @@ function fwenvs_8311()
 				},{
 					id="omcc_version",
 					name=translate("OMCC Version"),
-					description=translate("The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"),
+					description=translate("The OMCC version to use in hexadecimal format between 0x82 and 0xBF. Default is 0xA3"),
 					type="text",
 					default="0xA3",
 					maxlength=4,
-					pattern='^0x[89AB][0-9A-F]$'
+					pattern='^0x(8[2-9A-F]|[9AB][0-9A-F])$'
 				},{
 					id="iop_mask",
 					name=translate("OMCI Interoperability Mask"),
@@ -384,7 +384,7 @@ function fwenvs_8311()
 					name=translate("Fix VLANs"),
 					description=translate("Apply automatic fixes to the VLAN configuration from the OLT."),
 					type="select_named",
-					default=1,
+					default="1",
 					options={
 						{
 							name=translate("Disabled"),

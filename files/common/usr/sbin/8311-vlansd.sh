@@ -6,7 +6,7 @@ pon_hash() {
 	/root/8311-detect-config.sh -H
 }
 
-FIX_ENABLED=$(fwenv_get_8311 "fix_vlans")
+FIX_ENABLED=$(fwenv_get_8311 "fix_vlans" "1")
 [ "$FIX_ENABLED" -eq 0 ] 2>/dev/null && exit 0
 
 HOOK="/ptconf/8311/vlan_fixes_hook.sh"

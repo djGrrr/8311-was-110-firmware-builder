@@ -171,9 +171,6 @@ msgstr "设置Software image（ME[7]）版本A（最多14个字符）"
 msgid "Software Version B"
 msgstr "软件版本B"
 
-msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
-msgstr "设置Software image（ME[7]）版本B（最多14个字符）"
-
 msgid "Firmware Version Match"
 msgstr "固件版本匹配"
 

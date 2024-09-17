@@ -225,8 +225,8 @@ msgstr "8 - Ignorer la correspondance de priorité des règles VLAN étendues du
 msgid "16 - Convert Traffic Descriptor PIR/CIR values from kbyte/s to kbit/s"
 msgstr "16 - Convertir les valeurs PIR/CIR du descripteur de trafic de koctets/s en kbit/s"
 
-msgstr "32 - Forcer la gestion IP commune - appliquer l'Ethertype IPv4 0x0800 à la règle VLAN étendue correspondant aux paquets IPv6"
 msgid "32 - Force common IP handling - apply the IPv4 Ethertype 0x0800 to the Extended VLAN rule matching for IPv6 packets"
+msgstr "32 - Forcer la gestion IP commune - appliquer l'Ethertype IPv4 0x0800 à la règle VLAN étendue correspondant aux paquets IPv6"
 
 msgid "64 - It is unknown what this option does but it appears to affect the message length in omci_msg_send."
 msgstr "64 - L'effet exact de cette option est inconnue, mais elle semble affecter la longueur du message dans omci_msg_send"

@@ -141,7 +141,7 @@ set_8311_pon_mode() {
 }
 
 get_8311_omcc_version() {
-	fwenv_get_8311 "omcc_version" "0xA3" | grep -E '^0x[89AB][0-9A-F]$' || echo '0xA3'
+	fwenv_get_8311 "omcc_version" "0xA3" | grep -E '^0x(8[2-9A-F]|[9AB][0-9A-F])$' || echo '0xA3'
 }
 
 set_8311_omcc_version() {
