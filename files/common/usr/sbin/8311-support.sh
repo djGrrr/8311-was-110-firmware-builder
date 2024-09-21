@@ -24,17 +24,7 @@ echo -n "Dumping VLAN tables ..."
 echo " done"
 
 echo -n "Dumping TC Filters ..."
-for DEV in $(ip -o li | egrep -o -- '^\d+: \S+[@:]' | awk -F '[ @:]+' '{print $2}' | egrep -- '^(eth|gem|pmapper|tcont|sw)' | egrep -v -- '(-omci|lct)$' | sort -V); do
-	for DIR in ingress egress; do
-		TC=$(tc filter show dev "$DEV" "$DIR")
-		if [ -n "$TC" ]; then
-			echo "--------------- tc filter show dev $DEV $DIR ---------------"
-			echo "$TC"
-			echo
-			echo
-		fi 
-	done
-done > "$TMPDIR/tc_filters.txt"
+8311-tc-filter-dump.sh > "$TMPDIR/tc_filters.txt"
 echo " done"
 
 echo -n "Dumping System Log ..."
