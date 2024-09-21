@@ -432,6 +432,33 @@ msgstr "将HTTP重定向到HTTPS"
 msgid "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
 msgstr "自动将WebUI的HTTP请求重定向到HTTPS。默认开启"
 
+msgid "VLAN Tables"
+msgstr "VLAN表"
+
+msgid "Support"
+msgstr "支持"
+
+msgid "Support Archive"
+msgstr "支持存档"
+
+msgid "A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass."
+msgstr "支持存档包含诊断信息，用于帮助识别尝试使用8311固件的Stick时任何可能存在的问题。"
+
+msgid "Connect the fiber for at least 30 seconds before generating a support archive."
+msgstr "在生成支持存档之前，连接光纤至少30秒。"
+
+msgid "WARNING: A support archive contains potentially sensitive information. Do not share it publically."
+msgstr "警告：支持存档包含潜在的敏感信息，请勿公开分享。"
+
+msgid "Generate Support Archive"
+msgstr "生成支持存档"
+
+msgid "Download Support Archive"
+msgstr "下载支持存档"
+
+msgid "Delete Support Archive"
+msgstr "删除支持存档"
+
 msgid "Active Firmware"
 msgstr "活动固件分区"
 

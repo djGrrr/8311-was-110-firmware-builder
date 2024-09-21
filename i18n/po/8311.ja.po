@@ -431,6 +431,33 @@ msgstr "HTTPをHTTPSにリダイレクト"
 msgid "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
 msgstr "WebUIへのHTTPリクエストを自動的にHTTPSにリダイレクトします。デフォルトはオン。"
 
+msgid "VLAN Tables"
+msgstr "VLANテーブル"
+
+msgid "Support"
+msgstr "サポート"
+
+msgid "Support Archive"
+msgstr "サポートアーカイブ"
+
+msgid "A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass."
+msgstr "サポートアーカイブには、バイパスを試みる際に潜在的な問題を特定するための診断情報が含まれています。"
+
+msgid "Connect the fiber for at least 30 seconds before generating a support archive."
+msgstr "サポートアーカイブを生成する前に、少なくとも 30 秒間光ファイバーを接続してください。"
+
+msgid "WARNING: A support archive contains potentially sensitive information. Do not share it publically."
+msgstr "警告: サポートアーカイブには機密性の高い情報が含まれる可能性があります。公開しないでください。"
+
+msgid "Generate Support Archive"
+msgstr "サポートアーカイブを作成"
+
+msgid "Download Support Archive"
+msgstr "サポートアーカイブをダウンロード"
+
+msgid "Delete Support Archive"
+msgstr "サポートアーカイブを削除"
+
 msgid "Active Firmware"
 msgstr "アクティブファームウェア"
 
