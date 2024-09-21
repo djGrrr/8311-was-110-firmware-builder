@@ -39,11 +39,7 @@ dir() {
 	[ "$1" = "i" ] && echo "inner" || echo "outer"
 }
 
-odir() {
-	[ "$i" = "i" && echo "outer" || echo "inner"
-}
-
-output_priority() {
+filter_priority() {
 	local dir=$(dir "$1")
 
 	if [ "$2" -le  7 ]; then
@@ -67,7 +63,75 @@ output_priority() {
 	fi
 }
 
-output_treat_priority() {
+filter_vid() {
+	local dir=$(dir "$1")
+
+	if [ "$2" -lt 4095 ]; then
+		echo "$2"
+	elif [ "$2" -eq 4096 ]; then
+		echo -e "4096\t(Do not filter on the $dir VID)";
+	else
+		echo -e "$2\t(Reserved)";
+	fi
+}
+
+filter_tpid_dei() {
+	local dir=$(dir "$1")
+
+	if [ "$2" -eq 0 ]; then
+		echo -e "0\t(Do not filter on $dir TPID or DEI)"
+	elif [ "$2" -eq 4 ]; then
+		echo -e "4\t(TPID = 0x8100, ignore DEI)"
+	elif [ "$2" -eq 5 ]; then
+		echo -e "5\t(TPID = Input TPID, ignore DEI)"
+	elif [ "$2" -eq 6 ]; then
+		echo -e "6\t(TPID = Input TPID, DEI = 0)"
+	elif [ "$2" -eq 7 ]; then
+		echo -e "7\t(TPID = Input TPID, DEI = 1)"
+	else
+		echo -e "$2\t(Reserved)"
+	fi
+}
+
+filter_ethertype() {
+	if [ "$1" -eq 0 ]; then
+		echo -e "0\t(Do not filter on EtherType)"
+	elif [ "$1" -eq 1 ]; then
+		echo -e "1\t(0x0800 - IPv4 IPoE)"
+	elif [ "$1" -eq 2 ]; then
+		echo -e "2\t(0x8863 / 0x8864 - PPPoE)"
+	elif [ "$1" -eq 3 ]; then
+		echo -e "3\t(0x0806 - ARP)"
+	elif [ "$1" -eq 4 ]; then
+		echo -e "4\t(0x86DD - IPv6 IPoE)"
+	elif [ "$1" -eq 5 ]; then
+		echo -e "5\t(0x888E - EAPOL)"
+	else
+		echo -e "$1\t(Reserved)"
+	fi
+}
+
+filter_extended_criteria() {
+	if [ "$1" -eq 0 ]; then
+		echo -e "0\t(Do not filter on extended criteria)"
+	elif [ "$1" -eq 1 ]; then
+		echo -e "1\t(DHCPv4)"
+	elif [ "$1" -eq 2 ]; then
+		echo -e "2\t(DHCPv6)"
+	else
+		echo -e "$1\t(Reserved)"
+	fi
+}
+
+treatment_remove_tags() {
+	if [ "$1" -eq 3 ]; then
+		echo -e "3\t(Discard the frame)"
+	else
+		echo "$1"
+	fi
+}
+
+treatment_priority() {
 	local dir=$(dir "$1")
 
 	if [ "$2" -le  7 ]; then
@@ -85,25 +149,33 @@ output_treat_priority() {
 	fi
 }
 
-output_vid() {
-	local dir=$(dir "$1")
-
-	if [ "$2" -lt 4095 ]; then
-		echo "$2"
-	elif [ "$2" -eq 4096 ]; then
-		echo -e "4096\t(Do not filter on the $dir VID)";
-	else
-		echo -e "$2\t(Reserved)";
-	fi
-}
-
-output_treat_vid() {
+treatment_vid() {
 	if [ "$2" -lt 4095 ]; then
 		echo "$2"
 	elif [ "$2" -eq 4096 ]; then
 		echo -e "4096\t(Copy from the inner VID of received frame)"
 	elif [ "$2" -eq 4097 ]; then
 		echo -e "4097\t(Copy from the outer VID of received frame)"
+	else
+		echo -e "$2\t(Reserved)"
+	fi
+}
+
+treatment_tpid_dei() {
+	if [ "$2" -eq 0 ]; then
+		echo -e "0\t(TPID = Inner TPID, DEI = Inner DEI)"
+	elif [ "$2" -eq 1 ]; then
+		echo -e "1\t(TPID = Outer TPID, DEI = Outer DEI)"
+	elif [ "$2" -eq 2 ]; then
+		echo -e "2\t(TPID = Output TPID, DEI = Inner DEI)"
+	elif [ "$2" -eq 3 ]; then
+		echo -e "3\t(TPID = Output TPID, DEI = Outer DEI)"
+	elif [ "$2" -eq 4 ]; then
+		echo -e "4\t(TPID = 0x8100)"
+	elif [ "$2" -eq 6 ]; then
+		echo -e "6\t(TPID = Output TPID, DEI = 0)"
+	elif [ "$2" -eq 7 ]; then
+		echo -e "7\t(TPID = Output TPID, DEI = 1)"
 	else
 		echo -e "$2\t(Reserved)"
 	fi
@@ -137,32 +209,39 @@ vlan_parse() {
 		echo
 	else
 		echo -ne "Filter Outer Priority:\t\t"
-		output_priority o $filter_outer_priority
+		filter_priority o $filter_outer_priority
 		echo -ne "Filter Outer VID:\t\t"
-		output_vid o $filter_outer_vid
-		echo -e "Filter Outer TPID/DEI:\t\t$filter_outer_tpid_dei"
+		filter_vid o $filter_outer_vid
+		echo -ne "Filter Outer TPID/DEI:\t\t"
+		filter_tpid_dei o $filter_outer_tpid_dei
 
 		echo -ne "Filter Inner Priority:\t\t"
-		output_priority i $filter_inner_priority
+		filter_priority i $filter_inner_priority
 		echo -ne "Filter Inner VID:\t\t"
-		output_vid i $filter_inner_vid
-		echo -e "Filter Inner TPID/DEI:\t\t$filter_inner_tpid_dei"
+		filter_vid i $filter_inner_vid
+		echo -ne "Filter Inner TPID/DEI:\t\t"
+		filter_tpid_dei i $filter_inner_tpid_dei
 
-		echo -e "Filter EtherType:\t\t$filter_ethertype"
-		echo -e "Filter Extended Criteria:\t$filter_extended_criteria"
+		echo -ne "Filter EtherType:\t\t"
+		filter_ethertype $filter_ethertype
+		echo -ne "Filter Extended Criteria:\t"
+		filter_extended_criteria $filter_extended_criteria
 
-		echo -e "Treatment tags to remove:\t$treatment_remove_tags"
+		echo -ne "Treatment tags to remove:\t"
+		treatment_remove_tags $treatment_remove_tags
 		echo -ne "Treatment outer priority:\t"
-		output_treat_priority o $treatment_outer_priority
+		treatment_priority o $treatment_outer_priority
 		echo -ne "Treatment outer VID:\t\t"
-		output_treat_vid o $treatment_outer_vid
-		echo -e "Treatment outer TPID/DEI:\t$treatment_outer_tpid_dei"
+		treatment_vid o $treatment_outer_vid
+		echo -ne "Treatment outer TPID/DEI:\t"
+		treatment_tpid_dei o $treatment_outer_tpid_dei
 
 		echo -ne "Treatment inner priority:\t"
-		output_treat_priority i $treatment_inner_priority
+		treatment_priority i $treatment_inner_priority
 		echo -ne "Treatment inner VID:\t\t"
-		output_treat_vid i $treatment_inner_vid
-		echo -e "Treatment inner TPID/DEI:\t$treatment_inner_tpid_dei"
+		treatment_vid i $treatment_inner_vid
+		echo -ne "Treatment inner TPID/DEI:\t"
+		treatment_tpid_dei i $treatment_inner_tpid_dei
 	fi
 }
 
