@@ -10,20 +10,27 @@ local sys = require "luci.sys"
 local i18n = require "luci.i18n"
 local translate = i18n.translate
 local base64 = require "base64"
+local ltn12 = require "luci.ltn12"
+local support_file = "/tmp/support.tar.gz"
 
 local firmwareOutput = ''
+local supportOutput = ''
 
 function index()
 	entry({"admin", "8311"}, firstchild(), translate("8311"), 99).dependent=false
 	entry({"admin", "8311", "config"}, call("action_config"), translate("Configuration"), 1)
 	entry({"admin", "8311", "pon_status"}, call("action_pon_status"), translate("PON Status"), 2)
 	entry({"admin", "8311", "pon_explorer"}, call("action_pon_explorer"), translate("PON ME Explorer"), 3)
+	entry({"admin", "8311", "vlans"}, call("action_vlans"), translate("VLAN Tables"), 4)
+	entry({"admin", "8311", "support"}, post_on({ data = true }, "action_support"), translate("Support"), 5)
 
 	entry({"admin", "8311", "save"}, post_on({ data = true }, "action_save"))
 	entry({"admin", "8311", "pontop"}, call("action_pontop")).leaf=true
 	entry({"admin", "8311", "pon_dump"}, call("action_pon_dump")).leaf=true
+	entry({"admin", "8311", "vlans", "extvlans"}, call("action_vlan_extvlans"))
+	entry({"admin", "8311", "support", "support.tar.gz"}, call("action_support_download"))
 
-	entry({"admin", "8311", "firmware"}, call("action_firmware"), translate("Firmware"), 4);
+	entry({"admin", "8311", "firmware"}, call("action_firmware"), translate("Firmware"), 6);
 end
 
 function pontop_page_details()
@@ -291,11 +298,11 @@ function fwenvs_8311()
 				},{
 					id="omcc_version",
 					name=translate("OMCC Version"),
-					description=translate("The OMCC version to use in hexadecimal format between 0x82 and 0xBF. Default is 0xA3"),
+					description=translate("The OMCC version to use in hexadecimal format between 0x80 and 0xBF. Default is 0xA3"),
 					type="text",
 					default="0xA3",
 					maxlength=4,
-					pattern='^0x(8[2-9A-F]|[9AB][0-9A-F])$'
+					pattern='^0x[89AB][0-9A-F]$'
 				},{
 					id="iop_mask",
 					name=translate("OMCI Interoperability Mask"),
@@ -384,7 +391,7 @@ function fwenvs_8311()
 					name=translate("Fix VLANs"),
 					description=translate("Apply automatic fixes to the VLAN configuration from the OLT."),
 					type="select_named",
-					default="1",
+					default=1,
 					options={
 						{
 							name=translate("Disabled"),
@@ -611,6 +618,24 @@ function action_pon_status()
 	})
 end
 
+function action_vlans()
+	ltemplate.render("8311/vlans", {})
+end
+
+function action_vlan_extvlans()
+	local vlans_tables = util.exec("/usr/sbin/8311-extvlan-decode.sh")
+	luci.http.prepare_content("text/plain; charset=utf-8")
+	luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh", "-t"}, luci.http.write)
+	luci.http.write("\n\n")
+	luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh"}, luci.http.write)
+end
+
+function action_support_download()
+	local archive = ltn12.source.file(io.open(support_file))
+	luci.http.prepare_content("application/x-targz")
+	ltn12.pump.all(archive, luci.http.write)
+end
+
 function populate_8311_fwenvs()
 	local fwenvs = fwenvs_8311()
 	local fwenvs_values = tools.fw_getenvs_8311()
@@ -769,6 +794,29 @@ function action_firmware()
 	})
 end
 
+function action_support()
+	local values = luci.http.formvalue()
+	local action = values["action"] or ""
+
+	local support_file_exists = false
+	local support_output = ""
+
+	if action == "generate" then
+		cmd = { "/usr/sbin/8311-support.sh" }
+		luci.sys.process.exec(cmd, supportOut, supportOut)
+	elseif action == "delete" then
+		os.remove(support_file)
+	end
+
+	support_file_exists = file_exists(support_file)
+
+	ltemplate.render("8311/support", {
+		support_exec=support_exec,
+		support_output=supportOutput,
+		support_file_exists=support_file_exists
+	})
+end
+
 function file_exists(filename)
 	local fp = io.open(filename, "r")
 	if fp ~= nil then
@@ -782,6 +830,11 @@ end
 function firmwareUpgradeOutput(data)
 	data = data or ''
 	firmwareOutput = firmwareOutput .. data
+end
+
+function supportOut(data)
+	data = data or ''
+	supportOutput = supportOutput .. data
 end
 
 --location: (string) The full path to where the file should be saved.

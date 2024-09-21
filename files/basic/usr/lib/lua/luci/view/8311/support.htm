@@ -1,0 +1,51 @@
+<%
+local tools = require "8311.tools"
+local esc = tools.html_escape
+
+local action = "validate"
+local upload_enable = true
+local install_enable = false
+local cancel_enable = false
+local reboot_enable = false
+local i18n = require "luci.i18n"
+local translate = i18n.translate
+-%>
+
+<%+header%>
+<script type="text/javascript" src="<%=resource%>/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/jquery.validate.min.js"></script>
+<script type="text/javascript" src="<%=resource%>/view/8311.js"></script>
+
+<h2 name="content"><%:Support%></h2>
+<br />
+
+<div class="cbi-section fade-in">
+	<h3><%:Support Archive%></h3>
+
+	<p><%:A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass.%></p>
+	<p><%:Connect the fiber for at least 30 seconds before generating a support archive.%></p>
+	<p style="font-weight: bold"><%:WARNING: A support archive contains potentially sensitive information. Do not share it publically.%></p>
+
+	<form id="support-form" method="post" action="<%=REQUEST_URI%>" enctype="multipart/form-data">
+		<div id="zone-content-wrapper">
+			<div id="zone-content">
+<% if support_output ~= '' then %>
+<pre id="support_output" style="font-size:10pt; font-family: monospace;"><%= esc(support_output) %></pre>
+<% end %>
+				<img id="support-loading" src="<%=resource%>/icons/loading.gif" alt="Loading" style="display: none" />
+			</div>
+		</div>
+		<input class="cbi-input-button support-button" type="button" title="<%:Generate Support Archive%>" value="<%:Generate Support Archive%>"
+			onclick="submitSupportForm('generate');" />
+<% if support_file_exists then %>
+		<input class="cbi-input-button support-button" type="button" title="<%:Download Support Archive%>" value="<%:Download Support Archive%>"
+			onclick="location.href='support/support.tar.gz'" />
+		<input class="cbi-input-button support-button" type="button" title="<%:Delete Support Archive%>" value="<%:Delete Support Archive%>"
+			onclick="submitSupportForm('delete');" />
+<% end %>
+
+		<input id="support-action" type="hidden" name="action" value="generate" />
+	</form>
+</div>
+
+<%+footer%>

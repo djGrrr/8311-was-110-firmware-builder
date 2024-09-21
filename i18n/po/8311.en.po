@@ -432,6 +432,33 @@ msgstr "Redirect HTTP to HTTPs"
 msgid "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
 msgstr "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
 
+msgid "VLAN Tables"
+msgstr "VLAN Tables"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Support Archive"
+msgstr "Support Archive"
+
+msgid "A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass."
+msgstr "A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass."
+
+msgid "Connect the fiber for at least 30 seconds before generating a support archive."
+msgstr "Connect the fiber for at least 30 seconds before generating a support archive."
+
+msgid "WARNING: A support archive contains potentially sensitive information. Do not share it publically."
+msgstr "WARNING: A support archive contains potentially sensitive information. Do not share it publically."
+
+msgid "Generate Support Archive"
+msgstr "Generate Support Archive"
+
+msgid "Download Support Archive"
+msgstr "Download Support Archive"
+
+msgid "Delete Support Archive"
+msgstr "Delete Support Archive"
+
 msgid "Active Firmware"
 msgstr "Active Firmware"
 

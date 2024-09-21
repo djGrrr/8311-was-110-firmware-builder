@@ -48,6 +48,18 @@ function saveConfig(e) {
 	return valid;
 }
 
+function vlanTables() {
+	vlans = $('#syslog');
+
+	vlans.text("Loading...");
+	$.ajax({
+		url: 'vlans/extvlans',
+		dataType: 'text'
+	}).done(function(data) {
+		vlans.text(data);
+	});
+}
+
 function switchTabPonStatus(tab) {
 	switchTab(tab);
 
@@ -78,6 +90,13 @@ function showPonMe(meId, instanceId) {
 		meDump.show();
 		meLabel.get(0).scrollIntoView({behavior: 'smooth'});
 	});
+}
+
+function submitSupportForm(action) {
+	$('input.support-button').attr('disabled', 'disabled');
+	$('#support-action').attr('value', action);
+	$('#support-loading').show();
+	$('#support-form').submit();
 }
 
 function submitFirmwareForm() {
