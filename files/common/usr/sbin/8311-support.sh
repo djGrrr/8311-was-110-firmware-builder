@@ -3,38 +3,43 @@ echo "Generating support archive ..."
 echo
 OUT="/tmp/support.tar.gz"
 TMPDIR=$(mktemp -d)
+OUTDIR="$TMPDIR/support"
+
+mkdir -p "$OUTDIR"
 
 echo -n "Dumping FW ENVs ..."
-fw_printenv | sort -V > "$TMPDIR/fwenvs.txt"
+fw_printenv | sort -V > "$OUTDIR/fwenvs.txt"
 echo " done"
 
 echo -n "Dumping pontop pages ..."
 rm -f "/tmp/pontop.txt"
 pontop -b > /dev/null
-mv "/tmp/pontop.txt" "$TMPDIR/"
+mv "/tmp/pontop.txt" "$OUTDIR/"
 echo " done"
 
 echo -n "Dumping OMCI MEs ..."
-omci_pipe.sh md > "$TMPDIR/omci_pipe_md.txt"
-omci_pipe.sh mda > "$TMPDIR/omci_pipe_mda.txt"
+omci_pipe.sh md > "$OUTDIR/omci_pipe_md.txt"
+omci_pipe.sh mda > "$OUTDIR/omci_pipe_mda.txt"
 echo " done"
 
 echo -n "Dumping VLAN tables ..."
-8311-extvlan-decode.sh > "$TMPDIR/extvlan-tables.txt"
+8311-extvlan-decode.sh -t > "$OUTDIR/extvlan-tables.txt"
+{ echo; echo; } >> "$OUTDIR/extvlan-tables.txt"
+8311-extvlan-decode.sh >> "$OUTDIR/extvlan-tables.txt"
 echo " done"
 
 echo -n "Dumping TC Filters ..."
-8311-tc-filter-dump.sh > "$TMPDIR/tc_filters.txt"
+8311-tc-filter-dump.sh > "$OUTDIR/tc_filters.txt"
 echo " done"
 
 echo -n "Dumping System Log ..."
-logread > "$TMPDIR/system_log.txt"
+logread > "$OUTDIR/system_log.txt"
 echo " done"
 
 echo
 echo -n "Writing support archive '$OUT' ..."
 rm -f "$OUT"
-tar -cz -f "$OUT" -C "$TMPDIR" -- fwenvs.txt omci_pipe_md.txt omci_pipe_mda.txt pontop.txt system_log.txt extvlan-tables.txt tc_filters.txt
+tar -cz -f "$OUT" -C "$TMPDIR" -- support
 rm -rf "$TMPDIR"
 
 echo " done"
