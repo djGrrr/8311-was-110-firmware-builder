@@ -448,13 +448,13 @@ msgid "WARNING: A support archive contains potentially sensitive information. Do
 msgstr "ATTENTION: Le fichier de support contient des information sensibles. Ne le partage pas publiquement."
 
 msgid "Generate Support Archive"
-msgstr "Génération du fichier de support"
+msgstr "Génération du Fichier de Support"
 
 msgid "Download Support Archive"
-msgstr "Télécharger le fichier de support"
+msgstr "Télécharger le Fichier de Support"
 
 msgid "Delete Support Archive"
-msgstr "Supprimer le fichier de support"
+msgstr "Supprimer le Fichier de Support"
 
 msgid "Active Firmware"
 msgstr "Firmware Actif"
