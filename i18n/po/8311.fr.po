@@ -217,7 +217,7 @@ msgid "2 - Skip Alloc-IDs termination upon T-CONT deactivation"
 msgstr "2 - Ignorer la terminaison des Alloc-IDs lors de la désactivation des T-CONT"
 
 msgid "4 - Drop all packets on default Downstream Extended VLAN rules"
-msgstr "4 - Supprimez tous les paquets, du canal par defaut descendant, pour les règles VLAN étendues"
+msgstr "4 - Supprimez tous les paquets, du canal par défaut descendant, pour les règles VLAN étendues"
 
 msgid "8 - Ignore Downstream Extended VLAN rules priority matching"
 msgstr "8 - Ignorer la correspondance de priorité des règles VLAN étendues du canal descendant"
@@ -427,7 +427,34 @@ msgid "Redirect HTTP to HTTPs"
 msgstr "Redirige HTTP vers HTTPs"
 
 msgid "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
-msgstr "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
+msgstr "Redirige automatiquement les demandes destinées au WebUI via HTTP vers HTTPs. Activée par défaut."
+
+msgid "VLAN Tables"
+msgstr "Tableaux VLAN"
+
+msgid "Support"
+msgstr "Support"
+
+msgid "Support Archive"
+msgstr "Archives de Support"
+
+msgid "A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass."
+msgstr "L'archive de support contient de l'information de diagnostic utilisées pour aider à identifier des problèmes en essayant de bypasser."
+
+msgid "Connect the fiber for at least 30 seconds before generating a support archive."
+msgstr "Connecte la fibre pendant au moins 30 secondes avant de générer l'archive de support."
+
+msgid "WARNING: A support archive contains potentially sensitive information. Do not share it publically."
+msgstr "ATTENTION: L'archive de support contient de l'information potentiellement sensibles. Ne partage le pas publiquement."
+
+msgid "Generate Support Archive"
+msgstr "Générer L'archive de Support"
+
+msgid "Download Support Archive"
+msgstr "Télécharge L'archive de Support"
+
+msgid "Delete Support Archive"
+msgstr "Efacer L'archive de Support"
 
 msgid "Active Firmware"
 msgstr "Firmware Actif"
