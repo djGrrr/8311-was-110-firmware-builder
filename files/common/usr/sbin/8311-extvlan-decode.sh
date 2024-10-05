@@ -1,4 +1,6 @@
 #!/bin/sh
+_lib_8311_omci &>/dev/null || . /lib/8311-omci-lib.sh
+
 HEADER=true
 TABLE=false
 
@@ -246,7 +248,7 @@ vlan_parse() {
 }
 
 
-ext_vlan_tables=$(omci_pipe.sh md | grep -E -o '^\|\s+171\s+\|\s+(\d+)\s+' | awk '{print $4}')
+ext_vlan_tables=$(mibs 171)
 
 i=0
 for ext_vlan_table in $ext_vlan_tables; do
@@ -260,7 +262,7 @@ for ext_vlan_table in $ext_vlan_tables; do
 	fi
 	[ "$i" -gt 0 ] && echo
 
-	data=$(omci_pipe.sh meg 171 $ext_vlan_table | grep -A999 '6 RX frame VLAN table' | grep -B999 "7 Associated ME ptr" | grep -E '^  ( 0x[0-9a-f]{2}){16}\s*$' | sed -r -e 's/\s+0x//g')
+	data=$(mibattrdata 171 $ext_vlan_table 6)
 	for vlan_filter in $data; do
 		w=$(echo $vlan_filter | sed -r 's/(.{8})/0x\1 /g')
 		vlan_parse $w
