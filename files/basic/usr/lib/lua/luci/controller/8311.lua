@@ -391,7 +391,7 @@ function fwenvs_8311()
 					name=translate("Fix VLANs"),
 					description=translate("Apply automatic fixes to the VLAN configuration from the OLT."),
 					type="select_named",
-					default=1,
+					default="1",
 					options={
 						{
 							name=translate("Disabled"),
