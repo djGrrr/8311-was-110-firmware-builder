@@ -760,6 +760,7 @@ function action_firmware()
 	local firmware_file_exists = file_exists(firmware_file)
 	local firmware_exec = nil
 	local action = "validate"
+	local installed = false
 
 	if firmware_file_exists then
 		local cmd = {}
@@ -771,9 +772,11 @@ function action_firmware()
 		elseif action == "install" then
 			cmd = { "/usr/sbin/8311-firmware-upgrade.sh", "--yes", "--install", firmware_file }
 			firmware_exec = luci.sys.process.exec(cmd, firmwareUpgradeOutput, firmwareUpgradeOutput)
+			installed = true
 		elseif action == "install_reboot" then
 			cmd = { "/usr/sbin/8311-firmware-upgrade.sh", "--yes", "--install", "--reboot", firmware_file }	
 			firmware_exec = luci.sys.process.exec(cmd, firmwareUpgradeOutput, firmwareUpgradeOutput)
+			installed = true
 		elseif action == "reboot" then
 			sys.reboot()
 		else
@@ -783,6 +786,20 @@ function action_firmware()
 		end
 	end
 
+	local alt_firm_file = "/tmp/8311-alt-firmware"
+	if installed and file_exists(alt_firm_file) then
+		os.remove(alt_firm_file)
+	end
+
+	for k, v in string.gmatch(util.exec("/usr/sbin/alternate_firmware_info"), '([^\n=]+)=([^\n]+)') do
+		if k == "FW_VARIANT" then
+			altversion.variant=v
+		elseif k == "FW_VERSION" then
+			altversion.version=v
+		elseif k == "FW_REVISION" then
+			altversion.revision=v
+		end
+	end
 
 	ltemplate.render("8311/firmware", {
 		version=version,

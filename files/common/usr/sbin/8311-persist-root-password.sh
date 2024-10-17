@@ -6,5 +6,4 @@ if [ -z "$ROOT_PWHASH" ]; then
 fi
 
 echo "Setting fwenv 8311_root_pwhash to '$ROOT_PWHASH'"
-fw_setenv 8311_root_pwhash "$ROOT_PWHASH"
-fw_setenv 8311_root_pwhash "$ROOT_PWHASH"
+fwenv_set -8 "root_pwhash" "$ROOT_PWHASH"

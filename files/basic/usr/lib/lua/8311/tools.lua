@@ -55,13 +55,13 @@ function fwenv_get(key, default, _8311, base64)
 	if base64 then base64_arg = "--base64 " end
 	if default then default_arg = " " .. util.shellquote(default) end
 
-	return util.trim(util.exec("fwenv_get " .. _8311_arg .. base64_arg .. util.shellquote(key) .. default_arg))
+	return string.gsub(util.exec("fwenv_get " .. _8311_arg .. base64_arg .. util.shellquote(key) .. default_arg), '[\r\n]+$', "")
 end
 
 function fw_getenvs_8311()
 	local fwenvs = {}
-	for k, v in string.gmatch(util.exec('echo ; fw_printenv | grep "^8311_"'), '\n8311_([^\n=]+)=([^\n]+)') do
-		fwenvs[k] = util.trim(v)
+	for k, v in string.gmatch(util.exec('echo ; fw_printenv | grep "^8311_"'), '\n8311_([^\n=]+)=([^\r\n]+)') do
+		fwenvs[k] = v
 	end
 
 	return fwenvs
