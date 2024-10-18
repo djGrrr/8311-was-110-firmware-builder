@@ -35,12 +35,12 @@ local translate = i18n.translate
 				<img id="support-loading" src="<%=resource%>/icons/loading.gif" alt="Loading" style="display: none" />
 			</div>
 		</div>
-		<input class="cbi-input-button support-button" type="button" title="<%:Generate Support Archive%>" value="<%:Generate Support Archive%>"
+		<input class="cbi-button cbi-button-action" type="button" title="<%:Generate Support Archive%>" value="<%:Generate Support Archive%>"
 			onclick="submitSupportForm('generate');" />
 <% if support_file_exists then %>
-		<input class="cbi-input-button support-button" type="button" title="<%:Download Support Archive%>" value="<%:Download Support Archive%>"
+		<input class="cbi-button cbi-button-action important" type="button" title="<%:Download Support Archive%>" value="<%:Download Support Archive%>"
 			onclick="location.href='support/support.tar.gz'" />
-		<input class="cbi-input-button support-button" type="button" title="<%:Delete Support Archive%>" value="<%:Delete Support Archive%>"
+		<input class="cbi-button cbi-button-reset" type="button" title="<%:Delete Support Archive%>" value="<%:Delete Support Archive%>"
 			onclick="submitSupportForm('delete');" />
 <% end %>
 

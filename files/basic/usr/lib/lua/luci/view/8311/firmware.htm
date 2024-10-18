@@ -98,17 +98,17 @@ local translate = i18n.translate
 			</div>
 		</div>
 <% if upload_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="<%:Upload firmware%>" value="<%:Upload%>" onclick="uploadFirmware();" />
+		<input class="cbi-button cbi-button-action" type="button" title="<%:Upload firmware%>" value="<%:Upload%>" onclick="uploadFirmware();" />
 <% end %>
 <% if install_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="<%:Install firmware%>" value="<%:Install%>" onclick="installFirmware(false);" />
-		<input class="cbi-input-button firmware-button" type="button" title="<%:Install firmware and reboot%>" value="<%:Install and Reboot%>" onclick="installFirmware(true);" />
+		<input class="cbi-button cbi-button-action important" type="button" title="<%:Install firmware%>" value="<%:Install%>" onclick="installFirmware(false);" />
+		<input class="cbi-button cbi-button-action important" type="button" title="<%:Install firmware and reboot%>" value="<%:Install and Reboot%>" onclick="installFirmware(true);" />
 <% end %>
 <% if cancel_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="<%:Cancel firmware upgrade and cleanup%>" value="<%:Cancel%>" onclick="cancelFirmware();" />
+		<input class="cbi-button cbi-button-reset" type="button" title="<%:Cancel firmware upgrade and cleanup%>" value="<%:Cancel%>" onclick="cancelFirmware();" />
 <% end %>
 <% if reboot_enable then %>
-		<input class="cbi-input-button firmware-button" type="button" title="<%:Reboot to new firmware%>" value="<%:Reboot%>" onclick="rebootFirmware();" />
+		<input class="cbi-button cbi-button-action important" type="button" title="<%:Reboot to new firmware%>" value="<%:Reboot%>" onclick="rebootFirmware();" />
 <% end %>
 
 		<input id="firmware-action" type="hidden" name="action" value="<%= action %>" />

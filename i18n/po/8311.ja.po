@@ -290,6 +290,18 @@ msgstr "OLTからVLAN設定の自動修正を適用します。"
 msgid "Hook script only"
 msgstr "フックスクリプトのみ"
 
+msgid "Edit hook script"
+msgstr "フックスクリプト編集"
+
+msgid "Hook script saved."
+msgstr "フックスクリプトが保存されました。"
+
+msgid "Failed to save hook script."
+msgstr "フックスクリプトの保存に失敗しました。"
+
+msgid "Note: The hook script works in all cases except when Fix VLANs is set to Disabled."
+msgstr "注: フックスクリプトは、VLAN修正が無効に設定されている場合を除き、すべてのケースで動作します。"
+
 msgid "Internet VLAN"
 msgstr "インターネットVLAN"
 
