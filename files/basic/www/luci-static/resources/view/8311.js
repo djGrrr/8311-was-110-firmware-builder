@@ -26,7 +26,7 @@ function saveConfig(e) {
 	field.forEach(i => {
 		var element = $(i);
 		var element_id = element.attr('id');
-		var error_label = $('label.error[for="' + element_id  + '"]');
+		var error_label = $('label.error[for="' + element_id + '"]');
 
 		if (!i.checkValidity()) {
 			valid = false;
@@ -129,3 +129,70 @@ function installFirmware(reboot) {
 	$('#firmware-action').attr('value', action);
 	submitFirmwareForm();
 }
+
+$(document).ready(function () {
+	var fixVlansSelect = $('#widget\\.cbid\\.system\\.poncfg\\.fix_vlans');
+	if (fixVlansSelect.length === 0) {
+		return;
+	}
+
+	var editHookScriptBtn = $('#edit-hook-script-btn');
+	var hookScriptModal = $('#hook-script-modal');
+	var hookScriptMessage = $('#hook-script-message');
+	var hookScriptTextarea = $('#hook-script-textarea');
+	var vlanFields = $('.vlan-field');
+
+	function toggleVlanFields() {
+		var fixVlansValue = fixVlansSelect.val();
+		if (fixVlansValue == '1') {
+			vlanFields.show();
+		} else {
+			vlanFields.hide();
+		}
+	}
+
+	fixVlansSelect.change(toggleVlanFields);
+	toggleVlanFields();
+	editHookScriptBtn.click(function (e) {
+		e.preventDefault();
+
+		hookScriptMessage.hide();
+		hookScriptMessage.text('');
+
+		$.get('get_hook_script', function (data) {
+			if (data.trim() === '') {
+				hookScriptTextarea.val('');
+			} else {
+				hookScriptTextarea.val(data);
+			}
+			hookScriptModal.show();
+			adjustTextareaHeight();
+		});
+	});
+
+	$('#hook-script-save-btn').click(function () {
+		var content = hookScriptTextarea.val();
+		$.post('save_hook_script', { content: content }, function (response) {
+			hookScriptMessage.text(translations.hookScriptSaved);
+			hookScriptMessage.css('color', 'green');
+			hookScriptMessage.show();
+			setTimeout(function () {
+				hookScriptMessage.hide();
+				hookScriptModal.hide();
+			}, 1000); // hide window in 1s
+		}).fail(function () {
+			hookScriptMessage.text(translations.hookScriptSaveFailed);
+			hookScriptMessage.css('color', 'red');
+			hookScriptMessage.show();
+		});
+	});
+	$('#hook-script-cancel-btn').click(function () {
+		hookScriptModal.hide();
+	});
+	function adjustTextareaHeight() {
+		hookScriptTextarea.height(0);
+		var height = hookScriptTextarea[0].scrollHeight;
+		hookScriptTextarea.height(height);
+	}
+	hookScriptTextarea.on('input', adjustTextareaHeight);
+});

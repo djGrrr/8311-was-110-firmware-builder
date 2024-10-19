@@ -291,6 +291,18 @@ msgstr "启用从OLT自动修复VLAN配置"
 msgid "Hook script only"
 msgstr "仅限钩子脚本"
 
+msgid "Edit hook script"
+msgstr "编辑钩子脚本"
+
+msgid "Hook script saved."
+msgstr "钩子脚本已保存"
+
+msgid "Failed to save hook script."
+msgstr "钩子脚本保存失败"
+
+msgid "Note: The hook script works in all cases except when Fix VLANs is set to Disabled."
+msgstr "提示：钩子脚本在所有情况下都有效，除非将修复VLAN设置为已禁用。"
+
 msgid "Internet VLAN"
 msgstr "上网VLAN"
 

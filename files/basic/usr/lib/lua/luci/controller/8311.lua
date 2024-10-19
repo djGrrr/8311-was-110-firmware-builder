@@ -11,6 +11,7 @@ local i18n = require "luci.i18n"
 local translate = i18n.translate
 local base64 = require "base64"
 local ltn12 = require "luci.ltn12"
+local fs = require "nixio.fs"
 local support_file = "/tmp/support.tar.gz"
 
 local firmwareOutput = ''
@@ -25,6 +26,8 @@ function index()
 	entry({"admin", "8311", "support"}, post_on({ data = true }, "action_support"), translate("Support"), 5)
 
 	entry({"admin", "8311", "save"}, post_on({ data = true }, "action_save"))
+	entry({"admin", "8311", "get_hook_script"}, call("action_get_hook_script")).leaf=true
+	entry({"admin", "8311", "save_hook_script"}, call("action_save_hook_script")).leaf=true
 	entry({"admin", "8311", "pontop"}, call("action_pontop")).leaf=true
 	entry({"admin", "8311", "pon_dump"}, call("action_pon_dump")).leaf=true
 	entry({"admin", "8311", "vlans", "extvlans"}, call("action_vlan_extvlans"))
@@ -630,6 +633,25 @@ function action_vlan_extvlans()
 	luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh"}, luci.http.write)
 end
 
+function action_get_hook_script()
+    local content = fs.readfile("/ptconf/8311/vlan_fixes_hook.sh") or ''
+    luci.http.prepare_content("text/plain; charset=utf-8")
+    luci.http.write(content)
+end
+
+function action_save_hook_script()
+    local content = luci.http.formvalue('content') or ''
+	if content == '' then
+		fs.remove("/ptconf/8311/vlan_fixes_hook.sh")
+	else
+		fs.writefile("/ptconf/8311/vlan_fixes_hook.sh", content)
+		fs.chmod("/ptconf/8311/vlan_fixes_hook.sh", 755)
+	end
+    luci.http.status(200, "OK")
+    luci.http.prepare_content("application/json")
+    luci.http.write_json({ success = true })
+end
+
 function action_support_download()
 	local archive = ltn12.source.file(io.open(support_file))
 	luci.http.prepare_content("application/x-targz")
@@ -858,7 +880,6 @@ end
 --input_name: (string) The name specified by the input html field.  <input type="submit" name="input_name_here" value="whatever you want"/>
 --file_name: (string, optional) The optional name you would like the file to be saved as. If left blank the file keeps its uploaded name.
 function setFileHandler(location, input_name, file_name)
-	local fs = require "nixio.fs"
 	local fp
 
 	luci.http.setfilehandler(

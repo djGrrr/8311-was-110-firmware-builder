@@ -2,6 +2,7 @@
 local tools = require "8311.tools"
 local esc = tools.html_escape
 local nl2br = tools.nl2br
+local hook_script_placeholder = "#!/bin/sh\n# /ptconf/8311/vlan_fixes_hook.sh\n\nadd your script here.."
 -%>
 
 <%+header%>
@@ -18,12 +19,25 @@ local nl2br = tools.nl2br
 <% end -%>
 </ul>
 
+<script type="text/javascript">
+	var translations = {
+		hookScriptSaved: '<%=translate("Hook script saved.")%>',
+		hookScriptSaveFailed: '<%=translate("Failed to save hook script.")%>'
+	};
+</script>
+
 <form id="8311-config" action="save" onsubmit="return saveConfig()"  method="post" novalidate="novalidate">
 <div id="cbi-system-poncfg" class="cbi-section-node cbi-section-node-tabbed" data-section-id="poncfg" data-initialized="true">
 <%- for catid, cat in pairs(fwenvs) do -%>
 	<div id="container.system.poncfg.<%= cat.id %>" data-tab="<%= cat.id %>" data-tab-title="<%= esc(cat.category) %>" <% if catid < 2 then %>data-tab-active="true"<% end %>>
 <%- for itemid, item in pairs(cat.items) do %>
-		<div class="cbi-value" id="cbi-system-poncfg-<%= item.id %>" data-index="<%= (itemid - 1) %>" data-field="cbid.system.poncfg.<%= item.id %>" data-name="<%= item.id %>" data-widget="CBI.Value">
+		<%-
+		local show_item = true
+		if item.id == 'internet_vlan' or item.id == 'services_vlan' then
+			show_item = false
+		end
+		%>
+		<div class="cbi-value<% if not show_item then %> vlan-field<% end %>" id="cbi-system-poncfg-<%= item.id %>" data-index="<%= (itemid - 1) %>" data-field="cbid.system.poncfg.<%= item.id %>" data-name="<%= item.id %>" data-widget="CBI.Value">
 			<label class="cbi-value-title" for="widget.cbid.system.poncfg.<%= item.id %>"><%= esc(item.name) %></label>
 			<div class="cbi-value-field">
 				<div id="cbid.system.poncfg.<%= item.id %>">
@@ -34,6 +48,7 @@ local checked = ""
 local minv = ""
 local maxv = ""
 local maxlength = ""
+local class_attr = 'cbi-input-' .. item.type
 
 if item.type == "checkbox" then
 	value = "1"
@@ -62,7 +77,7 @@ end
 
 
 if item.type == "select" then %>
-					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" data-cat-id="<%= cat.id %>" class="cbi-input-select">
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" data-cat-id="<%= cat.id %>" class="<%= esc(class_attr) %>">
 <%
 for _, option in pairs(item.options) do
 	local option_html = esc(option)
@@ -72,16 +87,16 @@ for _, option in pairs(item.options) do
 <% end %>
 					</select>
 <%- elseif item.type == "select_named" then %>
-					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" data-cat-id="<%= cat.id %>" class="cbi-input-select">
+					<select id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" data-cat-id="<%= cat.id %>" class="<%= esc(class_attr) %>">
 <%
 for _, option in pairs(item.options) do
 %>
 						<option value="<%= esc(option.value) %>"
-<%- if option.value == value or value == '' and option.value == item.default then %> selected="selected"<% end %>>&nbsp;<%= esc(option.name) %></option>
+<%- if option.value == value or value == '' and option.value == item.default then %> selected="selected"<% end %>>&nbsp;<%= esc(translate(option.name)) %></option>
 <% end %>
 					</select>
 <%- else %>
-					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="cbi-input-<%= item.type %>"
+					<input id="widget.cbid.system.poncfg.<%= item.id %>" name="<%= item.id %>" class="<%= esc(class_attr) %>"
 						type="<%= item.type %>" value="<%= esc(value) %>"<% if item.required then %> required="required"<% end %>
 						<%= maxlength %><%= checked %><%= minv %><%= maxv %>
 						<% if placeholder then %>  placeholder="<%= esc(placeholder) %>"<% end %> data-cat-id="<%= cat.id %>"
@@ -94,11 +109,32 @@ for _, option in pairs(item.options) do
 <% end %>
 			</div>
 		</div>
+<% if item.id == 'fix_vlans' then %>
+		<div class="cbi-value">
+			<label class="cbi-value-title"></label>
+			<div class="cbi-value-field">
+				<button id="edit-hook-script-btn" type="button" class="cbi-button cbi-button-edit"><%:Edit hook script%></button>
+				<span class="hook-script-info"><%= translate("Note: The hook script works in all cases except when Fix VLANs is set to Disabled.") %></span>
+			</div>
+		</div>
+<% end %>
 <% end %>
 	</div>
 <% end %>
 </div>
-<input type="submit" value="<%:Save%>" />
+<input type="submit" class="cbi-button cbi-button-save" value="<%:Save%>" />
 </form>
+
+<div id="hook-script-modal" style="display:none;">
+	<div id="hook-script-overlay"></div>
+	<div id="hook-script-box">
+		<div id="hook-script-message" class="cbi-value-description" style="display:none;"></div>
+		<textarea id="hook-script-textarea" style="resize: none;" placeholder="<%= esc(hook_script_placeholder) %>"></textarea>
+		<div id="hook-script-buttons">
+			<button id="hook-script-save-btn" class="cbi-button cbi-button-save"><%:Save%></button>
+			<button id="hook-script-cancel-btn" class="cbi-button cbi-button-reset"><%:Cancel%></button>
+		</div>
+	</div>
+</div>
 
 <%+footer%>
