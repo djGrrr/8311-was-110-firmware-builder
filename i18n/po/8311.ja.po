@@ -299,7 +299,7 @@ msgstr "フックスクリプトが保存されました。"
 msgid "Failed to save hook script."
 msgstr "フックスクリプトの保存に失敗しました。"
 
-msgid "Note: The hook script works in all cases except when Fix VLANs is set to Disabled."
+msgid "Note: The hook script works unless Fix VLANs is set to Disabled."
 msgstr "注: フックスクリプトは、VLAN修正が無効に設定されている場合を除き、すべてのケースで動作します。"
 
 msgid "Internet VLAN"

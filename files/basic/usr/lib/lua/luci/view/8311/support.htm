@@ -32,16 +32,12 @@ local translate = i18n.translate
 <% if support_output ~= '' then %>
 <pre id="support_output" style="font-size:10pt; font-family: monospace;"><%= esc(support_output) %></pre>
 <% end %>
-				<img id="support-loading" src="<%=resource%>/icons/loading.gif" alt="Loading" style="display: none" />
 			</div>
 		</div>
-		<input class="cbi-button cbi-button-action" type="button" title="<%:Generate Support Archive%>" value="<%:Generate Support Archive%>"
-			onclick="submitSupportForm('generate');" />
+		<button type="button" class="support-button cbi-button cbi-button-action" onclick="return submitSupportForm(this, 'generate');"><%:Generate Support Archive%></button>
 <% if support_file_exists then %>
-		<input class="cbi-button cbi-button-action important" type="button" title="<%:Download Support Archive%>" value="<%:Download Support Archive%>"
-			onclick="location.href='support/support.tar.gz'" />
-		<input class="cbi-button cbi-button-reset" type="button" title="<%:Delete Support Archive%>" value="<%:Delete Support Archive%>"
-			onclick="submitSupportForm('delete');" />
+		<button type="button" class="support-button cbi-button cbi-button-action important" onclick="location.href='support/support.tar.gz'"><%:Download Support Archive%></button>
+		<button type="button" class="support-button cbi-button cbi-button-reset" onclick="submitSupportForm(this, 'delete');"><%:Delete Support Archive%></button>
 <% end %>
 
 		<input id="support-action" type="hidden" name="action" value="generate" />

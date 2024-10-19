@@ -85,4 +85,7 @@ boot() {
 
 	# 8311 MOD: start rx_los script
 	/usr/sbin/8311-rx_los.sh &
+
+	# Start Reverse ARP Daemon
+	/usr/sbin/8311-rarpd.sh &
 }

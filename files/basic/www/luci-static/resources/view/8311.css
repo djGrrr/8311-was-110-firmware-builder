@@ -7,6 +7,10 @@ label.error {
 	color: red !important;
 }
 
+input#firmware-file::file-selector-button {
+	display: none;
+}
+
 #hook-script-modal {
 	position: fixed;
 	top: 0;

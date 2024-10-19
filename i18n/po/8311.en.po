@@ -300,8 +300,8 @@ msgstr "Hook script saved."
 msgid "Failed to save hook script."
 msgstr "Failed to save hook script."
 
-msgid "Note: The hook script works in all cases except when Fix VLANs is set to Disabled."
-msgstr "Note: The hook script works in all cases except when Fix VLANs is set to Disabled."
+msgid "Note: The hook script works unless Fix VLANs is set to Disabled."
+msgstr "Note: The hook script works unless Fix VLANs is set to Disabled."
 
 msgid "Internet VLAN"
 msgstr "Internet VLAN"
@@ -437,6 +437,12 @@ msgstr "LCT MAC Address"
 
 msgid "MAC address of the LCT management interface (XX:XX:XX:XX:XX:XX format)."
 msgstr "MAC address of the LCT management interface (XX:XX:XX:XX:XX:XX format)."
+
+msgid "Reverse ARP Monitoring"
+msgstr "Reverse ARP Monitoring"
+
+msgid "Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets. This can help in reaching the management interface without using NAT."
+msgstr "Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets. This can help in reaching the management interface without using NAT."
 
 msgid "Redirect HTTP to HTTPs"
 msgstr "Redirect HTTP to HTTPs"

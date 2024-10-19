@@ -483,7 +483,7 @@ function fwenvs_8311()
 					name=translate("Root password hash"),
 					description=translate("Custom password hash for the root user. This can be set from System > Administration"),
 					maxlength=255,
-					pattern="^\\$[0-9a-z]+\\$.+\\$[A-Za-z0-9./]+\$",
+					pattern="^\\$[0-9a-z]+\\$.+\\$[A-Za-z0-9.\\/]+\$",
 					type="text"
 				},{
 					id="ethtool_speed",
@@ -586,6 +586,13 @@ function fwenvs_8311()
 					type="text",
 					default=util.trim(util.exec(". /lib/pon.sh && pon_mac_get lct")):upper()
 				},{
+					id="reverse_arp",
+					name=translate("Reverse ARP Monitoring"),
+					description=translate("Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets." ..
+						" This can help in reaching the management interface without using NAT."),
+					type="checkbox",
+					default=true
+				},{
 					id="https_redirect",
 					name=translate("Redirect HTTP to HTTPs"),
 					description=translate("Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."),
@@ -628,9 +635,11 @@ end
 function action_vlan_extvlans()
 	local vlans_tables = util.exec("/usr/sbin/8311-extvlan-decode.sh")
 	luci.http.prepare_content("text/plain; charset=utf-8")
-	luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh", "-t"}, luci.http.write)
-	luci.http.write("\n\n")
-	luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh"}, luci.http.write)
+
+	if luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh", "-t"}, luci.http.write, luci.http.write).code == 0 then
+		luci.http.write("\n\n")
+		luci.sys.process.exec({"/usr/sbin/8311-extvlan-decode.sh"}, luci.http.write, luci.http.write)
+	end
 end
 
 function action_get_hook_script()

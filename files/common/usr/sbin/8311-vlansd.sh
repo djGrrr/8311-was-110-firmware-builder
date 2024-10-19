@@ -3,7 +3,7 @@
 _lib_8311 2>/dev/null || . /lib/8311.sh
 
 pon_hash() {
-	/root/8311-detect-config.sh -H
+	/usr/sbin/8311-detect-config.sh -H
 }
 
 FIX_ENABLED=$(fwenv_get_8311 "fix_vlans" "1")
@@ -12,7 +12,7 @@ FIX_ENABLED=$(fwenv_get_8311 "fix_vlans" "1")
 HOOK="/ptconf/8311/vlan_fixes_hook.sh"
 
 FIXES=""
-[ "$FIX_ENABLED" -eq 1 ] && FIXES="/root/8311-fix-vlans.sh"
+[ "$FIX_ENABLED" -eq 1 ] && FIXES="/usr/sbin/8311-fix-vlans.sh"
 HOOKCMD=". /lib/8311-vlans-lib.sh && . $HOOK"
 
 LAST_HASH=""

@@ -23,9 +23,10 @@ omci_pipe.sh mda > "$OUTDIR/omci_pipe_mda.txt"
 echo " done"
 
 echo -n "Dumping VLAN tables ..."
-8311-extvlan-decode.sh -t > "$OUTDIR/extvlan-tables.txt"
-{ echo; echo; } >> "$OUTDIR/extvlan-tables.txt"
-8311-extvlan-decode.sh >> "$OUTDIR/extvlan-tables.txt"
+8311-extvlan-decode.sh -t > "$OUTDIR/extvlan-tables.txt" && {
+	printf "\n\n"
+	8311-extvlan-decode.sh
+} >> "$OUTDIR/extvlan-tables.txt"
 echo " done"
 
 echo -n "Dumping TC Filters ..."

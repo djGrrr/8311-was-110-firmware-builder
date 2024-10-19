@@ -300,7 +300,7 @@ msgstr "钩子脚本已保存"
 msgid "Failed to save hook script."
 msgstr "钩子脚本保存失败"
 
-msgid "Note: The hook script works in all cases except when Fix VLANs is set to Disabled."
+msgid "Note: The hook script works unless Fix VLANs is set to Disabled."
 msgstr "提示：钩子脚本在所有情况下都有效，除非将修复VLAN设置为已禁用。"
 
 msgid "Internet VLAN"

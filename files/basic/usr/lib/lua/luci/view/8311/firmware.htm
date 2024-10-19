@@ -12,6 +12,7 @@ local translate = i18n.translate
 -%>
 
 <%+header%>
+<link rel="stylesheet" href="<%=resource%>/view/8311.css" />
 <script type="text/javascript" src="<%=resource%>/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/jquery.validate.min.js"></script>
 <script type="text/javascript" src="<%=resource%>/view/8311.js"></script>
@@ -67,7 +68,8 @@ local translate = i18n.translate
 			<div id="zone-content">
 <% if not firmware_file_exists then %>
 				<div class="cbi-value">
-					<input class="cbi-input-file" type="file" name="firmware_file" id="firmware-file" required="required" />
+					<button type="button" class="firmware-button cbi-button cbi-button-neutral important" onclick="$('#firmware-file').click();">Browse</button>
+					<input type="file" name="firmware_file" id="firmware-file" required="required" />
 					<div class="upload-description">
 						<%:Upload firmware file here, typically named local-upgrade.tar%>
 					</div>
@@ -94,21 +96,20 @@ local translate = i18n.translate
 %>
 <pre id="firmware_output" style="font-size:10pt; font-family: monospace;"><%= esc(firmware_output) %></pre>
 <% end %>
-				<img id="firmware-loading" src="<%=resource%>/icons/loading.gif" alt="Loading" style="display: none" />
 			</div>
 		</div>
 <% if upload_enable then %>
-		<input class="cbi-button cbi-button-action" type="button" title="<%:Upload firmware%>" value="<%:Upload%>" onclick="uploadFirmware();" />
+		<button class="firmware-button cbi-button cbi-button-action" title="<%:Upload firmware%>" onclick="return uploadFirmware(this);"><%:Upload%></button>
 <% end %>
 <% if install_enable then %>
-		<input class="cbi-button cbi-button-action important" type="button" title="<%:Install firmware%>" value="<%:Install%>" onclick="installFirmware(false);" />
-		<input class="cbi-button cbi-button-action important" type="button" title="<%:Install firmware and reboot%>" value="<%:Install and Reboot%>" onclick="installFirmware(true);" />
+		<button class="firmware-button cbi-button cbi-button-action important" type="button" title="<%:Install firmware%>" onclick="return installFirmware(this, false);"><%:Install%></button>
+		<button class="firmware-button cbi-button cbi-button-action important" type="button" title="<%:Install firmware and reboot%>" onclick="return installFirmware(this, true);"><%:Install and Reboot%></button>
 <% end %>
 <% if cancel_enable then %>
-		<input class="cbi-button cbi-button-reset" type="button" title="<%:Cancel firmware upgrade and cleanup%>" value="<%:Cancel%>" onclick="cancelFirmware();" />
+		<button class="firmware-button cbi-button cbi-button-reset" type="button" title="<%:Cancel firmware upgrade and cleanup%>" onclick="return cancelFirmware(this);"><%:Cancel%></button>
 <% end %>
 <% if reboot_enable then %>
-		<input class="cbi-button cbi-button-action important" type="button" title="<%:Reboot to new firmware%>" value="<%:Reboot%>" onclick="rebootFirmware();" />
+		<button class="firmware-button cbi-button cbi-button-action important" type="button" title="<%:Reboot to new firmware%>" onclick="return rebootFirmware(this);"><%:Reboot%></button>
 <% end %>
 
 		<input id="firmware-action" type="hidden" name="action" value="<%= action %>" />

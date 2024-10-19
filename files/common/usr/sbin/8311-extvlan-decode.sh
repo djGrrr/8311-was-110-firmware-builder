@@ -249,6 +249,10 @@ vlan_parse() {
 
 
 ext_vlan_tables=$(mibs 171)
+if [ -z "$ext_vlan_tables" ]; then
+	echo "No Extended VLAN Tables Detected" >&2
+	exit 1
+fi
 
 i=0
 for ext_vlan_table in $ext_vlan_tables; do

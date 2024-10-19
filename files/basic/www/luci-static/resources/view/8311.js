@@ -16,11 +16,9 @@ function switchTab(tab) {
 		selectContainer.attr('data-tab-active', 'true');
 }
 
-function saveConfig(e) {
-	console.log("save");
-	jForm = $('#8311-config');
-	const form = jForm.get(0);
+function saveConfig(form) {
 	const field = Array.from(form.elements);
+	var saveb = $('#save-btn');
 
 	var valid = true;
 	field.forEach(i => {
@@ -44,6 +42,11 @@ function saveConfig(e) {
 			error_label.hide();
 		}
 	});
+
+	if (valid) {
+		saveb.attr('disabled', 'disabled');
+		saveb.addClass('spinning');
+	}
 
 	return valid;
 }
@@ -92,42 +95,51 @@ function showPonMe(meId, instanceId) {
 	});
 }
 
-function submitSupportForm(action) {
-	$('input.support-button').attr('disabled', 'disabled');
+function submitSupportForm(input, action) {
+	$('button.support-button').attr('disabled', 'disabled');
 	$('#support-action').attr('value', action);
-	$('#support-loading').show();
+	var btn = $(input);
+	if (btn)
+		btn.addClass('spinning');
+
 	$('#support-form').submit();
 }
 
-function submitFirmwareForm() {
-	$('input.firmware-button').attr('disabled', 'disabled');
-	$('#firmware-loading').show();
+function submitFirmwareForm(input) {
+	var btn = $(input);
+	$('.firmware-button').attr('disabled', 'disabled');
+	$('#firmware-file').attr('onclick', 'return false');
+	if (btn)
+		btn.addClass('spinning');
+
 	$('#firmware-form').submit();
+	return true;
 }
 
-function uploadFirmware() {
-	if ($('#firmware-form').valid()) {
-		submitFirmwareForm();
-	}
+function uploadFirmware(input) {
+	if (!$('#firmware-form').valid())
+		return false;
+
+	return submitFirmwareForm(input);
 }
 
-function cancelFirmware() {
+function cancelFirmware(input) {
 	$('#firmware-action').attr('value', 'cancel');
-	submitFirmwareForm();
+	return submitFirmwareForm(input);
 }
 
-function rebootFirmware() {
+function rebootFirmware(input) {
 	$('#firmware-action').attr('value', 'reboot');
-	submitFirmwareForm();
+	return submitFirmwareForm(input);
 }
 
-function installFirmware(reboot) {
+function installFirmware(input, reboot) {
 	action = 'install';
 	if (reboot)
 		action = 'install_reboot';
 
 	$('#firmware-action').attr('value', action);
-	submitFirmwareForm();
+	return submitFirmwareForm(input);
 }
 
 $(document).ready(function () {
