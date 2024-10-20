@@ -168,9 +168,6 @@ msgstr "Image specific software version sent in the Software image MEs [7] (up t
 msgid "Software Version B"
 msgstr "Software Version B"
 
-msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
-msgstr "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
-
 msgid "Firmware Version Match"
 msgstr "Firmware Version Match"
 
