@@ -438,6 +438,12 @@ msgstr "LCT MAC地址"
 msgid "MAC address of the LCT management interface (XX:XX:XX:XX:XX:XX format)."
 msgstr "设置LCT管理接口的MAC地址（格式XX:XX:XX:XX:XX:XX）"
 
+msgid "Reverse ARP Monitoring"
+msgstr "反向ARP监控"
+
+msgid "Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets. This can help in reaching the management interface without using NAT."
+msgstr "启用一个反向ARP监控守护进程，它会自动从接收到的数据包的MAC地址中添加ARP条目。这可以帮助在不使用NAT的情况下访问管理接口。"
+
 msgid "Redirect HTTP to HTTPs"
 msgstr "将HTTP重定向到HTTPS"
 

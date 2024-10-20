@@ -437,6 +437,12 @@ msgstr "LCT MACアドレス"
 msgid "MAC address of the LCT management interface (XX:XX:XX:XX:XX:XX format)."
 msgstr "LCT管理インターフェースのMACアドレスを設定（形式：XX:XX:XX:XX:XX:XX）"
 
+msgid "Reverse ARP Monitoring"
+msgstr "リバースARP監視"
+
+msgid "Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets. This can help in reaching the management interface without using NAT."
+msgstr "受信パケットのMACアドレスから自動的にARPエントリを追加するリバースARP監視デーモンを有効にします。NATを使用せずに管理インターフェースにアクセスするのに役立ちます。"
+
 msgid "Redirect HTTP to HTTPs"
 msgstr "HTTPをHTTPSにリダイレクト"
 
