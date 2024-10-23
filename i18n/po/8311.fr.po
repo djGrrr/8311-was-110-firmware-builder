@@ -439,7 +439,7 @@ msgid "Reverse ARP Monitoring"
 msgstr "Inverser le monitoring ARP"
 
 msgid "Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets. This can help in reaching the management interface without using NAT."
-msgstr "Active un daemon de surveillance ARP qui ajoutera automatiquement les entrées ARP à partir de l'addresse MAC des paquets reçu. Ceci peut aider à accéder à l'interface de gestion sans utiliser NAT."
+msgstr "Active un daemon de surveillance ARP qui ajoutera automatiquement les entrées ARP à partir de l'addresse MAC des paquets reçus. Cela peut aider à accéder à l'interface de gestion sans utiliser de NAT."
 
 msgid "Redirect HTTP to HTTPs"
 msgstr "Redirige HTTP vers HTTPs"
