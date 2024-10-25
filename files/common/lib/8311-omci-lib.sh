@@ -76,11 +76,16 @@ mibattrdata() {
 		local size=$((bytes * 8))
 
 		"$inttype$size" "$int"
-	elif [ "$type" = "STR" ]; then
-		printf "$(echo $(echo "$mibattr" | tail -n1))" | { $hexstr && str2hex || cat; }
-		! $hexstr && $nl && echo
-	elif [ "$type" = "TBL" ]; then
-		printf "$(echo $(echo "$mibattr" | tail -n1))" | xxd -p -c "$bytes"
+	elif [ "$type" = "STR" ] || [ "$type" = "TBL" ]; then
+		[ "$type" = "STR" ] && HEAD=-1 || HEAD=-2
+		local hexdata=$(echo -n "$mibattr" | head -n $HEAD | tail -n +2 | sed -r -e 's/\s+//g' -e 's/0x//g')
+		if [ "$type" = "STR" ]; then
+			hexdata=$(echo "$hexdata" | tr -d '\n')
+			echo "$hexdata" | { ! $hexstr && hex2str || cat; }
+			! $hexstr && $nl && echo
+		else
+			echo "$hexdata"
+		fi
 	else
 		return 1
 	fi
