@@ -77,10 +77,10 @@ mibattrdata() {
 
 		"$inttype$size" "$int"
 	elif [ "$type" = "STR" ]; then
-		printf $(echo "$mibattr" | tail -n1) | { $hexstr && str2hex || cat; }
+		printf "$(echo $(echo "$mibattr" | tail -n1))" | { $hexstr && str2hex || cat; }
 		! $hexstr && $nl && echo
 	elif [ "$type" = "TBL" ]; then
-		printf $(echo "$mibattr" | tail -n1) | xxd -p -c "$bytes"
+		printf "$(echo $(echo "$mibattr" | tail -n1))" | xxd -p -c "$bytes"
 	else
 		return 1
 	fi
