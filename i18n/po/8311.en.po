@@ -489,6 +489,15 @@ msgstr "Variant"
 msgid "Inactive Firmware"
 msgstr "Inactive Firmware"
 
+msgid "Switch and Reboot"
+msgstr "Switch and Reboot"
+
+msgid "Switch to inactive bank"
+msgstr "Switch to inactive bank"
+
+msgid "Confirm and Reboot"
+msgstr "Confirm and Reboot"
+
 msgid "Firmware Upgrade"
 msgstr "Firmware Upgrade"
 
@@ -516,14 +525,5 @@ msgstr "Install and Reboot"
 msgid "Cancel firmware upgrade and cleanup"
 msgstr "Cancel firmware upgrade and cleanup"
 
-msgid "Cancel"
-msgstr "Cancel"
-
 msgid "Reboot to new firmware"
 msgstr "Reboot to new firmware"
-
-msgid "Reboot"
-msgstr "Reboot"
-
-msgid "Rebooting..."
-msgstr "Rebooting..."

@@ -491,6 +491,15 @@ msgstr "バリアント"
 msgid "Inactive Firmware"
 msgstr "非アクティブファームウェア"
 
+msgid "Switch and Reboot"
+msgstr "ファームウェアを切り替えて再起動"
+
+msgid "Switch to inactive bank"
+msgstr "非アクティブなファームウェアに切り替えますか:"
+
+msgid "Confirm and Reboot"
+msgstr "確認して再起動"
+
 msgid "Firmware Upgrade"
 msgstr "ファームウェアアップグレード"
 
@@ -518,14 +527,5 @@ msgstr "インストールして再起動"
 msgid "Cancel firmware upgrade and cleanup"
 msgstr "ファームウェアアップグレードをキャンセルしてクリーンアップ"
 
-msgid "Cancel"
-msgstr "キャンセル"
-
 msgid "Reboot to new firmware"
 msgstr "新しいファームウェアで再起動"
-
-msgid "Reboot"
-msgstr "再起動"
-
-msgid "Rebooting..."
-msgstr "再起動中..."

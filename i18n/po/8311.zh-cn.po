@@ -349,10 +349,10 @@ msgid "Enable the RX_LOS pin. Disable to allow stick to be accessible without th
 msgstr "启用RX_LOS引脚。禁用以允许无光时访问ONU Stick"
 
 msgid "Root password hash"
-msgstr "Root密码"
+msgstr "Root密码哈希"
 
 msgid "Custom password hash for the root user. This can be set from System > Administration"
-msgstr "为root用户自定义密码。可以从[系统] > [管理权]设置此配置项"
+msgstr "为root用户自定义密码哈希。可以从[系统] > [管理权]设置此配置项"
 
 msgid "Ethtool Speed Settings"
 msgstr "Ethtool速率设置"
@@ -492,6 +492,15 @@ msgstr "变体"
 msgid "Inactive Firmware"
 msgstr "非活动固件分区"
 
+msgid "Switch and Reboot"
+msgstr "切换分区并重启"
+
+msgid "Switch to inactive bank"
+msgstr "确定切换到非活动固件分区"
+
+msgid "Confirm and Reboot"
+msgstr "确定并重启"
+
 msgid "Firmware Upgrade"
 msgstr "固件升级"
 
@@ -519,14 +528,5 @@ msgstr "安装并重启"
 msgid "Cancel firmware upgrade and cleanup"
 msgstr "取消固件升级并清理"
 
-msgid "Cancel"
-msgstr "取消"
-
 msgid "Reboot to new firmware"
 msgstr "重启至新固件"
-
-msgid "Reboot"
-msgstr "重启"
-
-msgid "Rebooting..."
-msgstr "重启中..."

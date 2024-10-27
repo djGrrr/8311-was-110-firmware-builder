@@ -58,8 +58,20 @@ local translate = i18n.translate
 			</div>
 		</div>
 	</div>
+	<% if not install_enable and not firmware_file_exists and firmware_action ~="switch_reboot" then %>
+	<div class="cbi-value" id="switch-reboot-section">
+		<div id="switch-reboot-original" style="display: flex; align-items: center;">
+			<button class="cbi-button cbi-button-action" type="button" onclick="showSwitchRebootConfirmation();" style="margin-left: 10px;"><%:Switch and Reboot%></button>
+		</div>
+		<div id="switch-reboot-confirmation" style="display:none; align-items: center;">
+			<span><%:Switch to inactive bank %><%= esc(altversion.bank) %>?</span>
+			<button class="cbi-button cbi-button-action important" type="button" onclick="confirmSwitchReboot(true, this);" style="margin-left: 10px;"><%:Confirm and Reboot%></button>
+			<button class="cbi-button cbi-button-reset" type="button" onclick="confirmSwitchReboot(false, this);" style="margin-left: 5px;"><%:Cancel%></button>
+		</div>
+	</div>
+	<% end %>
 </div>
-
+<% if firmware_action ~="switch_reboot" then %>
 <div class="cbi-section fade-in">
 	<h3><%:Firmware Upgrade%></h3>
 
@@ -90,11 +102,10 @@ local translate = i18n.translate
 			cancel_enable = false
 		elseif firmware_action == "reboot" then
 			cancel_enable = false
-			firmware_output = translate("Rebooting...")
+			firmware_output = translate("Rebooting…")
 		end
 	end
 %>
-<pre id="firmware_output" style="font-size:10pt; font-family: monospace;"><%= esc(firmware_output) %></pre>
 <% end %>
 			</div>
 		</div>
@@ -111,9 +122,12 @@ local translate = i18n.translate
 <% if reboot_enable then %>
 		<button class="firmware-button cbi-button cbi-button-action important" type="button" title="<%:Reboot to new firmware%>" onclick="return rebootFirmware(this);"><%:Reboot%></button>
 <% end %>
-
 		<input id="firmware-action" type="hidden" name="action" value="<%= action %>" />
 	</form>
+<% end %>
+<% if firmware_output and firmware_output ~="" then %>
+	<pre id="firmware_output" style="font-size:10pt; font-family: monospace;"><%= esc(firmware_output) %></pre>
+<% end %>
 </div>
 
 <%+footer%>
