@@ -138,7 +138,7 @@ if [ -n "$IMGFILE" ]; then
 
 	HEADER="$OUT_DIR/header.bin"
 else
-	__err "Must specify --bfw-image-file"
+	_err "Must specify --bfw-image-file"
 fi
 
 if [ -n "$IMGDIR" ] && [ -d "$IMGDIR" ]; then
