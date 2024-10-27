@@ -39,7 +39,7 @@ msgstr "Capacité"
 msgid "LAN Info"
 msgstr "Informations LAN"
 
-msgid "Alarms" 
+msgid "Alarms"
 msgstr "Alarmes"
 
 msgid "GEM Status"
@@ -142,16 +142,16 @@ msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Ser
 msgstr "ID du Vendeur PON envoyé dans différents MEs, automatiquement dérivé du numéro série PON si non défini (4 caractères alphanumériques.)"
 
 msgid "Equipment ID"
-msgstr "ID de L'Equipement (Equipment ID)"
+msgstr "ID de l'Équipement (Equipment ID)"
 
 msgid "PON Equipment ID field in the ONU2-G ME [257] (up to 20 characters)."
-msgstr "Définit l'ID de l'Equipement PON pour ONU2-G ME [257] (20 caractères max)."
+msgstr "Définit l'ID de l'Équipement PON pour ONU2-G ME [257] (20 caractères max)."
 
 msgid "Hardware Version"
 msgstr "Version Hardware (Hardware Version)"
 
 msgid "Hardware version string sent in various MEs (up to 14 characters)."
-msgstr "Version hardware envoyé dans différents MEs (14 caractères max)."
+msgstr "Version hardware envoyée dans différents MEs (14 caractères max)."
 
 msgid "Sync Circuit Pack Version"
 msgstr "Version de Circuit Pack Synchronisée"
@@ -172,13 +172,13 @@ msgid "Firmware Version Match"
 msgstr "Correspondence de la Version du Firmware"
 
 msgid "PCRE pattern match for automatic updating of Software Versions when OLT uploads a firmware upgrade. Must contain a single sub-pattern match."
-msgstr "Correspondance de modèle PCRE pour les mise à jour automatique des versions de logicielle quand l'OLT envoie une mise à jour. Doit contenir un seul Correspondancede sous-modèle."
+msgstr "Modèle PCRE pour les mise à jour automatique des versions logicielles lorsque l'OLT envoie une mise à jour. Doit contenir un seul sous-modèle de correspondance."
 
 msgid "Firmware Match Number"
-msgstr "Numéro de Correspondance du Dirmware"
+msgstr "Numéro de Correspondance du Firmware"
 
 msgid "If there are multiple matches for the Firmware Version Match pattern, use this specific match number."
-msgstr "S'il existed plusieurs correspondance pour le modèle de Version du Firmware, utiliser ce numéro numéro de correspondance spécifique"
+msgstr "S'il existe plusieurs correspondance pour le modèle de Version du Firmware, utiliser ce numéro numéro de correspondance spécifique"
 
 msgid "Override active firmware bank"
 msgstr "Remplacer la banque de firmware actifs"
@@ -385,7 +385,7 @@ msgid "NTP Servers"
 msgstr "Serveurs NTP"
 
 msgid "NTP server(s) to sync time from (space separated)."
-msgstr "Serveaur(s) NTP pour synchroniser l'heaure (séparés par des espaces)"
+msgstr "Serveur(s) NTP pour synchroniser l'heaure (séparés par des espaces)"
 
 msgid "Persist RootFS"
 msgstr "Persiste RootFS"
@@ -439,7 +439,7 @@ msgid "Reverse ARP Monitoring"
 msgstr "Inverser le monitoring ARP"
 
 msgid "Enables a reverse ARP monitoring daemon that will automatically add ARP entries from the MAC address of recieved packets. This can help in reaching the management interface without using NAT."
-msgstr "Active un daemon de surveillance ARP qui ajoutera automatiquement les entrées ARP à partir de l'addresse MAC des paquets reçu. Ceci peut aider à accéder à l'interface de gestion sans utiliser NAT."
+msgstr "Active un daemon de surveillance ARP qui ajoutera automatiquement les entrées ARP à partir de l'addresse MAC des paquets reçus. Cela peut aider à accéder à l'interface de gestion sans utiliser de NAT."
 
 msgid "Redirect HTTP to HTTPs"
 msgstr "Redirige HTTP vers HTTPs"
