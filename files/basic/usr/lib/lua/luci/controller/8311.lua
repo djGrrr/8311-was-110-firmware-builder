@@ -790,12 +790,17 @@ function action_firmware()
 
 	local firmware_file_exists = file_exists(firmware_file)
 	local firmware_exec = nil
-	local action = "validate"
+	action = values["action"] or "validate"
 	local installed = false
+
+	if action == "switch_reboot" then
+		firmwareUpgradeOutput("Switch bank from " .. version.bank .. " to " .. altversion.bank .. "...\nRebooting...")
+		tools.fw_setenv({ "commit_bank", altversion.bank })
+		sys.reboot()
+	end
 
 	if firmware_file_exists then
 		local cmd = {}
-		action = values["action"] or "validate"
 
 		if action == "cancel" then
 			os.remove(firmware_file)

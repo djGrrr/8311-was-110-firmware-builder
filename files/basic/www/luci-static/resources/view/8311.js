@@ -19,8 +19,13 @@ function switchTab(tab) {
 function saveConfig(form) {
 	const field = Array.from(form.elements);
 	var saveb = $('#save-btn');
-
 	var valid = true;
+
+	var activeTab = $('li.cbi-tab[data-tab]').attr('data-tab');
+	if (activeTab) {
+		localStorage.setItem('activeConfigTab', activeTab);
+	}
+
 	field.forEach(i => {
 		var element = $(i);
 		var element_id = element.attr('id');
@@ -119,7 +124,7 @@ function submitFirmwareForm(input) {
 function uploadFirmware(input) {
 	if (!$('#firmware-form').valid())
 		return false;
-
+	$('#switch-reboot-section').hide();
 	return submitFirmwareForm(input);
 }
 
@@ -142,7 +147,30 @@ function installFirmware(input, reboot) {
 	return submitFirmwareForm(input);
 }
 
+function showSwitchRebootConfirmation() {
+	$('#switch-reboot-original').hide();
+	$('#switch-reboot-confirmation').show();
+}
+
+function confirmSwitchReboot(confirm, input) {
+	if (confirm) {
+		$('#firmware-file').removeAttr('required');
+		$('#firmware-action').val('switch_reboot');
+		return submitFirmwareForm(input);
+	}
+	else {
+		$('#switch-reboot-confirmation').hide();
+		$('#switch-reboot-original').show();
+	}
+}
+
 $(document).ready(function () {
+	var savedTab = localStorage.getItem('activeConfigTab');
+	if (savedTab) {
+		switchTab(savedTab);
+		localStorage.removeItem('activeConfigTab');
+	}
+
 	var fixVlansSelect = $('#widget\\.cbid\\.system\\.poncfg\\.fix_vlans');
 	if (fixVlansSelect.length === 0) {
 		return;

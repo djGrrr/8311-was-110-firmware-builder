@@ -516,14 +516,5 @@ msgstr "Installer et redémarrer"
 msgid "Cancel firmware upgrade and cleanup"
 msgstr "Annuler la mise à jour du firmware et nettoier"
 
-msgid "Cancel"
-msgstr "Annuler"
-
 msgid "Reboot to new firmware"
 msgstr "Redémarrage sur le nouveau firmware"
-
-msgid "Reboot"
-msgstr "Redémarrer"
-
-msgid "Rebooting..."
-msgstr "En Train de Redémarrer..."
