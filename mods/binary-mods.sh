@@ -35,6 +35,18 @@ if check_file "$OMCID" "82b6746d5385d676765d185a21443fabcab63f193fac7eb56a1a8cd8
 	expected_hash "$OMCID" "184aad016a0d38da5c3a6fc8451f8b4971be59702d6d10a2bca379b2f9bce7f7"
 fi
 
+# PTXG_CX_V0.03
+if check_file "$OMCID" "5217dccf98cf8c75bc1b8ba380a92514511a77c40803a9718651b1f2bb5a9a5a"; then
+	echo "Patching '$OMCID'..."
+
+	# omcid mod by djGrrr to make default LOID and LPWD empty
+	printf '\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xA04C8)) bs=1 count=6 2>/dev/null
+	printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xA04D8)) bs=1 count=9 2>/dev/null
+
+	expected_hash "$OMCID" "b0d0fad0da26c48bf267ea12e731fd017ec205151e1444b7b7c0e0af43765620"
+fi
+
+# Potrontec 1.18.1 OMCId v8.15.17 and PTXG_CX_V0.03
 LIBPON="$ROOT_DIR/usr/lib/libpon.so.0.0.0"
 if check_file "$LIBPON" "401cc97e0f43b6b08a1d27f7be94a9e37fa798a810ae89838776f14b55e66cc1"; then
 	echo "Patching '$LIBPON'..."
@@ -97,6 +109,22 @@ if check_file "$LIBPONNET" "05536d164e51c5d412421a347a5c99b6883a53c57c24ed4d00f4
 	printf '/tmp/8311-iphost-domainname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x6BC0C)) bs=1 count=28 2>/dev/null
 
 	expected_hash "$LIBPONNET" "71e5fa85bde3793cdc1085781e3a1440fc9ef0bb8900c74d144b99be720ba50e"
+fi
+
+# PTXG_CX_V0.03
+if check_file "$LIBPONNET" "ac12631273e8cf069aecbba55e02ace987d54ddf70bc0e14211dabf4abc600b7"; then
+	echo "Patching '$LIBPONNET'..."
+
+	# patch pon_net_dev_db_add to return 0 instead of -1 when an existing device entry exists, fixes VEIP management
+	printf '\x00\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x3D1D2)) bs=1 count=2 2>/dev/null
+
+	# patch file location for IP Host hostname
+	printf '/tmp/8311-iphost-hostname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x6C050)) bs=1 count=26 2>/dev/null
+
+	# patch file location for IP Host domain
+	printf '/tmp/8311-iphost-domainname\x00' | dd of="$LIBPONNET" conv=notrunc seek=$((0x6C01C)) bs=1 count=28 2>/dev/null
+
+	expected_hash "$LIBPONNET" "687f88bda014c86e7c6bff59857d10ea3bfe7307d6204bc327c616e8b39b20bc"
 fi
 
 LIBPONHWAL="$ROOT_DIR/ptrom/lib/libponhwal.so"
