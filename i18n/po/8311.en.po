@@ -21,6 +21,21 @@ msgstr "8311 Configuration"
 msgid "Save"
 msgstr "Save"
 
+msgid "PON PLOAM Status"
+msgstr "PON PLOAM Status"
+
+msgid "Receive / Transmit Optical Power"
+msgstr "Receive / Transmit Optical Power"
+
+msgid "CPU / Laser Temperature"
+msgstr "CPU / Laser Temperature"
+
+msgid "Module Info"
+msgstr "Module Info"
+
+msgid "ETH Speed"
+msgstr "ETH Speed"
+
 msgid "PON Status"
 msgstr "PON Status"
 

@@ -23,6 +23,21 @@ msgstr "8311設定"
 msgid "Save"
 msgstr "保存"
 
+msgid "PON PLOAM Status"
+msgstr "PON PLOAM ステータス"
+
+msgid "Receive / Transmit Optical Power"
+msgstr "受信 / 送信光パワー"
+
+msgid "CPU / Laser Temperature"
+msgstr "CPU / レーザー温度"
+
+msgid "Module Info"
+msgstr "モジュール情報"
+
+msgid "ETH Speed"
+msgstr "ETHスピード"
+
 msgid "PON Status"
 msgstr "PON状態"
 

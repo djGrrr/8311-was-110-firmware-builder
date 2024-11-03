@@ -30,6 +30,7 @@ function index()
 	entry({"admin", "8311", "save_hook_script"}, call("action_save_hook_script")).leaf=true
 	entry({"admin", "8311", "pontop"}, call("action_pontop")).leaf=true
 	entry({"admin", "8311", "pon_dump"}, call("action_pon_dump")).leaf=true
+	entry({"admin", "8311", "gpon_status"}, call("action_gpon_status")).leaf = true
 	entry({"admin", "8311", "vlans", "extvlans"}, call("action_vlan_extvlans"))
 	entry({"admin", "8311", "support", "support.tar.gz"}, call("action_support_download"))
 
@@ -626,6 +627,41 @@ function action_pon_status()
 	ltemplate.render("8311/pon_status", {
 		pages=pages,
 	})
+end
+
+function get_pontop_value(page, parameter_name)
+	local cmd = string.format("pontop -b -g %s", util.shellquote(page))
+	local output = util.exec(cmd)
+
+	for line in output:gmatch("[^\r\n]+") do
+		line = line:match("^%s*(.-)%s*$")
+		if line:match("^" .. parameter_name .. "%s*:") then
+			local value = line:match(": (.+)")
+			if value then
+				return value:trim()
+			end
+		end
+	end
+	return nil
+end
+
+function action_gpon_status()
+	local cpu_temp = tonumber(util.exec("cat /sys/class/thermal/thermal_zone0/temp"):trim()) or "N/A"
+	cpu_temp = type(cpu_temp) == "number" and string.format("%.1f°C", cpu_temp / 1000) or cpu_temp
+	local laser_temp = get_pontop_value("Optical Interface Status", "Optical transceiver temperature")
+	laser_temp = laser_temp and laser_temp:match("^(%d+)") and laser_temp:match("^(%d+)") .. "°C" or "N/A"
+
+	local rv = {
+		status = get_pontop_value("Status", "PON PLOAM Status"),
+		power = string.format("%s / %s", get_pontop_value("Optical Interface Status", "Receive power"), get_pontop_value("Optical Interface Status", "Transmit power")),
+		temperature = string.format("%s / %s", cpu_temp, laser_temp),
+		pon_mode = util.exec(". /lib/8311.sh && get_8311_pon_mode"):trim(),
+		module_info = get_pontop_value("Optical Interface Info", "Vendor name") .. " " .. get_pontop_value("Optical Interface Info", "Part number") .. " " .. get_pontop_value("Optical Interface Info", "Revision") .. " / Type: " .. util.exec(". /lib/8311.sh && get_8311_module_type"):trim(),
+		eth_speed = util.exec("ethtool eth0_0 | grep -E 'Speed|Duplex' | awk '{printf \"%s\", $2 (NR==1 ? \", \" : \"\")}'"):trim() .. " Duplex",
+		active_bank = util.exec(". /lib/8311.sh && active_fwbank"):trim()
+	}
+	luci.http.prepare_content("application/json")
+	luci.http.write_json(rv)
 end
 
 function action_vlans()

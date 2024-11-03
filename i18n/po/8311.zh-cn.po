@@ -24,6 +24,21 @@ msgstr "8311社区固件配置"
 msgid "Save"
 msgstr "保存"
 
+msgid "PON PLOAM Status"
+msgstr "注册状态"
+
+msgid "Receive / Transmit Optical Power"
+msgstr "接收 / 发射光功率"
+
+msgid "CPU / Laser Temperature"
+msgstr "CPU / 激光器温度"
+
+msgid "Module Info"
+msgstr "模块信息"
+
+msgid "ETH Speed"
+msgstr "ETH速率"
+
 msgid "PON Status"
 msgstr "PON状态"
 
