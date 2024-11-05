@@ -21,6 +21,62 @@ msgstr "8311 Configuration"
 msgid "Save"
 msgstr "Save"
 
+" Start PLOAM States "
+msgid "O0, Power-up state"
+msgstr "O0, Power-up state"
+
+msgid "O1, Initial state"
+msgstr "O1, Initial state"
+
+msgid "O1.1, Off-sync state"
+msgstr "O1.1, Off-sync state"
+
+msgid "O1.2, Profile learning state"
+msgstr "O1.2, Profile learning state"
+
+msgid "O2, Stand-by state"
+msgstr "O2, Stand-by state"
+
+msgid "O2.3, Serial number state"
+msgstr "O2.3, Serial number state"
+
+msgid "O3, Serial number state"
+msgstr "O3, Serial number state"
+
+msgid "O4, Ranging state"
+msgstr "O4, Ranging state"
+
+msgid "O5, Operation state"
+msgstr "O5, Operation state"
+
+msgid "O5.1, Associated state"
+msgstr "O5.1, Associated state"
+
+msgid "O5.2, Pending state"
+msgstr "O5.2, Pending state"
+
+msgid "O6, Intermittent LOS state"
+msgstr "O6, Intermittent LOS state"
+
+msgid "O7, Emergency stop state"
+msgstr "O7, Emergency stop state"
+
+msgid "O7.1, Emergency stop off-sync state"
+msgstr "O7.1, Emergency stop off-sync state"
+
+msgid "O7.2, Emergency stop in-sync state"
+msgstr "O7.2, Emergency stop in-sync state"
+
+msgid "O8.1, Downstream tuning off-sync state"
+msgstr "O8.1, Downstream tuning off-sync state"
+
+msgid "O8.2, Downstream tuning profile learning state"
+msgstr "O8.2, Downstream tuning profile learning state"
+
+msgid "O9, Upstream tuning state"
+msgstr "O9, Upstream tuning state"
+" End PLOAM States "
+
 msgid "PON PLOAM Status"
 msgstr "PON PLOAM Status"
 
