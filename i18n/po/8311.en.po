@@ -24,11 +24,14 @@ msgstr "Save"
 msgid "PON PLOAM Status"
 msgstr "PON PLOAM Status"
 
-msgid "Receive / Transmit Optical Power"
-msgstr "Receive / Transmit Optical Power"
+msgid "RX Power / TX Power / TX Bias"
+msgstr "RX Power / TX Power / TX Bias"
 
-msgid "CPU / Laser Temperature"
-msgstr "CPU / Laser Temperature"
+msgid "CPU1 / CPU2 / Laser Temperature"
+msgstr "CPU1 / CPU2 / Laser Temperature"
+
+msgid "Module Voltage"
+msgstr "Module Voltage"
 
 msgid "Module Info"
 msgstr "Module Info"

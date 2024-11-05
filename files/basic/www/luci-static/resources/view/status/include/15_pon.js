@@ -14,8 +14,9 @@ return baseclass.extend({
 		var fields = [
 			_('PON Mode'), data.pon_mode || '?',
 			_('PON PLOAM Status'), data.status || '?',
-			_('Receive / Transmit Optical Power'), data.power || '?',
-			_('CPU / Laser Temperature'), data.temperature || '?',
+			_('RX Power / TX Power / TX Bias'), data.power || '?',
+			_('CPU1 / CPU2 / Laser Temperature'), data.temperature || '?',
+			_('Module Voltage'), data.voltage || '?',
 			_('Module Info'), data.module_info || '?',
 			_('ETH Speed'), data.eth_speed || '?',
 			_('Active Firmware'), data.active_bank || '?'

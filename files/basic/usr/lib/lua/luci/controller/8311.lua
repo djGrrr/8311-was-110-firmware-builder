@@ -9,9 +9,12 @@ local dispatcher = require "luci.dispatcher"
 local sys = require "luci.sys"
 local i18n = require "luci.i18n"
 local translate = i18n.translate
+local _ = i18n.translate
 local base64 = require "base64"
 local ltn12 = require "luci.ltn12"
 local fs = require "nixio.fs"
+local bit = require "nixio.bit"
+local uci = require "luci.model.uci"
 local support_file = "/tmp/support.tar.gz"
 
 local firmwareOutput = ''
@@ -629,36 +632,70 @@ function action_pon_status()
 	})
 end
 
-function get_pontop_value(page, parameter_name)
-	local cmd = string.format("pontop -b -g %s", util.shellquote(page))
-	local output = util.exec(cmd)
+function pon_state(state)
+	state = string.format("O%d", state)
+	local states = {
+		O0	= "O0, Power-up state",
+		O10	= "O1, Initial state",
+		O11	= "O1.1, Off-sync state",
+		O12	= "O1.2, Profile learning state",
+		O20	= "O2, Stand-by state",
+		O23	= "O2.3, Serial number state",
+		O30	= "O3, Serial number state",
+		O40	= "O4, Ranging state",
+		O50	= "O5, Operation state",
+		O51	= "O5.1, Associated state",
+		O52	= "O5.2, Pending state",
+		O60	= "O6, Intermittent LOS state",
+		O70	= "O7, Emergency stop state",
+		O71	= "O7.1, Emergency stop off-sync state",
+		O72	= "O7.2, Emergency stop in-sync state",
+		O81	= "O8.1, Downstream tuning off-sync state",
+		O82	= "O8.2, Downstream tuning profile learning state",
+		O90	= "O9, Upstream tuning state",
+	}
 
-	for line in output:gmatch("[^\r\n]+") do
-		line = line:match("^%s*(.-)%s*$")
-		if line:match("^" .. parameter_name .. "%s*:") then
-			local value = line:match(": (.+)")
-			if value then
-				return value:trim()
-			end
-		end
-	end
-	return nil
+	return _(states[state] or "N/A")
+end
+
+function temperature(t)
+	return string.format(_("%.2f °C (%.1f °F)"), t, (t * 1.8 + 32))
+end
+
+function dBm(mw)
+	return string.format(_("%.2f dBm"), 10 * math.log10(mw))
 end
 
 function action_gpon_status()
-	local cpu_temp = tonumber(util.exec("cat /sys/class/thermal/thermal_zone0/temp"):trim()) or "N/A"
-	cpu_temp = type(cpu_temp) == "number" and string.format("%.1f°C", cpu_temp / 1000) or cpu_temp
-	local laser_temp = get_pontop_value("Optical Interface Status", "Optical transceiver temperature")
-	laser_temp = laser_temp and laser_temp:match("^(%d+)") and laser_temp:match("^(%d+)") .. "°C" or "N/A"
+	local ploam_status = tonumber(util.exec("pon psg | pcre2grep -o1 '\\Wcurrent=(\\d+)\\W'"):trim())
+	local cpu1_temp = (tonumber(fs.readfile("/sys/class/thermal/thermal_zone0/temp"):trim()) / 1000) or _("N/A")
+	local cpu2_temp = (tonumber(fs.readfile("/sys/class/thermal/thermal_zone1/temp"):trim()) / 1000) or _("N/A")
+
+	local eep50 = fs.readfile("/sys/devices/platform/18000000.ssx1_1/18100000.ponmbox/eeprom50", 256)
+	local eep51 = fs.readfile("/sys/devices/platform/18000000.ssx1_1/18100000.ponmbox/eeprom51", 256)
+
+	local laser_temp = eep51:byte(97) + eep51:byte(98) / 256
+	local voltage = (bit.lshift(eep51:byte(99), 8) + eep51:byte(100)) / 10000
+	local tx_bias = (bit.lshift(eep51:byte(101), 8) + eep51:byte(102)) / 500
+	local tx_mw = (bit.lshift(eep51:byte(103), 8) + eep51:byte(104)) / 10000
+	local rx_mw = (bit.lshift(eep51:byte(105), 8) + eep51:byte(106)) / 10000
+	local eth_speed = tonumber(fs.readfile("/sys/class/net/eth0_0/speed"):trim()) or _("N/A")
+	local vendor_name = eep50:sub(21, 36):trim()
+	local vendor_pn = eep50:sub(41, 56):trim()
+	local vendor_rev = eep50:sub(57, 60):trim()
+	local pon_mode = uci:get("gpon", "ponip", "pon_mode") or "xgspon"
+	local module_type = util.exec(". /lib/8311.sh && get_8311_module_type"):trim() or "bfw"
+	local active_bank = util.exec(". /lib/8311.sh && active_fwbank"):trim() or "A"
 
 	local rv = {
-		status = get_pontop_value("Status", "PON PLOAM Status"),
-		power = string.format("%s / %s", get_pontop_value("Optical Interface Status", "Receive power"), get_pontop_value("Optical Interface Status", "Transmit power")),
-		temperature = string.format("%s / %s", cpu_temp, laser_temp),
-		pon_mode = util.exec(". /lib/8311.sh && get_8311_pon_mode"):trim(),
-		module_info = get_pontop_value("Optical Interface Info", "Vendor name") .. " " .. get_pontop_value("Optical Interface Info", "Part number") .. " " .. get_pontop_value("Optical Interface Info", "Revision") .. " / Type: " .. util.exec(". /lib/8311.sh && get_8311_module_type"):trim(),
-		eth_speed = util.exec("ethtool eth0_0 | grep -E 'Speed|Duplex' | awk '{printf \"%s\", $2 (NR==1 ? \", \" : \"\")}'"):trim() .. " Duplex",
-		active_bank = util.exec(". /lib/8311.sh && active_fwbank"):trim()
+		status = pon_state(ploam_status),
+		power = string.format(_("%s / %s / %.2f mW"), dBm(rx_mw), dBm(tx_mw), tx_bias),
+		temperature = string.format("%s / %s / %s", temperature(cpu1_temp), temperature(cpu2_temp), temperature(laser_temp)),
+		voltage = string.format(_("%.2f V"), voltage),
+		pon_mode = pon_mode:upper():gsub("PON$", "-PON"),
+		module_info = string.format("%s %s %s (%s)", vendor_name, vendor_pn, vendor_rev, module_type),
+		eth_speed = string.format(_("%s Mbps"), eth_speed),
+		active_bank = active_bank,
 	}
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(rv)
