@@ -24,14 +24,71 @@ msgstr "8311社区固件配置"
 msgid "Save"
 msgstr "保存"
 
+msgid "O0, Power-up state"
+msgstr "O0, 启动状态"
+
+msgid "O1, Initial state"
+msgstr "O1, 初始状态"
+
+msgid "O1.1, Off-sync state"
+msgstr "O1.1, 失同步状态"
+
+msgid "O1.2, Profile learning state"
+msgstr "O1.2, 配置模板学习状态"
+
+msgid "O2, Stand-by state"
+msgstr "O2, 待机状态"
+
+msgid "O2.3, Serial number state"
+msgstr "O2.3, 序列号状态"
+
+msgid "O3, Serial number state"
+msgstr "O3, 序列号状态"
+
+msgid "O4, Ranging state"
+msgstr "O4, 测距状态"
+
+msgid "O5, Operation state"
+msgstr "O5, 运行状态"
+
+msgid "O5.1, Associated state"
+msgstr "O5.1, 关联状态"
+
+msgid "O5.2, Pending state"
+msgstr "O5.2, 挂起状态"
+
+msgid "O6, Intermittent LOS state"
+msgstr "O6, 间歇LOS状态"
+
+msgid "O7, Emergency stop state"
+msgstr "O7, 紧急停止状态"
+
+msgid "O7.1, Emergency stop off-sync state"
+msgstr "O7.1, 紧急停止失同步状态"
+
+msgid "O7.2, Emergency stop in-sync state"
+msgstr "O7.2, 紧急停止同步状态"
+
+msgid "O8.1, Downstream tuning off-sync state"
+msgstr "O8.1, 下行调谐失同步状态"
+
+msgid "O8.2, Downstream tuning profile learning state"
+msgstr "O8.2, 下行调谐配置模板学习状态"
+
+msgid "O9, Upstream tuning state"
+msgstr "O9, 上行调谐状态"
+
 msgid "PON PLOAM Status"
 msgstr "注册状态"
 
-msgid "Receive / Transmit Optical Power"
-msgstr "接收 / 发射光功率"
+msgid "RX Power / TX Power / TX Bias"
+msgstr "接收光功率 / 发射光功率 / 发射偏置电流"
 
-msgid "CPU / Laser Temperature"
-msgstr "CPU / 激光器温度"
+msgid "CPU1 / CPU2 / Optic Temperature"
+msgstr "CPU1 / CPU2 / 激光器温度"
+
+msgid "Module Voltage"
+msgstr "模块电压"
 
 msgid "Module Info"
 msgstr "模块信息"

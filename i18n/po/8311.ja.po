@@ -23,14 +23,71 @@ msgstr "8311設定"
 msgid "Save"
 msgstr "保存"
 
+msgid "O0, Power-up state"
+msgstr "O0, 電源投入状態"
+
+msgid "O1, Initial state"
+msgstr "O1, 初期状態"
+
+msgid "O1.1, Off-sync state"
+msgstr "O1.1, 非同期状態"
+
+msgid "O1.2, Profile learning state"
+msgstr "O1.2, プロファイル学習状態"
+
+msgid "O2, Stand-by state"
+msgstr "O2, 待機状態"
+
+msgid "O2.3, Serial number state"
+msgstr "O2.3, シリアル番号状態"
+
+msgid "O3, Serial number state"
+msgstr "O3, シリアル番号状態"
+
+msgid "O4, Ranging state"
+msgstr "O4, レンジング状態"
+
+msgid "O5, Operation state"
+msgstr "O5, 運転状態"
+
+msgid "O5.1, Associated state"
+msgstr "O5.1, 関連状態"
+
+msgid "O5.2, Pending state"
+msgstr "O5.2, 保留状態"
+
+msgid "O6, Intermittent LOS state"
+msgstr "O6, 断続的光LOS状態"
+
+msgid "O7, Emergency stop state"
+msgstr "O7, 緊急停止状態"
+
+msgid "O7.1, Emergency stop off-sync state"
+msgstr "O7.1, 緊急停止非同期状態"
+
+msgid "O7.2, Emergency stop in-sync state"
+msgstr "O7.2, 緊急停止同期状態"
+
+msgid "O8.1, Downstream tuning off-sync state"
+msgstr "O8.1, 下りチューニング非同期状態"
+
+msgid "O8.2, Downstream tuning profile learning state"
+msgstr "O8.2, 下りチューニングプロファイル学習状態"
+
+msgid "O9, Upstream tuning state"
+msgstr "O9, 上りチューニング状態"
+
 msgid "PON PLOAM Status"
 msgstr "PON PLOAM ステータス"
 
-msgid "Receive / Transmit Optical Power"
-msgstr "受信 / 送信光パワー"
+msgid "RX Power / TX Power / TX Bias"
+msgstr "受信光パワー / 送信光パワー / 送信バイアス電流"
 
-msgid "CPU / Laser Temperature"
-msgstr "CPU / レーザー温度"
+msgid "CPU1 / CPU2 / Optic Temperature"
+msgstr "CPU1 / CPU2 / 光デバイス温度"
+
+msgid "Module Voltage"
+msgstr "モジュール電圧"
 
 msgid "Module Info"
 msgstr "モジュール情報"
