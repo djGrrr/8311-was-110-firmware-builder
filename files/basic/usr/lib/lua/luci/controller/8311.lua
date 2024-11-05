@@ -689,7 +689,7 @@ function action_gpon_status()
 
 	local rv = {
 		status = pon_state(ploam_status),
-		power = string.format(_("%s / %s / %.2f mW"), dBm(rx_mw), dBm(tx_mw), tx_bias),
+		power = string.format(_("%s / %s / %.2f mA"), dBm(rx_mw), dBm(tx_mw), tx_bias),
 		temperature = string.format("%s / %s / %s", temperature(cpu1_temp), temperature(cpu2_temp), temperature(laser_temp)),
 		voltage = string.format(_("%.2f V"), voltage),
 		pon_mode = pon_mode:upper():gsub("PON$", "-PON"),
