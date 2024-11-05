@@ -21,7 +21,6 @@ msgstr "8311 Configuration"
 msgid "Save"
 msgstr "Save"
 
-" Start PLOAM States "
 msgid "O0, Power-up state"
 msgstr "O0, Power-up state"
 
@@ -75,7 +74,6 @@ msgstr "O8.2, Downstream tuning profile learning state"
 
 msgid "O9, Upstream tuning state"
 msgstr "O9, Upstream tuning state"
-" End PLOAM States "
 
 msgid "PON PLOAM Status"
 msgstr "PON PLOAM Status"

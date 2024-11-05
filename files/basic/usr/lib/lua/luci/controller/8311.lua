@@ -674,7 +674,7 @@ function action_gpon_status()
 	local eep50 = fs.readfile("/sys/devices/platform/18000000.ssx1_1/18100000.ponmbox/eeprom50", 256)
 	local eep51 = fs.readfile("/sys/devices/platform/18000000.ssx1_1/18100000.ponmbox/eeprom51", 256)
 
-	local laser_temp = eep51:byte(97) + eep51:byte(98) / 256
+	local optic_temp = eep51:byte(97) + eep51:byte(98) / 256
 	local voltage = (bit.lshift(eep51:byte(99), 8) + eep51:byte(100)) / 10000
 	local tx_bias = (bit.lshift(eep51:byte(101), 8) + eep51:byte(102)) / 500
 	local tx_mw = (bit.lshift(eep51:byte(103), 8) + eep51:byte(104)) / 10000
@@ -690,7 +690,7 @@ function action_gpon_status()
 	local rv = {
 		status = pon_state(ploam_status),
 		power = string.format(_("%s / %s / %.2f mA"), dBm(rx_mw), dBm(tx_mw), tx_bias),
-		temperature = string.format("%s / %s / %s", temperature(cpu1_temp), temperature(cpu2_temp), temperature(laser_temp)),
+		temperature = string.format("%s / %s / %s", temperature(cpu1_temp), temperature(cpu2_temp), temperature(optic_temp)),
 		voltage = string.format(_("%.2f V"), voltage),
 		pon_mode = pon_mode:upper():gsub("PON$", "-PON"),
 		module_info = string.format("%s %s %s (%s)", vendor_name, vendor_pn, vendor_rev, module_type),
