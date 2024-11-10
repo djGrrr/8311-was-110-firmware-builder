@@ -9,7 +9,6 @@ local dispatcher = require "luci.dispatcher"
 local sys = require "luci.sys"
 local i18n = require "luci.i18n"
 local translate = i18n.translate
-local _ = i18n.translate
 local base64 = require "base64"
 local ltn12 = require "luci.ltn12"
 local fs = require "nixio.fs"
@@ -532,6 +531,55 @@ function fwenvs_8311()
 				}
 			}
 		},{
+			id="sfp",
+			category=translate("SFP"),
+			items={ {
+					id="sfp_vendor",
+					name=translate("Vendor Name"),
+					description=translate("Set the vendor name presented in the virtual EEPROM (up to 16 characters)."),
+					type="text",
+					maxlength=16,
+				},{
+					id="sfp_oui",
+					name=translate("Vendor OUI"),
+					description=translate("Set the 3 byte vendor OUI presented in the virtual EEPROM (XX:XX:XX format)."),
+					type="text",
+					pattern="^[0-9A-F]{2}(:[0-9A-F]{2}){2}$",
+					maxlength=8,
+				},{
+					id="sfp_partno",
+					name=translate("Part Number"),
+					description=translate("Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."),
+					type="text",
+					maxlength=16,
+				},{
+					id="sfp_rev",
+					name=translate("Revision"),
+					description=translate("Set the vendor revision presented in the virtual EEPROM (up to 4 characters)."),
+					type="text",
+					maxlength=4,
+				},{
+					id="sfp_serial",
+					name=translate("Serial Number"),
+					description=translate("Set the vendor serial number presented in the virtual EEPROM (up to 16 characters)."),
+					type="text",
+					maxlength=16,
+				},{
+					id="sfp_date",
+					name=translate("Date Code"),
+					description=translate("Set the date code presented in the virtual EEPROM (up to 8 characters)."),
+					type="text",
+					pattern="^\\d{6}.{,2}",
+					maxlength="8",
+				},{
+					id="sfp_vendordata",
+					name=translate("Vendor Specific"),
+					description=translate("Set the vendor specific data presented in the virtual EEPROM (up to 32 characters)."),
+					type="text",
+					maxlength=32,
+				}
+			}
+		},{
 			id="manage",
 			category=translate("Management"),
 			items={	{
@@ -633,53 +681,53 @@ function action_pon_status()
 end
 
 function pon_state(state)
-	state = string.format("O%d", state)
+	state = tonumber(state)
 	local states = {
-		O0	= "O0, Power-up state",
-		O10	= "O1, Initial state",
-		O11	= "O1.1, Off-sync state",
-		O12	= "O1.2, Profile learning state",
-		O20	= "O2, Stand-by state",
-		O23	= "O2.3, Serial number state",
-		O30	= "O3, Serial number state",
-		O40	= "O4, Ranging state",
-		O50	= "O5, Operation state",
-		O51	= "O5.1, Associated state",
-		O52	= "O5.2, Pending state",
-		O60	= "O6, Intermittent LOS state",
-		O70	= "O7, Emergency stop state",
-		O71	= "O7.1, Emergency stop off-sync state",
-		O72	= "O7.2, Emergency stop in-sync state",
-		O81	= "O8.1, Downstream tuning off-sync state",
-		O82	= "O8.2, Downstream tuning profile learning state",
-		O90	= "O9, Upstream tuning state",
+		[0]		= "O0, Power-up state",
+		[10]	= "O1, Initial state",
+		[11]	= "O1.1, Off-sync state",
+		[12]	= "O1.2, Profile learning state",
+		[20]	= "O2, Stand-by state",
+		[23]	= "O2.3, Serial number state",
+		[30]	= "O3, Serial number state",
+		[40]	= "O4, Ranging state",
+		[50]	= "O5, Operation state",
+		[51]	= "O5.1, Associated state",
+		[52]	= "O5.2, Pending state",
+		[60]	= "O6, Intermittent LOS state",
+		[70]	= "O7, Emergency stop state",
+		[71]	= "O7.1, Emergency stop off-sync state",
+		[72]	= "O7.2, Emergency stop in-sync state",
+		[81]	= "O8.1, Downstream tuning off-sync state",
+		[82]	= "O8.2, Downstream tuning profile learning state",
+		[90]	= "O9, Upstream tuning state",
 	}
 
-	return _(states[state] or "N/A")
+	return translate(states[state] or "N/A")
 end
 
 function temperature(t)
-	return string.format(_("%.2f °C (%.1f °F)"), t, (t * 1.8 + 32))
+	return string.format(translate("%.2f °C (%.1f °F)"), t, (t * 1.8 + 32))
 end
 
 function dBm(mw)
-	return string.format(_("%.2f dBm"), 10 * math.log10(mw))
+	return string.format(translate("%.2f dBm"), 10 * math.log10(mw))
 end
 
 function action_gpon_status()
-	local ploam_status = tonumber(util.exec("pon psg | pcre2grep -o1 '\\Wcurrent=(\\d+)\\W'"):trim())
-	local cpu1_temp = (tonumber(fs.readfile("/sys/class/thermal/thermal_zone0/temp"):trim()) / 1000) or _("N/A")
-	local cpu2_temp = (tonumber(fs.readfile("/sys/class/thermal/thermal_zone1/temp"):trim()) / 1000) or _("N/A")
+	local _, _, ploam_status = string.find(util.exec("pon psg"):trim(), " current=(%d+) ")
+	local cpu1_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone0/temp") or ""):trim()) or 0) / 1000
+	local cpu2_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone1/temp") or ""):trim()) or 0) / 1000
 
-	local eep50 = fs.readfile("/sys/devices/platform/18000000.ssx1_1/18100000.ponmbox/eeprom50", 256)
-	local eep51 = fs.readfile("/sys/devices/platform/18000000.ssx1_1/18100000.ponmbox/eeprom51", 256)
+	local eep50 = fs.readfile("/sys/class/pon_mbox/pon_mbox0/device/eeprom50", 256)
+	local eep51 = fs.readfile("/sys/class/pon_mbox/pon_mbox0/device/eeprom51", 256)
 
 	local optic_temp = eep51:byte(97) + eep51:byte(98) / 256
 	local voltage = (bit.lshift(eep51:byte(99), 8) + eep51:byte(100)) / 10000
 	local tx_bias = (bit.lshift(eep51:byte(101), 8) + eep51:byte(102)) / 500
 	local tx_mw = (bit.lshift(eep51:byte(103), 8) + eep51:byte(104)) / 10000
 	local rx_mw = (bit.lshift(eep51:byte(105), 8) + eep51:byte(106)) / 10000
-	local eth_speed = tonumber(fs.readfile("/sys/class/net/eth0_0/speed"):trim()) or _("N/A")
+	local eth_speed = tonumber((fs.readfile("/sys/class/net/eth0_0/speed") or ""):trim())
 	local vendor_name = eep50:sub(21, 36):trim()
 	local vendor_pn = eep50:sub(41, 56):trim()
 	local vendor_rev = eep50:sub(57, 60):trim()
@@ -688,13 +736,13 @@ function action_gpon_status()
 	local active_bank = util.exec(". /lib/8311.sh && active_fwbank"):trim() or "A"
 
 	local rv = {
-		status = pon_state(ploam_status),
-		power = string.format(_("%s / %s / %.2f mA"), dBm(rx_mw), dBm(tx_mw), tx_bias),
+		status = pon_state(tonumber(ploam_status) or 0),
+		power = string.format(translate("%s / %s / %.2f mA"), dBm(rx_mw), dBm(tx_mw), tx_bias),
 		temperature = string.format("%s / %s / %s", temperature(cpu1_temp), temperature(cpu2_temp), temperature(optic_temp)),
-		voltage = string.format(_("%.2f V"), voltage),
+		voltage = string.format(translate("%.2f V"), voltage),
 		pon_mode = pon_mode:upper():gsub("PON$", "-PON"),
 		module_info = string.format("%s %s %s (%s)", vendor_name, vendor_pn, vendor_rev, module_type),
-		eth_speed = string.format(_("%s Mbps"), eth_speed),
+		eth_speed = (eth_speed and string.format(translate("%s Mbps"), eth_speed) or translate("N/A")),
 		active_bank = active_bank,
 	}
 	luci.http.prepare_content("application/json")

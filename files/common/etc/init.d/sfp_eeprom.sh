@@ -25,6 +25,27 @@ set_string()  {
 	$SFP_I2C_BINARY -i $1 -s "$2"
 }
 
+set_sfp_string() {
+	local index=$(($1))
+	local length=$(($2))
+	local hex=$(echo -n "$3" | xxd -p -l $length -c 1)
+	local end=$((index + length))
+
+	# write out string
+	for v in $hex; do
+		$SFP_I2C_BINARY -i "$index" -w "0x$v" || return $?
+		index=$((index + 1))
+	done
+
+	# pad with NULLs
+	while [ "$index" -lt "$end" ]; do
+		$SFP_I2C_BINARY -i "$index" -w 0 || return $?
+		index=$((index + 1))
+	done
+
+	return 0
+}
+
 vendor_config() {
 	local name
 	local partno
@@ -32,28 +53,32 @@ vendor_config() {
 	local datecode
 	local oui
 	local oui_hex
+	local vendordata
 
-	config_get name default vendor_name "MaxLinear"
-	config_get partno default vendor_partno "0"
-	config_get revision default vendor_rev "0001"
-	config_get datecode default datecode "2021xxxx"
-	config_get oui default vendor_oui "$(pon_oui_get)"
+	config_get name default vendor_name
+	config_get partno default vendor_partno
+	config_get revision default vendor_rev
+	config_get datecode default datecode
+	config_get oui default vendor_oui
+	config_get vendordata default vendor_data
 
-	set_string 0 "$name"
-	set_string 1 "$partno"
-	set_string 2 "$revision"
-	set_string 4 "$datecode"
+	[ -n "$name" ] && set_string 0 "$name"
+	[ -n "$partno" ] && set_string 1 "$partno"
+	[ -n "$revision" ] && set_string 2 "$revision"
+	[ -n "$datecode" ] && set_string 4 "$datecode"
+	[ -n "$vendordata" ] && set_sfp_string 96 32 "$vendordata"
 
-	oui_hex=$(echo $oui | awk 'BEGIN{FS=":"} {printf "0x%2s%2s%2s",$1,$2,$3}')
-
-	$SFP_I2C_BINARY -i 36 -w $oui_hex -4 -m 0x00FFFFFF
+	if [ -n "$oui" ]; then
+		oui_hex=$(echo $oui | awk 'BEGIN{FS=":"} {printf "0x%2s%2s%2s",$1,$2,$3}')
+		$SFP_I2C_BINARY -i 36 -w $oui_hex -4 -m 0x00FFFFFF
+	fi
 }
 
 serialnumber_config() {
 	local nSerial
 
-	config_get nSerial default serial_no "no serial number"
-	set_string 3 "$nSerial"
+	config_get nSerial default serial_no
+	[ -n "$nSerial" ] && set_string 3 "$nSerial"
 }
 
 bitrate_config() {
@@ -81,7 +106,7 @@ eeprom_addr_get() {
 	local addr
 
 	addr=$(fw_printenv -n sfp_i2c_addr_eeprom_$num 2>&-)
-	if [ -z "$tmp" ]; then
+	if [ -z "$addr" ]; then
 		config_get addr $section addr_eeprom_$num $def
 	fi
 
@@ -105,16 +130,19 @@ default_sfp_init() {
 	config_load sfp_eeprom
 
 	# reset to default values, if no init file exists
-#	[ -e /lib/firmware/sfp_eeprom0.bin ] || sfp_i2c -d yes
-#	vendor_config
-#	serialnumber_config
+	[ -e /lib/firmware/sfp_eeprom0_hack.bin ] || sfp_i2c -d yes
+	vendor_config
+	serialnumber_config
 	bitrate_config
+
 	# configure I2C EEPROM addresses
 	eeprom_addr_config
+
 	# write protection: 0x50 / 0 - 95
 	sfp_i2c -i 0 -l 96 -p 1
 	# write protection: 0x51 / 0 - 127
 	sfp_i2c -i 256 -l 128 -p 1
+
 	# activate write protection for dedicated fields
 	# 0x51 / 110, writable bits 3 & 6
 	sfp_i2c -i 366 -p 2 -m 0xB7
@@ -154,6 +182,7 @@ start_dmi_monitoring() {
 	config_load optic
 	config_get eeprom_dmi sfp_eeprom dmi
 	config_get eeprom_serial_id sfp_eeprom serial_id
+
 	[ -n "$eeprom_dmi" ] && sync0="-T $eeprom_dmi"
 	[ -n "$eeprom_serial_id" ] && sync1="-S $eeprom_serial_id"
 

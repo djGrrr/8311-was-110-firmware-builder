@@ -33,6 +33,12 @@ fwenv_set_8311() {
 	fwenv_set --8311 "$@"
 }
 
+uci_set() {
+	if [ -n "$1" ] && [ -n "$2" ]; then
+		uci set "$1"="$2"
+	fi
+}
+
 _8311_check_persistent_root() {
 	# Remove persistent root
 	PERSIST_ROOT=$(fwenv_get_8311 "persist_root")
@@ -506,4 +512,32 @@ inactive_fwbank() {
 	fi
 
 	return 0
+}
+
+get_8311_sfp_vendor() {
+	fwenv_get_8311 "sfp_vendor" | head -c 16
+}
+
+get_8311_sfp_oui() {
+	fwenv_get_8311 "sfp_oui" | grep -Ei '^[0-9a-f]{2}(:[0-9a-f]{2}){2}$'
+}
+
+get_8311_sfp_partno() {
+	fwenv_get_8311 "sfp_partno" | head -c 16
+}
+
+get_8311_sfp_rev() {
+	fwenv_get_8311 "sfp_rev" | head -c 4
+}
+
+get_8311_sfp_serial() {
+	fwenv_get_8311 "sfp_serial" | head -c 16
+}
+
+get_8311_sfp_date() {
+	fwenv_get_8311 "sfp_date" | head -c 8
+}
+
+get_8311_sfp_vendordata() {
+	fwenv_get_8311 "sfp_vendordata" | head -c 32
 }

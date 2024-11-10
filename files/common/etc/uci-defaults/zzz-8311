@@ -1,7 +1,6 @@
 #!/bin/sh
 _lib_8311 2>/dev/null || . /lib/8311.sh
 
-
 # Configure LCT Interface
 LCT_IFNAME=$(uci get "network.lct.ifname" || echo "eth0_0_1_lct")
 LCT_MAC="$(get_8311_lct_mac)"
@@ -139,3 +138,13 @@ if [ -f /usr/sbin/uhttpd ]; then
 		commit uhttpd
 EOF
 fi
+
+# SFP Virtual EEPROM
+uci_set "sfp_eeprom.default.vendor_name" "$(get_8311_sfp_vendor)"
+uci_set "sfp_eeprom.default.vendor_oui" "$(get_8311_sfp_oui)"
+uci_set "sfp_eeprom.default.vendor_partno" "$(get_8311_sfp_partno)"
+uci_set "sfp_eeprom.default.vendor_rev" "$(get_8311_sfp_rev)"
+uci_set "sfp_eeprom.default.serial_no" "$(get_8311_sfp_serial)"
+uci_set "sfp_eeprom.default.datecode" "$(get_8311_sfp_date)"
+uci_set "sfp_eeprom.default.vendor_data" "$(get_8311_sfp_vendordata)"
+uci commit "sfp_eeprom"
