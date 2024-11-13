@@ -83,8 +83,8 @@ msgstr "PON PLOAM ステータス"
 msgid "RX Power / TX Power / TX Bias"
 msgstr "受信光パワー / 送信光パワー / 送信バイアス電流"
 
-msgid "CPU1 / CPU2 / Optic Temperature"
-msgstr "CPU1 / CPU2 / 光デバイス温度"
+msgid "CPU0 / CPU1 / Optic Temperature"
+msgstr "CPU0 / CPU1 / 光デバイス温度"
 
 msgid "Module Voltage"
 msgstr "モジュール電圧"
@@ -200,6 +200,9 @@ msgstr "ISP修正"
 msgid "Device"
 msgstr "デバイス"
 
+msgid "SFP"
+msgstr "SFP"
+
 msgid "Management"
 msgstr "管理"
 
@@ -213,19 +216,19 @@ msgid "Vendor ID"
 msgstr "ベンダーID"
 
 msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters)."
-msgstr "PONベンダーIDを設定。未設定の場合は、PONシリアル番号から自動的に派生（4文字の英数字）"
+msgstr "PONベンダーIDを設定。未設定の場合は、GPONシリアル番号から自動的に派生（4文字の英数字）"
 
 msgid "Equipment ID"
 msgstr "機器ID"
 
 msgid "PON Equipment ID field in the ONU2-G ME [257] (up to 20 characters)."
-msgstr "ONU2-G（ME[257]）のPON機器IDフィールドを設定（最大20文字）"
+msgstr "ONU2-G（ME[257]）のPON機器IDフィールドを設定（最大20文字の英数字）"
 
 msgid "Hardware Version"
 msgstr "ハードウェアバージョン"
 
 msgid "Hardware version string sent in various MEs (up to 14 characters)."
-msgstr "ハードウェアバージョンを設定（最大14文字）"
+msgstr "ハードウェアバージョンを設定（最大14文字の英数字）"
 
 msgid "Sync Circuit Pack Version"
 msgstr "同期Circuit Packバージョン"
@@ -237,7 +240,7 @@ msgid "Software Version A"
 msgstr "ソフトウェアバージョンA"
 
 msgid "Image specific software version sent in the Software image MEs [7] (up to 14 characters)."
-msgstr "ソフトウェアイメージ（ME[7]）バージョンAを設定（最大14文字）"
+msgstr "ソフトウェアイメージ（ME[7]）バージョンAを設定（最大14文字の英数字）"
 
 msgid "Software Version B"
 msgstr "ソフトウェアバージョンB"
@@ -315,13 +318,13 @@ msgid "Logical ONU ID"
 msgstr "Logical ONU ID（LOID）"
 
 msgid "Logical ONU ID presented in the ONU-G ME [256] (up to 24 characters)."
-msgstr "ONU-G（ME[256]）で提示されるLogical ONU IDを設定（最大24文字）"
+msgstr "ONU-G（ME[256]）で提示されるLogical ONU IDを設定（最大24文字の英数字）"
 
 msgid "Logical Password"
 msgstr "LOIDパスワード"
 
 msgid "Logical Password presented in the ONU-G ME [256] (up to 12 characters)."
-msgstr "ONU-G（ME[256]）で提示されるLOIDパスワードを設定（最大12文字）"
+msgstr "ONU-G（ME[256]）で提示されるLOIDパスワードを設定（最大12文字の英数字）"
 
 msgid "MIB File"
 msgstr "MIBファイル"
@@ -345,13 +348,13 @@ msgid "IP Host Hostname"
 msgstr "IPホストホスト名"
 
 msgid "Hostname sent in the IP host config data ME [134] (up to 25 characters)."
-msgstr "IP host config data（ME[134]）で送信されるホスト名を設定（最大25文字）"
+msgstr "IP host config data（ME[134]）で送信されるホスト名を設定（最大25文字の英数字）"
 
 msgid "IP Host Domain Name"
 msgstr "IPホストドメイン名"
 
 msgid "Domain name sent in the IP host config data ME [134] (up to 25 characters)."
-msgstr "IP host config data（ME[134]）で送信されるドメイン名を設定（最大25文字）"
+msgstr "IP host config data（ME[134]）で送信されるドメイン名を設定（最大25文字の英数字）"
 
 msgid "Fix VLANs"
 msgstr "VLAN修正"
@@ -465,7 +468,46 @@ msgid "Persist RootFS"
 msgstr "RootFS永続化"
 
 msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
-msgstr "ルートファイルシステムを永続化します（bootcmd fwenvの変更も必要）。推奨されず、デバッグ/テスト目的でのみ。"
+msgstr "ルートファイルシステムを永続化します（bootcmd fwenvの変更も必要）。推奨されず、デバッグ/テスト目的でのみ"
+
+msgid "Vendor Name"
+msgstr "ベンダー名"
+
+msgid "Set the vendor name presented in the virtual EEPROM (up to 16 characters)."
+msgstr "仮想EEPROMに表示されるベンダー名を設定します（最大16文字の英数字）"
+
+msgid "Vendor OUI"
+msgstr "ベンダーOUI"
+
+msgid "Set the 3 byte vendor OUI presented in the virtual EEPROM (XX:XX:XX format)."
+msgstr "仮想EEPROMに表示される3バイトのベンダーOUIを設定します（形式：XX:XX:XX）"
+
+msgid "Part Number"
+msgstr "型番"
+
+msgid "Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "仮想EEPROMに表示されるベンダー型番を設定します（最大16文字の英数字）"
+
+msgid "Set the vendor revision presented in the virtual EEPROM (up to 4 characters)."
+msgstr "仮想EEPROMに表示されるベンダーリビジョンを設定します（最大4文字の英数字）"
+
+msgid "Serial Number"
+msgstr "シリアル番号"
+
+msgid "Set the vendor serial number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "仮想EEPROMに表示されるベンダーシリアル番号を設定します（最大16文字の英数字）"
+
+msgid "Date Code"
+msgstr "日付コード"
+
+msgid "Set the date code presented in the virtual EEPROM (up to 8 characters)."
+msgstr "仮想EEPROMに表示される日付コードを設定します（最大8文字の英数字）"
+
+msgid "Vendor Specific"
+msgstr "ベンダー固有データ"
+
+msgid "Set the vendor specific data presented in the virtual EEPROM (up to 32 characters)."
+msgstr "仮想EEPROMに表示されるベンダー固有データを設定します（最大32文字の英数字）"
 
 msgid "Management VLAN"
 msgstr "管理VLAN"
@@ -519,7 +561,7 @@ msgid "Redirect HTTP to HTTPs"
 msgstr "HTTPをHTTPSにリダイレクト"
 
 msgid "Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."
-msgstr "WebUIへのHTTPリクエストを自動的にHTTPSにリダイレクトします。デフォルトはオン。"
+msgstr "WebUIへのHTTPリクエストを自動的にHTTPSにリダイレクトします。デフォルトはオン"
 
 msgid "VLAN Tables"
 msgstr "VLANテーブル"
@@ -531,13 +573,13 @@ msgid "Support Archive"
 msgstr "サポートアーカイブ"
 
 msgid "A support archive contains diagnostic information used to help identify any underlying issues when attempting to bypass."
-msgstr "サポートアーカイブには、バイパスを試みる際に潜在的な問題を特定するための診断情報が含まれています。"
+msgstr "サポートアーカイブには、バイパスを試みる際に潜在的な問題を特定するための診断情報が含まれています"
 
 msgid "Connect the fiber for at least 30 seconds before generating a support archive."
-msgstr "サポートアーカイブを生成する前に、少なくとも 30 秒間光ファイバーを接続してください。"
+msgstr "サポートアーカイブを生成する前に、少なくとも 30 秒間光ファイバーを接続してください"
 
 msgid "WARNING: A support archive contains potentially sensitive information. Do not share it publically."
-msgstr "警告: サポートアーカイブには機密性の高い情報が含まれる可能性があります。公開しないでください。"
+msgstr "警告: サポートアーカイブには機密性の高い情報が含まれる可能性があります。公開しないでください"
 
 msgid "Generate Support Archive"
 msgstr "サポートアーカイブを作成"
@@ -576,7 +618,7 @@ msgid "Firmware Upgrade"
 msgstr "ファームウェアアップグレード"
 
 msgid "Upload firmware file here, typically named local-upgrade.tar"
-msgstr "ここにファームウェアファイルをアップロードします。通常、名前はlocal-upgrade.tarです。"
+msgstr "ここにファームウェアファイルをアップロードします。通常、名前はlocal-upgrade.tarです"
 
 msgid "Upload firmware"
 msgstr "ファームウェアをアップロード"

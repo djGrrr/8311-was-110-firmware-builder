@@ -81,8 +81,8 @@ msgstr "PON PLOAM Status"
 msgid "RX Power / TX Power / TX Bias"
 msgstr "RX Power / TX Power / TX Bias"
 
-msgid "CPU1 / CPU2 / Optic Temperature"
-msgstr "CPU1 / CPU2 / Optic Temperature"
+msgid "CPU0 / CPU1 / Optic Temperature"
+msgstr "CPU0 / CPU1 / Optic Temperature"
 
 msgid "Module Voltage"
 msgstr "Module Voltage"
@@ -197,6 +197,9 @@ msgstr "ISP Fixes"
 
 msgid "Device"
 msgstr "Device"
+
+msgid "SFP"
+msgstr "SFP"
 
 msgid "Management"
 msgstr "Management"
@@ -470,6 +473,45 @@ msgstr "Persist RootFS"
 
 msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
 msgstr "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
+
+msgid "Vendor Name"
+msgstr "Vendor Name"
+
+msgid "Set the vendor name presented in the virtual EEPROM (up to 16 characters)."
+msgstr "Set the vendor name presented in the virtual EEPROM (up to 16 characters)."
+
+msgid "Vendor OUI"
+msgstr "Vendor OUI"
+
+msgid "Set the 3 byte vendor OUI presented in the virtual EEPROM (XX:XX:XX format)."
+msgstr "Set the 3 byte vendor OUI presented in the virtual EEPROM (XX:XX:XX format)."
+
+msgid "Part Number"
+msgstr "Part Number"
+
+msgid "Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."
+
+msgid "Set the vendor revision presented in the virtual EEPROM (up to 4 characters)."
+msgstr "Set the vendor revision presented in the virtual EEPROM (up to 4 characters)."
+
+msgid "Serial Number"
+msgstr "Serial Number"
+
+msgid "Set the vendor serial number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "Set the vendor serial number presented in the virtual EEPROM (up to 16 characters)."
+
+msgid "Date Code"
+msgstr "Date Code"
+
+msgid "Set the date code presented in the virtual EEPROM (up to 8 characters)."
+msgstr "Set the date code presented in the virtual EEPROM (up to 8 characters)."
+
+msgid "Vendor Specific"
+msgstr "Vendor Specific"
+
+msgid "Set the vendor specific data presented in the virtual EEPROM (up to 32 characters)."
+msgstr "Set the vendor specific data presented in the virtual EEPROM (up to 32 characters)."
 
 msgid "Management VLAN"
 msgstr "Management VLAN"

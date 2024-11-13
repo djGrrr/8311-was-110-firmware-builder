@@ -15,7 +15,7 @@ return baseclass.extend({
 			_('PON Mode'), data.pon_mode || '?',
 			_('PON PLOAM Status'), data.status || '?',
 			_('RX Power / TX Power / TX Bias'), data.power || '?',
-			_('CPU1 / CPU2 / Optic Temperature'), data.temperature || '?',
+			_('CPU0 / CPU1 / Optic Temperature'), data.temperature || '?',
 			_('Module Voltage'), data.voltage || '?',
 			_('Module Info'), data.module_info || '?',
 			_('ETH Speed'), data.eth_speed || '?',
