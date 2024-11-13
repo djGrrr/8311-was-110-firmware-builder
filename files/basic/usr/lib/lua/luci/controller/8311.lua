@@ -716,8 +716,8 @@ end
 
 function action_gpon_status()
 	local _, _, ploam_status = string.find(util.exec("pon psg"):trim(), " current=(%d+) ")
-	local cpu1_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone0/temp") or ""):trim()) or 0) / 1000
-	local cpu2_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone1/temp") or ""):trim()) or 0) / 1000
+	local cpu0_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone0/temp") or ""):trim()) or 0) / 1000
+	local cpu1_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone1/temp") or ""):trim()) or 0) / 1000
 
 	local eep50 = fs.readfile("/sys/class/pon_mbox/pon_mbox0/device/eeprom50", 256)
 	local eep51 = fs.readfile("/sys/class/pon_mbox/pon_mbox0/device/eeprom51", 256)
@@ -738,7 +738,7 @@ function action_gpon_status()
 	local rv = {
 		status = pon_state(tonumber(ploam_status) or 0),
 		power = string.format(translate("%s / %s / %.2f mA"), dBm(rx_mw), dBm(tx_mw), tx_bias),
-		temperature = string.format("%s / %s / %s", temperature(cpu1_temp), temperature(cpu2_temp), temperature(optic_temp)),
+		temperature = string.format("%s / %s / %s", temperature(cpu0_temp), temperature(cpu1_temp), temperature(optic_temp)),
 		voltage = string.format(translate("%.2f V"), voltage),
 		pon_mode = pon_mode:upper():gsub("PON$", "-PON"),
 		module_info = string.format("%s %s %s (%s)", vendor_name, vendor_pn, vendor_rev, module_type),

@@ -84,8 +84,8 @@ msgstr "注册状态"
 msgid "RX Power / TX Power / TX Bias"
 msgstr "接收光功率 / 发射光功率 / 发射偏置电流"
 
-msgid "CPU1 / CPU2 / Optic Temperature"
-msgstr "CPU1 / CPU2 / 激光器温度"
+msgid "CPU0 / CPU1 / Optic Temperature"
+msgstr "CPU0 / CPU1 / 激光器温度"
 
 msgid "Module Voltage"
 msgstr "模块电压"
@@ -201,6 +201,9 @@ msgstr "ISP修复"
 msgid "Device"
 msgstr "设备"
 
+msgid "SFP"
+msgstr "SFP"
+
 msgid "Management"
 msgstr "管理"
 
@@ -214,7 +217,7 @@ msgid "Vendor ID"
 msgstr "供应商ID"
 
 msgid "PON Vendor ID sent in various MEs, automatically derived from the PON Serial Number if not set (4 alphanumeric characters)."
-msgstr "设置PON供应商ID。如果未设置则自动从PON序列号中派生（4个字母或数字字符）"
+msgstr "设置PON供应商ID。如果未设置则自动从GPON SN中派生（4个字母或数字字符）"
 
 msgid "Equipment ID"
 msgstr "设备ID"
@@ -467,6 +470,45 @@ msgstr "持久化RootFS"
 
 msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
 msgstr "RootFS持久化，须同时修改bootcmd fwenv（仅用于调试，不推荐启用）"
+
+msgid "Vendor Name"
+msgstr "厂商名称"
+
+msgid "Set the vendor name presented in the virtual EEPROM (up to 16 characters)."
+msgstr "设置虚拟EEPROM中显示的厂商名称（最多16个字符）"
+
+msgid "Vendor OUI"
+msgstr "厂商OUI"
+
+msgid "Set the 3 byte vendor OUI presented in the virtual EEPROM (XX:XX:XX format)."
+msgstr "设置虚拟EEPROM中显示的3字节厂商OUI（格式XX:XX:XX）"
+
+msgid "Part Number"
+msgstr "产品型号"
+
+msgid "Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "设置虚拟EEPROM中显示的厂商产品型号（最多16个字符）"
+
+msgid "Set the vendor revision presented in the virtual EEPROM (up to 4 characters)."
+msgstr "设置虚拟EEPROM中显示的厂商版本号（最多4个字符）"
+
+msgid "Serial Number"
+msgstr "序列号"
+
+msgid "Set the vendor serial number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "设置虚拟EEPROM中显示的厂商序列号（最多16个字符）"
+
+msgid "Date Code"
+msgstr "日期码"
+
+msgid "Set the date code presented in the virtual EEPROM (up to 8 characters)."
+msgstr "设置虚拟EEPROM中显示的日期码（最多8个字符）"
+
+msgid "Vendor Specific"
+msgstr "厂商自定义数据"
+
+msgid "Set the vendor specific data presented in the virtual EEPROM (up to 32 characters)."
+msgstr "设置虚拟EEPROM中显示的厂商自定义数据（最多32个字符）"
 
 msgid "Management VLAN"
 msgstr "管理VLAN"
