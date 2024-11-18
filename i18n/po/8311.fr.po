@@ -21,6 +21,78 @@ msgstr "Configuration 8311"
 msgid "Save"
 msgstr "Sauvegarde"
 
+msgid "O0, Power-up state"
+msgstr "O0, État de mise sous tension"
+
+msgid "O1, Initial state"
+msgstr "O1, État initial"
+
+msgid "O1.1, Off-sync state"
+msgstr "O1.1, État désynchronisé"
+
+msgid "O1.2, Profile learning state"
+msgstr "O1.2, État d'apprentissage du profil"
+
+msgid "O2, Stand-by state"
+msgstr "O2, État de veille"
+
+msgid "O2.3, Serial number state"
+msgstr "O2.3, État du numéro de série"
+
+msgid "O3, Serial number state"
+msgstr "O3, État du numéro de série"
+
+msgid "O4, Ranging state"
+msgstr "O4, État de portée"
+
+msgid "O5, Operation state"
+msgstr "O5, État de fonctionnement"
+
+msgid "O5.1, Associated state"
+msgstr "O5.1, État associé"
+
+msgid "O5.2, Pending state"
+msgstr "O5.2, État en attente"
+
+msgid "O6, Intermittent LOS state"
+msgstr "O6, État LOS intermittent"
+
+msgid "O7, Emergency stop state"
+msgstr "O7, État d'arrêt d'urgence"
+
+msgid "O7.1, Emergency stop off-sync state"
+msgstr "O7.1, État de désynchronisation et arrêt d'urgence"
+
+msgid "O7.2, Emergency stop in-sync state"
+msgstr "O7.2, État synchronisé et arrêt d’urgence"
+
+msgid "O8.1, Downstream tuning off-sync state"
+msgstr "O8.1, État de réglage de désynchronisation du canal descendant"
+
+msgid "O8.2, Downstream tuning profile learning state"
+msgstr "O8.2, État de réglage d'apprentissage du profil du canal descendant"
+
+msgid "O9, Upstream tuning state"
+msgstr "O9, État de réglage du canal montant"
+
+msgid "PON PLOAM Status"
+msgstr "Statut PON PLOAM"
+
+msgid "RX Power / TX Power / TX Bias"
+msgstr "RX Power / TX Power / TX Bias"
+
+msgid "CPU1 / CPU2 / Optic Temperature"
+msgstr "CPU1 / CPU2 / Température optique"
+
+msgid "Module Voltage"
+msgstr "Tension du module"
+
+msgid "Module Info"
+msgstr "Informations du module"
+
+msgid "ETH Speed"
+msgstr "Vitesse ETH"
+
 msgid "PON Status"
 msgstr "Statut PON"
 
@@ -488,6 +560,15 @@ msgstr "Variante"
 
 msgid "Inactive Firmware"
 msgstr "Firmware Inactif"
+
+msgid "Switch and Reboot"
+msgstr "Changer et redémarrer"
+
+msgid "Switch to inactive bank"
+msgstr "Passer à la banque inactive"
+
+msgid "Confirm and Reboot"
+msgstr "Confirmer et redémarrer"
 
 msgid "Firmware Upgrade"
 msgstr "Mise à Jour du Firmware"
