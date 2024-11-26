@@ -77,8 +77,7 @@ mibattrdata() {
 
 		"$inttype$size" "$int"
 	elif [ "$type" = "STR" ] || [ "$type" = "TBL" ]; then
-		[ "$type" = "STR" ] && HEAD=-1 || HEAD=-2
-		local hexdata=$(echo -n "$mibattr" | head -n $HEAD | tail -n +2 | sed -r -e 's/\s+//g' -e 's/0x//g')
+		local hexdata=$(echo -n "$mibattr" | pcre2grep -o1 -i "^\s*((?:\W0x[0-9A-F]{2}){$bytes})\s*$" | sed -r -e 's/\s+//g' -e 's/0x//g')
 		if [ "$type" = "STR" ]; then
 			hexdata=$(echo "$hexdata" | tr -d '\n')
 			echo "$hexdata" | { ! $hexstr && hex2str || cat; }
