@@ -135,6 +135,13 @@ default_sfp_init() {
 	serialnumber_config
 	bitrate_config
 
+	# clone the initial DMI configuration values from the physical EEPROM
+	local index=256
+	for x in $(head -c 95 /sys/class/pon_mbox/pon_mbox0/device/eeprom51 | xxd -p -c 1); do
+		sfp_i2c -i $index -w 0x$x
+		index=$((index + 1))
+	done
+
 	# configure I2C EEPROM addresses
 	eeprom_addr_config
 
