@@ -198,6 +198,9 @@ msgstr "Corrections FAI"
 msgid "Device"
 msgstr "Appareil"
 
+msgid "SFP"
+msgstr "SFP"
+
 msgid "Management"
 msgstr "Gestion"
 
@@ -400,10 +403,16 @@ msgid "3 (Default)"
 msgstr "3 (Défaut)"
 
 msgid "Serial Console"
-msgstr "Console série"
+msgstr "Console Série"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
 msgstr "Activer la console série. Ceci va causer TX_FAULT à être vérifier puisqu'ils partagent le même pin SFP."
+
+msgid "Early Serial Console"
+msgstr "Console Série Précoce"
+
+msgid "Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."
+msgstr "Activer la console série au début le processus de démarrage. Désactiver ceci peut aider appareils qui ont des problèmes avec TX_FAULT."
 
 msgid "Dying Gasp"
 msgstr "Dying Gasp"
@@ -465,11 +474,50 @@ msgstr "Persiste RootFS"
 msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
 msgstr "Permet au système de fishiers root de rester persistant (il faut aussi que tu modifie le bootcmd fwenv). Ceci n'est pas recommandé et devrait être seulement utilisé pour des tests ou des débogages."
 
+msgid "Vendor Name"
+msgstr "Nom du Vendeur"
+
+msgid "Set the vendor name presented in the virtual EEPROM (up to 16 characters)."
+msgstr "Définit le nom du vendeur présenté dans l'EEPROM virtuelle (16 caractères max)."
+
+msgid "Vendor OUI"
+msgstr "OUI du Vendeur"
+
+msgid "Set the 3 byte vendor OUI presented in the virtual EEPROM (XX:XX:XX format)."
+msgstr "Définit l'OUI du vendeur de 3 octets présenté dans l'EEPROM virtuelle (format XX:XX:XX)."
+
+msgid "Part Number"
+msgstr "Numéro de Pièce"
+
+msgid "Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "Définit le numéro de pièce du vendeur présenté dans l'EEPROM virtuelle (16 caractères max)."
+
+msgid "Set the vendor revision presented in the virtual EEPROM (up to 4 characters)."
+msgstr "Définit la révision du vendeur présentée dans l'EEPROM virtuelle (4 caractères max)."
+
+msgid "Serial Number"
+msgstr "Numéro de Série"
+
+msgid "Set the vendor serial number presented in the virtual EEPROM (up to 16 characters)."
+msgstr "Définit le numéro de série du vendeur présenté dans l'EEPROM virtuelle (16 caractères max)."
+
+msgid "Date Code"
+msgstr "Code de Date"
+
+msgid "Set the date code presented in the virtual EEPROM (up to 8 characters)."
+msgstr "Définit le code de date présenté dans l'EEPROM virtuelle (8 caractères max)."
+
+msgid "Vendor Specific"
+msgstr "Spécifique au Vendeur"
+
+msgid "Set the vendor specific data presented in the virtual EEPROM (up to 32 characters)."
+msgstr "Définit les données spécifiques au vendeur présentées dans l'EEPROM virtuelle (32 caractères max)."
+
 msgid "Management VLAN"
 msgstr "VLAN de Gestion (Management VLAN)"
 
 msgid "Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged)."
-msgstr "Définit l'ID du VLAN de gestion (0 à 4095). Par défaut 15 secondes" (pas de VLAN)"
+msgstr "Définit l'ID du VLAN de gestion (0 à 4095). Par défaut 15 secondes (pas de VLAN)"
 
 msgid "IP Address"
 msgstr "Adresse IP"
@@ -495,11 +543,17 @@ msgstr "Serveur DNS"
 msgid "Management DNS server."
 msgstr "Serveur DNS de gestion."
 
+msgid "Ping Daemon"
+msgstr "Ping Daemon"
+
+msgid "Enables a daemon that will ping an IP every 5 seconds, which can help with accessing the stick."
+msgstr "Active un daemon qui envoie un ping à une adresse IP toutes les 5 secondes, ce qui peut aider à accéder le stick."
+
 msgid "Ping IP"
 msgstr "Ping IP"
 
-msgid "IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
-msgstr "Adresse IP à envoyer en ping tous les 5 secondes, ceci peut aider à accéder le stick. Par défaut c'est la deuxième adresse IP configuré pour le réseau de gestion (ex. 192.168.11.2)"
+msgid "IP address to ping. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
+msgstr "Adresse IP à envoyer en ping. Par défaut, la 2e adresse IP du réseau de gestion configuré (192.168.11.2)."
 
 msgid "LCT MAC Address"
 msgstr "Adresse MAC LCT"
