@@ -406,13 +406,13 @@ msgid "Serial Console"
 msgstr "Console Série"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
-msgstr "Activer la console série. Ceci va causer TX_FAULT à être vérifier puisqu'ils partagent le même pin SFP."
+msgstr "Active la console série. Ceci va causer TX_FAULT à être vérifier puisqu'ils partagent le même pin SFP."
 
 msgid "Early Serial Console"
-msgstr "Console Série Précoce"
+msgstr "Console Série d'amorce"
 
 msgid "Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."
-msgstr "Activer la console série au début le processus de démarrage. Désactiver ceci peut aider appareils qui ont des problèmes avec TX_FAULT."
+msgstr "Active la console série au début du processus de démarrage. Désactiver ceci peut aider les appareils qui ont des problèmes avec TX_FAULT."
 
 msgid "Dying Gasp"
 msgstr "Dying Gasp"
@@ -472,7 +472,7 @@ msgid "Persist RootFS"
 msgstr "Persiste RootFS"
 
 msgid "Allow the root file system to stay persistent (would also require that you modify the bootcmd fwenv). This is not recommended and should only be used for debug/testing purposes."
-msgstr "Permet au système de fishiers root de rester persistant (il faut aussi que tu modifie le bootcmd fwenv). Ceci n'est pas recommandé et devrait être seulement utilisé pour des tests ou des débogages."
+msgstr "Permet au système de fichiers root de rester persistant (il faut aussi modifier le bootcmd fwenv). Ceci n'est pas recommandé et devrait être seulement utilisé pour des tests ou des débogages."
 
 msgid "Vendor Name"
 msgstr "Nom du Vendeur"
@@ -488,6 +488,7 @@ msgstr "Définit l'OUI du vendeur de 3 octets présenté dans l'EEPROM virtuelle
 
 msgid "Part Number"
 msgstr "Numéro de Pièce"
+msgstr "Numéro de la Pièce"
 
 msgid "Set the vendor part number presented in the virtual EEPROM (up to 16 characters)."
 msgstr "Définit le numéro de pièce du vendeur présenté dans l'EEPROM virtuelle (16 caractères max)."
@@ -547,7 +548,7 @@ msgid "Ping Daemon"
 msgstr "Ping Daemon"
 
 msgid "Enables a daemon that will ping an IP every 5 seconds, which can help with accessing the stick."
-msgstr "Active un daemon qui envoie un ping à une adresse IP toutes les 5 secondes, ce qui peut aider à accéder le stick."
+msgstr "Active un daemon qui envoie un ping à une adresse IP toutes les 5 secondes, ce qui peut aider à accéder au stick."
 
 msgid "Ping IP"
 msgstr "Ping IP"
