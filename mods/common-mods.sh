@@ -59,16 +59,17 @@ RC_LOCAL="$ROOT_DIR/etc/rc.local"
 RC_LOCAL_HEAD=$(grep -P -B99999999 '^exit 0$' "$RC_LOCAL" | head -n -1)
 RC_LOCAL_FOOT=$(grep -P -A99999999 '^exit 0$' "$RC_LOCAL")
 
+MIN_DELAY=0
 DEFAULT_DELAY=15
-[ "$FW_VARIANT" = "bfw" ] && DEFAULT_DELAY=30
+[ "$FW_VARIANT" = "bfw" ] && DEFAULT_DELAY=30 && MIN_DELAY=10
 
 echo "$RC_LOCAL_HEAD" > "$RC_LOCAL"
 cat >> "$RC_LOCAL" <<FAILSAFE
 
 # 8311 MOD: Failsafe, delay omcid start
 DELAY=\$(fw_printenv -n 8311_failsafe_delay 2>/dev/null || echo "$DEFAULT_DELAY")
-[ "\$DELAY" -ge 10 ] 2>/dev/null || DELAY=10
-[ "\$DELAY" -le 300 ] || DELAY=300
+[ "\$DELAY" -ge $MIN_DELAY ] 2>/dev/null || DELAY=$MIN_DELAY
+[ "\$DELAY" -le "300" ] || DELAY=300
 sleep "\$DELAY" && [ ! -f /root/.failsafe ] && [ ! -f /tmp/.failsafe ] && [ ! -f /ptconf/.failsafe ] && /etc/init.d/omcid.sh start
 
 FAILSAFE

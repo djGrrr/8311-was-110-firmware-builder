@@ -50,9 +50,10 @@ local maxv = ""
 local maxlength = ""
 local class_attr = 'cbi-input-' .. item.type
 
-if item.type == "checkbox" then
+if item.type == "checkbox" or item.type == "checkbox_onoff" then
+	item.type = "checkbox"
 	value = "1"
-	if item.value == '1' or (item.default and item.value ~= '0') then
+	if item.value == '1' or item.value == "on" or (item.default and item.value ~= '0' and item.value ~= 'off') then
 		checked=' checked="checked"'
 	end
 else

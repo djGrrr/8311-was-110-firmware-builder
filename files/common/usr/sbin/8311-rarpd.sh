@@ -26,6 +26,6 @@ IPADDR
 		sh
 		sleep 1
 	else
-		sleep 5
+		sleep 30
 	fi
 done

@@ -402,7 +402,7 @@ msgstr "1 （快速启动）"
 msgid "3 (Default)"
 msgstr "3 （默认）"
 
-msgid "Serial console"
+msgid "Serial Console"
 msgstr "串行控制台"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
@@ -435,8 +435,8 @@ msgstr "使用ethtool配置eth0_0接口速率（ethtool -s）"
 msgid "Failsafe Delay"
 msgstr "故障保护延迟"
 
-msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
-msgstr "启动时延迟启动omcid的秒数。默认15秒（范围10-300）"
+msgid "Number of seconds that we will delay the startup of omcid for at bootup (0 to 300). Defaults to 15 seconds"
+msgstr "启动时延迟启动omcid的秒数。默认15秒（范围0-300）"
 
 msgid "Language"
 msgstr "语言"

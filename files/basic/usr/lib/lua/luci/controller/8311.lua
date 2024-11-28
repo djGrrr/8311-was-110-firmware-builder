@@ -465,10 +465,17 @@ function fwenvs_8311()
 					}
 				},{
 					id="console_en",
-					name=translate("Serial console"),
+					name=translate("Serial Console"),
 					description=translate("Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."),
 					type="checkbox",
 					default=false
+				},{
+					id="uart_select",
+					name=translate("Early Serial Console"),
+					description=translate("Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."),
+					type="checkbox_onoff",
+					base=true,
+					default=true,
 				},{
 					id="dying_gasp_en",
 					name=translate("Dying Gasp"),
@@ -486,7 +493,7 @@ function fwenvs_8311()
 					name=translate("Root password hash"),
 					description=translate("Custom password hash for the root user. This can be set from System > Administration"),
 					maxlength=255,
-					pattern="^\\$[0-9a-z]+\\$.+\\$[A-Za-z0-9.\\/]+\$",
+					pattern="^\\$[0-9a-z]+\\$.+\\$[A-Za-z0-9.\\/]+$",
 					type="text"
 				},{
 					id="ethtool_speed",
@@ -497,9 +504,9 @@ function fwenvs_8311()
 				},{
 					id="failsafe_delay",
 					name=translate("Failsafe Delay"),
-					description=translate("Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"),
+					description=translate("Number of seconds that we will delay the startup of omcid for at bootup (0 to 300). Defaults to 15 seconds"),
 					type="number",
-					min=10,
+					min=0,
 					max=300,
 					default="15"
 				},{
@@ -583,14 +590,15 @@ function fwenvs_8311()
 			id="manage",
 			category=translate("Management"),
 			items={	{
-					id="lct_vlan",
-					name=translate("Management VLAN"),
-					description=translate("Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged)."),
-					type="number",
-					min=0,
-					max=4095,
-					default="0"
-				},{
+--					Currently Broken, hide for the time being
+--					id="lct_vlan",
+--					name=translate("Management VLAN"),
+--					description=translate("Set the management VLAN ID (0 to 4095). Defaults to 0 (untagged)."),
+--					type="number",
+--					min=0,
+--					max=4095,
+--					default="0"
+--				},{
 					id="ipaddr",
 					name=translate("IP Address"),
 					description=translate("Management IP address. Defaults to 192.168.11.1"),
@@ -622,9 +630,15 @@ function fwenvs_8311()
 					pattern=ipv4_regex,
 					type="text"
 				},{
+					id="pingd",
+					name=translate("Ping Daemon"),
+					description=translate("Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."),
+					type="checkbox",
+					default=true,
+				},{
 					id="ping_ip",
 					name=translate("Ping IP"),
-					description=translate("IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."),
+					description=translate("IP address to ping. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."),
 					maxlength=15,
 					pattern=ipv4_regex,
 					type="text",
@@ -826,12 +840,19 @@ function action_save()
 		for catid, cat in pairs(fwenvs) do
 			for itemid, item in pairs(cat.items) do
 				value = formvalue(item.id) or ''
-
-				if item.type == 'checkbox' then
+				if item.type == 'checkbox' or item.type == 'checkbox_onoff' then
 					if item.value == '' and ((item.default and value == '1') or (not item.default and (value == '0' or value == ''))) then
 						value = ''
+					elseif item.type == 'checkbox_onoff' then
+						if value == '' then
+							value = 'off'
+						else
+							value = 'on'
+						end
 					elseif value == '' then
 						value = '0'
+					else
+						value = '1'
 					end
 				elseif item.value == '' and item.default and value == item.default then
 					value = ''

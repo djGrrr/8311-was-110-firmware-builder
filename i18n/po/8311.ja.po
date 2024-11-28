@@ -401,7 +401,7 @@ msgstr "1 （高速起動）"
 msgid "3 (Default)"
 msgstr "3 （デフォルト）"
 
-msgid "Serial console"
+msgid "Serial Console"
 msgstr "シリアルコンソール"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
@@ -434,8 +434,8 @@ msgstr "eth0_0インターフェースのEthtool速度設定（ethtool -s）"
 msgid "Failsafe Delay"
 msgstr "フェイルセーフ遅延"
 
-msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
-msgstr "起動時にomcidの起動を遅延させる秒数（範囲10～300）。デフォルトは15秒。"
+msgid "Number of seconds that we will delay the startup of omcid for at bootup (0 to 300). Defaults to 15 seconds"
+msgstr "起動時にomcidの起動を遅延させる秒数（範囲0～300）。デフォルトは15秒。"
 
 msgid "Language"
 msgstr "言語"

@@ -3,17 +3,17 @@
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fr\n"
 
-msgid "8311 Community Firmware MOD"
-msgstr "8311 Firmware Communautaire MOD"
-
-msgid "8311 Community Discord Server"
-msgstr "8311 Serveur Discord Communautaire"
-
 msgid "Translator"
 msgstr "TeaRex-coder+mastah_fr"
 
 msgid "TranslatorURL"
 msgstr "https://github.com/TeaRex-coder/8311-was-110-firmware-builder"
+
+msgid "8311 Community Firmware MOD"
+msgstr "8311 Firmware Communautaire MOD"
+
+msgid "8311 Community Discord Server"
+msgstr "8311 Serveur Discord Communautaire"
 
 msgid "8311 Configuration"
 msgstr "Configuration 8311"
@@ -327,7 +327,7 @@ msgstr "1 (Démarrage Rapide)"
 msgid "3 (Default)"
 msgstr "3 (Défaut)"
 
-msgid "Serial console"
+msgid "Serial Console"
 msgstr "Console série"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
@@ -360,8 +360,8 @@ msgstr "Réglages de Vitesse Ethtool sur l'interface eth0_0 (ethtool -s)."
 msgid "Failsafe Delay"
 msgstr "Délai du Failsafe"
 
-msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
-msgstr "Nombre de secondes avant que le démarrage d'omcid commence au démarrage (10 à 300). Par défaut 15 secondes"
+msgid "Number of seconds that we will delay the startup of omcid for at bootup (0 to 300). Defaults to 15 seconds"
+msgstr "Nombre de secondes avant que le démarrage d'omcid commence au démarrage (0 à 300). Par défaut 15 secondes"
 
 msgid "Language"
 msgstr "Langue"

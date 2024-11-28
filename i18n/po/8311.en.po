@@ -3,17 +3,17 @@
 "Content-Transfer-Encoding: 8bit\n"
 "Language: en\n"
 
-msgid "8311 Community Firmware MOD"
-msgstr "8311 Community Firmware MOD"
-
-msgid "8311 Community Discord Server"
-msgstr "8311 Community Discord Server"
-
 msgid "Translator"
 msgstr "djGrrr"
 
 msgid "TranslatorURL"
 msgstr "https://github.com/djGrrr"
+
+msgid "8311 Community Firmware MOD"
+msgstr "8311 Community Firmware MOD"
+
+msgid "8311 Community Discord Server"
+msgstr "8311 Community Discord Server"
 
 msgid "8311 Configuration"
 msgstr "8311 Configuration"
@@ -399,11 +399,17 @@ msgstr "1 (Fast Boot)"
 msgid "3 (Default)"
 msgstr "3 (Default)"
 
-msgid "Serial console"
-msgstr "Serial console"
+msgid "Serial Console"
+msgstr "Serial Console"
 
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
 msgstr "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
+
+msgid "Early Serial Console"
+msgstr "Early Serial Console"
+
+msgid "Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."
+msgstr "Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."
 
 msgid "Dying Gasp"
 msgstr "Dying Gasp"
@@ -432,8 +438,8 @@ msgstr "Ethtool speed settings on the eth0_0 interface (ethtool -s)."
 msgid "Failsafe Delay"
 msgstr "Failsafe Delay"
 
-msgid "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
-msgstr "Number of seconds that we will delay the startup of omcid for at bootup (10 to 300). Defaults to 15 seconds"
+msgid "Number of seconds that we will delay the startup of omcid for at bootup (0 to 300). Defaults to 15 seconds"
+msgstr "Number of seconds that we will delay the startup of omcid for at bootup (0 to 300). Defaults to 15 seconds"
 
 msgid "Language"
 msgstr "Language"
@@ -495,11 +501,17 @@ msgstr "DNS Server"
 msgid "Management DNS server."
 msgstr "Management DNS server."
 
+msgid "Ping Daemon"
+msgstr "Ping Daemon"
+
+msgid "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+msgstr "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+
 msgid "Ping IP"
 msgstr "Ping IP"
 
-msgid "IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
-msgstr "IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
+msgid "IP address to ping. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
+msgstr "IP address to ping. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
 
 msgid "LCT MAC Address"
 msgstr "LCT MAC Address"
