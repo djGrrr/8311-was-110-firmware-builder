@@ -549,7 +549,7 @@ msgstr "设置管理DNS服务器"
 msgid "Ping Daemon"
 msgstr "Ping守护进程"
 
-msgid "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+msgid "Enables a daemon that will ping an IP every 5 seconds, which can help with accessing the stick."
 msgstr "启用一个守护进程，每5秒对一个IP地址进行一次Ping操作，这可以帮助访问ONU Stick"
 
 msgid "Ping IP"

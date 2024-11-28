@@ -548,7 +548,7 @@ msgstr "管理DNSサーバーを設定"
 msgid "Ping Daemon"
 msgstr "Pingデーモン"
 
-msgid "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+msgid "Enables a daemon that will ping an IP every 5 seconds, which can help with accessing the stick."
 msgstr "Pingデーモンを有効化し、5秒ごとにIPアドレスをpingします。これにより、ONU Stickへのアクセスが容易になります。"
 
 msgid "Ping IP"

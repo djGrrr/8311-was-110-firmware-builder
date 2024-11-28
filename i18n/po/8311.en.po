@@ -546,8 +546,8 @@ msgstr "Management DNS server."
 msgid "Ping Daemon"
 msgstr "Ping Daemon"
 
-msgid "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
-msgstr "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+msgid "Enables a daemon that will ping an IP every 5 seconds, which can help with accessing the stick."
+msgstr "Enables a daemon that will ping an IP every 5 seconds, which can help with accessing the stick."
 
 msgid "Ping IP"
 msgstr "Ping IP"
