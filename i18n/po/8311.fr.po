@@ -81,8 +81,8 @@ msgstr "Statut PON PLOAM"
 msgid "RX Power / TX Power / TX Bias"
 msgstr "RX Power / TX Power / TX Bias"
 
-msgid "CPU1 / CPU2 / Optic Temperature"
-msgstr "CPU1 / CPU2 / Température optique"
+msgid "CPU0 / CPU1 / Optic Temperature"
+msgstr "CPU0 / CPU1 / Température optique"
 
 msgid "Module Voltage"
 msgstr "Tension du module"
