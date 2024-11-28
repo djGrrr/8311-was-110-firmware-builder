@@ -411,6 +411,12 @@ msgstr "串行控制台"
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
 msgstr "启用串行控制台。由于引脚复用，启用时TX_FAULT被置为高电平"
 
+msgid "Early Serial Console"
+msgstr "早期串行控制台"
+
+msgid "Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."
+msgstr "在启动过程中提前启用串行控制台。禁用此功能可能有助于解决某些设备中存在的TX_FAULT问题"
+
 msgid "Dying Gasp"
 msgstr "断电告警"
 
@@ -540,11 +546,17 @@ msgstr "DNS服务器"
 msgid "Management DNS server."
 msgstr "设置管理DNS服务器"
 
+msgid "Ping Daemon"
+msgstr "Ping守护进程"
+
+msgid "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+msgstr "启用一个守护进程，每5秒对一个IP地址进行一次Ping操作，这可以帮助访问ONU Stick"
+
 msgid "Ping IP"
 msgstr "Ping IP"
 
-msgid "IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
-msgstr "设置每5秒Ping一次的IP地址，用于确认ONU Stick的可访问性。默认为管理子网中的第2个IP地址（192.168.11.2）"
+msgid "IP address to ping. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
+msgstr "需要Ping的IP地址。默认为管理子网中的第2个IP地址（192.168.11.2）"
 
 msgid "LCT MAC Address"
 msgstr "LCT MAC地址"

@@ -410,6 +410,12 @@ msgstr "シリアルコンソール"
 msgid "Enable the serial console. This will cause TX_FAULT to be asserted as it shares the same SFP pin."
 msgstr "シリアルコンソールを有効にします。同じSFPピンを共有するため、TX_FAULTがアサートされます。"
 
+msgid "Early Serial Console"
+msgstr "初期シリアルコンソール"
+
+msgid "Enable the serial console early in the boot process. Disabling this may help in some devices that have issues with TX_FAULT."
+msgstr "ブートプロセスの初期段階でシリアルコンソールを有効にします。この機能を無効にすることで、TX_FAULTの問題を抱える一部のデバイスに役立つ場合があります。"
+
 msgid "Dying Gasp"
 msgstr "Dying Gasp"
 
@@ -539,11 +545,17 @@ msgstr "DNSサーバー"
 msgid "Management DNS server."
 msgstr "管理DNSサーバーを設定"
 
+msgid "Ping Daemon"
+msgstr "Pingデーモン"
+
+msgid "Enables a daemon that will ping an ip every 5 seconds, which can help with accessing the stick."
+msgstr "Pingデーモンを有効化し、5秒ごとにIPアドレスをpingします。これにより、ONU Stickへのアクセスが容易になります。"
+
 msgid "Ping IP"
 msgstr "Ping IP"
 
-msgid "IP address to ping every 5 seconds, this can help with reaching the stick. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
-msgstr "5秒ごとにPingを送信するIPアドレスを設定します。これはスティックへのアクセスに役立ちます。デフォルトは設定された管理ネットワークの2番目のIPアドレス（例：192.168.11.2）"
+msgid "IP address to ping. Defaults to the 2nd IP address in the configured management network (ie. 192.168.11.2)."
+msgstr "PingするIPアドレスを指定します。デフォルトは設定された管理ネットワークの2番目のIPアドレス（例：192.168.11.2）"
 
 msgid "LCT MAC Address"
 msgstr "LCT MACアドレス"
