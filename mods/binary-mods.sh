@@ -43,7 +43,20 @@ if check_file "$OMCID" "5217dccf98cf8c75bc1b8ba380a92514511a77c40803a9718651b1f2
 	printf '\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xA04C8)) bs=1 count=6 2>/dev/null
 	printf '\x00\x00\x00\x00\x00\x00\x00\x00\x00' | dd of="$OMCID" conv=notrunc seek=$((0xA04D8)) bs=1 count=9 2>/dev/null
 
-	expected_hash "$OMCID" "b0d0fad0da26c48bf267ea12e731fd017ec205151e1444b7b7c0e0af43765620"
+	# omci_sip_user_data.c - ME 153 function sip_user_update_timeout_handler - fix data length when reading ME 148 attribute username2
+	printf '\x19' | dd of="$OMCID" conv=notrunc seek=$((0x80C77)) bs=1 count=1 2>/dev/null
+
+	# omci_sip_agent_config_data.c - ME 150 function me_update - fix data lengths when reading ME 136 and 134 attributes
+	printf '\x02' | dd of="$OMCID" conv=notrunc seek=$((0x82403)) bs=1 count=1 2>/dev/null
+	printf '\x3C' | dd of="$OMCID" conv=notrunc seek=$((0x825C7)) bs=1 count=1 2>/dev/null
+	printf '\x04' | dd of="$OMCID" conv=notrunc seek=$((0x825CB)) bs=1 count=1 2>/dev/null
+	printf '\x16' | dd of="$OMCID" conv=notrunc seek=$((0x825F1)) bs=1 count=1 2>/dev/null
+	printf '\xB6' | dd of="$OMCID" conv=notrunc seek=$((0x825F5)) bs=1 count=1 2>/dev/null
+	printf '\xAF\xB6\x00\x10\x24\x16\x00\x04' | dd of="$OMCID" conv=notrunc seek=$((0x82624)) bs=1 count=8 2>/dev/null
+	printf '\x6C' | dd of="$OMCID" conv=notrunc seek=$((0x8262F)) bs=1 count=1 2>/dev/null
+	printf '\x02' | dd of="$OMCID" conv=notrunc seek=$((0x82633)) bs=1 count=1 2>/dev/null
+
+	expected_hash "$OMCID" "c1df5decc2aa80a583abf0d8b1a237cc603ceeabd4acee4f7e8bbb6a91fd6848"
 fi
 
 # Potrontec 1.18.1 OMCId v8.15.17 and PTXG_CX_V0.03
