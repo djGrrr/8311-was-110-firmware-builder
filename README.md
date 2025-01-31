@@ -1,7 +1,11 @@
 # 8311 WAS-110 Firmware Builder
+## 国内优化版，目前没做太多更改
+### 主要特性如下：
+- 修改bypass脚本，适配国内运营商，不会瞎把internet绑定到默认GEM1的tr096上（这个因地区而异，在我的印象里大部分运营商GEM1一般是tr096，GEM2一般是internet，GEM3一般是iptv，如果你们地区有很逆天的配置，比如一个GEM走N个VLAN，请告诉我）
+- 初步SNMP支持
 
 ## Custom fwenvs
-```
+
 8311_fix_vlans=1
 8311_internet_vlan=0
 8311_services_vlan=36
@@ -28,8 +32,6 @@
 8311_sw_verA=SGC830007C
 8311_sw_verB=SGC830006E
 8311_vendor_id=SMBS
-```
-
 
 ### ISP Fix fwenvs
 `8311_fix_vlans` - **Fix VLANs**  
@@ -180,4 +182,3 @@ Options:
 -k --kernel <filename>          Specify filename to extract kernel image to (default: kernel.bin).
 -r --rootfs <filename>          Specify filename to extract rootfs image to (default: rootfs.img).
 -h --help                       This help text
-```

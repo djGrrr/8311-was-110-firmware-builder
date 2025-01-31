@@ -13,7 +13,7 @@ msgid "TranslatorURL"
 msgstr "https://github.com/missing233"
 
 msgid "8311 Community Firmware MOD"
-msgstr "8311社区固件 MOD"
+msgstr "8311社区固件 MOD 国内优化版"
 
 msgid "8311 Community Discord Server"
 msgstr "8311社区Discord服务器"
