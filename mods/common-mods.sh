@@ -62,7 +62,7 @@ RC_LOCAL_FOOT=$(grep -P -A99999999 '^exit 0$' "$RC_LOCAL")
 MIN_DELAY=0
 DEFAULT_DELAY=15
 [ "$FW_VARIANT" = "bfw" ] && DEFAULT_DELAY=30 && MIN_DELAY=10
-
+# Failsafe下的处理
 echo "$RC_LOCAL_HEAD" > "$RC_LOCAL"
 cat >> "$RC_LOCAL" <<FAILSAFE
 

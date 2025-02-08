@@ -8,7 +8,10 @@ start() {
 	CONSOLE_EN=$(get_8311_console_en)
 	DYING_GASP_EN=$(get_8311_dying_gasp_en)
 
-	if [ "$CONSOLE_EN" != "1" ]; then
+	if [ "$CONSOLE_EN" != "1" ] && \
+	   [ ! -f /root/.failsafe ] && \
+	   [ ! -f /tmp/.failsafe ] && \
+	   [ ! -f /ptconf/.failsafe ]; then
 		echo "Disabling serial console output, set fwenv 8311_console_en to 1 to re-enable" | to_console
 		UART_TX="low"
 	else
