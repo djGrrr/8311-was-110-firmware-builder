@@ -484,7 +484,7 @@ get_8311_base_mac() {
 		local suffix=$(echo -n "$serial" | tail -c "$length" | tr -dc [:xdigit:])
 
 		if [ -z "$suffix" ] || [ "$length" -ne "${#suffix}" ]; then
-			suffix=$(echo -n "$serial" | sha256sum | head -c 6)
+			suffix=$(echo -n "$serial" | sha256sum | head -c "$length")
 		fi
 
 		echo "${prefix}${suffix}" | strtoupper | sed -r 's/(..)/\1:/g; s/:$//' > "/tmp/8311-base-mac"
