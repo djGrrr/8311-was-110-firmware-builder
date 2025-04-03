@@ -393,9 +393,9 @@ function fwenvs_8311()
 			id="isp",
 			category=translate("ISP Fixes"),
 			items={	{
-					id="fix_vlans",
-					name=translate("Fix VLANs"),
-					description=translate("Apply automatic fixes to the VLAN configuration from the OLT."),
+					id="iopmask",
+					name=translate("互操作兼容模式"),
+					description=translate("兼容适配模式，启用自动VLAN配置和组播规则修复"),
 					type="select_named",
 					default="1",
 					options={
@@ -413,21 +413,72 @@ function fwenvs_8311()
 						}
 					}
 				},{
-					id="internet_vlan",
-					name=translate("Internet VLAN"),
-					description=translate("Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged)."),
-					type="number",
-					min=0,
-					max=4095,
-					default="0"
+					id="uvlan",
+					name=translate("默认PVID"),
+					description=translate("将untag的报文添加默认vlan（vlan范围:1-4094），填写\"u\"即可使用untag转untag模式（原光猫上网vlan为空的，可尝试填写）"),
+					type="text",
+					maxlength=4,
+					depends="iopmask"
 				},{
-					id="services_vlan",
-					name=translate("Services VLAN"),
-					description=translate("Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095). This fixes multi-service on Bell."),
+					id="forceuvlan",
+					name=translate("强制创建默认PVID"),
+					description=translate("pvid设置后不生效，可尝试勾选"),
+					type="checkbox",
+					default=false,
+					depends="iopmask"
+				},{
+					id="forcemerule",
+					name=translate("强制设置ME规则"),
+					description=translate("o5状态无法拨号，可尝试勾选"),
+					type="checkbox",
+					default=false,
+					depends="iopmask"
+				},{
+					id="mvlansource",
+					name=translate("下行组播VLAN"),
+					description=translate("组播数据vlan（填写原光猫中的组播vlan，vlan范围:1-4094）"),
 					type="number",
 					min=1,
-					max=4095,
-					default="34|36"
+					max=4094,
+					depends="iopmask"
+				},{
+					id="multicast_vlan",
+					name=translate("下行组播VLAN转换"),
+					description=translate("将组播数据vlan转换为其他vlan（填写原光猫中iptv的vlan，即可将组播数据vlan转换为iptv认证vlan，vlan范围:1-4094）"),
+					type="number",
+					min=1,
+					max=4094,
+					depends="iopmask"
+				},{
+					id="vlan_trans_rules",
+					name=translate("VLAN转换/绑定"),
+					description=translate("将下行vlan转换/绑定为其它vlan（可填写多组vlan转换对，填写示例："2:41,3:43,4:u,5:44@5"，即可将用户侧vlan：2、3、4、5分别转换为网络侧vlan：41、43、utag、44，其中"@5"表示指定网络侧vlan优先级，优先级范围:0-7，vlan范围:1-4094）"),
+					type="text",
+					maxlength=255,
+					depends="iopmask"
+				},{
+					id="vlandebug",
+					name=translate("VLAN脚本日志"),
+					description=translate("启用vlan脚本调试日志"),
+					type="checkbox",
+					default=true,
+					depends="iopmask"
+				},{
+					id="igmp_version",
+					name=translate("组播版本设置"),
+					description=translate("更改ME309规则的IGMP版本，基于IPoE的IPTV组播异常，可尝试更改"),
+					type="select",
+					default="3",
+					options={
+						"2",
+						"3"
+					}
+				},{
+					id="force_me309",
+					name=translate("强制创建ME309规则"),
+					description=translate("基于IPoE的IPTV组播异常，可尝试勾选"),
+					type="checkbox",
+					default=false
 				}
 			}
 		},{
