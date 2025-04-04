@@ -250,14 +250,14 @@ vlan_parse() {
 
 ext_vlan_tables=$(mibs 171)
 if [ -z "$ext_vlan_tables" ]; then
-	echo "未检测到扩展VLAN表" >&2
+	echo "未检测到EXTVLAN表" >&2
 	exit 1
 fi
 
 i=0
 for ext_vlan_table in $ext_vlan_tables; do
 	if $HEADER; then
-		echo "扩展VLAN表 $ext_vlan_table"
+		echo "EXTVLAN表 $ext_vlan_table"
 		echo "------------------------"
 		if $TABLE; then
 			echo -e "过滤外部\t\t过滤内部\t\t其他过滤\t处理外部\t\t\t处理内部"
