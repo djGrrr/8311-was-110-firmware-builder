@@ -5,15 +5,15 @@ HEADER=true
 TABLE=false
 
 _help() {
-	printf -- 'Tool for decoding the extended VLAN tables\n\n'
+	printf -- '用于解码扩展VLAN表的工具\n\n'
 
-	printf -- 'Usage %s [options]\n\n' "$0"
+	printf -- '用法 %s [选项]\n\n' "$0"
 
-	printf -- 'Options:\n'
-	printf -- '-t --table\tOutput table version instead of user-friendly version\n'
-	printf -- '-n --no-header\tDo not output informational headers\n'
+	printf -- '选项:\n'
+	printf -- '-t --table\t输出表格格式而非用户友好格式\n'
+	printf -- '-n --no-header\t不输出信息头\n'
 
-	printf -- '-h --help\tThis help text\n'
+	printf -- '-h --help\t显示帮助信息\n'
 
 	exit $1
 }
@@ -38,7 +38,7 @@ while [ $# -gt 0 ]; do
 done
 
 dir() {
-	[ "$1" = "i" ] && echo "inner" || echo "outer"
+	[ "$1" = "i" ] && echo "内部" || echo "外部"
 }
 
 filter_priority() {
@@ -47,21 +47,21 @@ filter_priority() {
 	if [ "$2" -le  7 ]; then
 		echo "$2"
 	elif [ "$2" -eq 8 ]; then
-		echo -e "8\t(Do not filter on the $dir priority)"
+		echo -e "8\t(不根据${dir}优先级过滤)"
 	elif [ "$2" -eq 14 ]; then
-		if [ "$dir" = "inner" ]; then
-			echo -e "14\t(Default filter when no other one-tag rule applies)"
+		if [ "$dir" = "内部" ]; then
+			echo -e "14\t(无其他单标签规则时的默认过滤)"
 		else
-			echo -e "14\t(Default filter when no other two-tag rule applies)"
+			echo -e "14\t(无其他双标签规则时的默认过滤)"
 		fi
 	elif [ "$2" -eq 15 ]; then
-		if [ "$dir" = "inner" ]; then
-			echo -e "15\t(No-tag rule; ignore all other VLAN tag filter fields)"
+		if [ "$dir" = "内部" ]; then
+			echo -e "15\t(无标签规则；忽略其他VLAN标签过滤字段)"
 		else
-			echo -e "15\t(Not a double-tag rule; ignore all other outer tag filter fields)"
+			echo -e "15\t(非双标签规则；忽略外部标签过滤字段)"
 		fi
 	else
-		echo -e "$2\t(Reserved)"
+		echo -e "$2\t(保留)"
 	fi
 }
 
@@ -71,9 +71,9 @@ filter_vid() {
 	if [ "$2" -lt 4095 ]; then
 		echo "$2"
 	elif [ "$2" -eq 4096 ]; then
-		echo -e "4096\t(Do not filter on the $dir VID)";
+		echo -e "4096\t(不根据${dir} VID过滤)";
 	else
-		echo -e "$2\t(Reserved)";
+		echo -e "$2\t(保留)"；
 	fi
 }
 
@@ -81,23 +81,23 @@ filter_tpid_dei() {
 	local dir=$(dir "$1")
 
 	if [ "$2" -eq 0 ]; then
-		echo -e "0\t(Do not filter on $dir TPID or DEI)"
+		echo -e "0\t(不根据${dir} TPID或DEI过滤)"
 	elif [ "$2" -eq 4 ]; then
-		echo -e "4\t(TPID = 0x8100, ignore DEI)"
+		echo -e "4\t(TPID = 0x8100，忽略DEI)"
 	elif [ "$2" -eq 5 ]; then
-		echo -e "5\t(TPID = Input TPID, ignore DEI)"
+		echo -e "5\t(TPID = 输入TPID，忽略DEI)"
 	elif [ "$2" -eq 6 ]; then
-		echo -e "6\t(TPID = Input TPID, DEI = 0)"
+		echo -e "6\t(TPID = 输入TPID，DEI = 0)"
 	elif [ "$2" -eq 7 ]; then
-		echo -e "7\t(TPID = Input TPID, DEI = 1)"
+		echo -e "7\t(TPID = 输入TPID，DEI = 1)"
 	else
-		echo -e "$2\t(Reserved)"
+		echo -e "$2\t(保留)"
 	fi
 }
 
 filter_ethertype() {
 	if [ "$1" -eq 0 ]; then
-		echo -e "0\t(Do not filter on EtherType)"
+		echo -e "0\t(不根据EtherType过滤)"
 	elif [ "$1" -eq 1 ]; then
 		echo -e "1\t(0x0800 - IPv4 IPoE)"
 	elif [ "$1" -eq 2 ]; then
@@ -109,25 +109,25 @@ filter_ethertype() {
 	elif [ "$1" -eq 5 ]; then
 		echo -e "5\t(0x888E - EAPOL)"
 	else
-		echo -e "$1\t(Reserved)"
+		echo -e "$1\t(保留)"
 	fi
 }
 
 filter_extended_criteria() {
 	if [ "$1" -eq 0 ]; then
-		echo -e "0\t(Do not filter on extended criteria)"
+		echo -e "0\t(不根据扩展条件过滤)"
 	elif [ "$1" -eq 1 ]; then
 		echo -e "1\t(DHCPv4)"
 	elif [ "$1" -eq 2 ]; then
 		echo -e "2\t(DHCPv6)"
 	else
-		echo -e "$1\t(Reserved)"
+		echo -e "$1\t(保留)"
 	fi
 }
 
 treatment_remove_tags() {
 	if [ "$1" -eq 3 ]; then
-		echo -e "3\t(Discard the frame)"
+		echo -e "3\t(丢弃帧)"
 	else
 		echo "$1"
 	fi
@@ -139,15 +139,15 @@ treatment_priority() {
 	if [ "$2" -le  7 ]; then
 		echo "$2"
 	elif [ "$2" -eq 8 ]; then
-		echo -e "8\t(Copy from the inner priority of received frame)"
+		echo -e "8\t(从接收帧的内部优先级复制)"
 	elif [ "$2" -eq 9 ]; then
-		echo -e "9\t(Copy from the outer priority of received frame)"
+		echo -e "9\t(从接收帧的外部优先级复制)"
 	elif [ "$2" -eq 10 ]; then
-		echo -e "10\t(Derive priority based on DSCP to P-bit mapping)"
+		echo -e "10\t(根据DSCP到P-bit映射派生优先级)"
 	elif [ "$2" -eq 15 ]; then
-		echo -e "15\t(Do not add an $dir tag)"
+		echo -e "15\t(不添加${dir}标签)"
 	else
-		echo -e "$2\t(Reserved)"
+		echo -e "$2\t(保留)"
 	fi
 }
 
@@ -155,36 +155,36 @@ treatment_vid() {
 	if [ "$2" -lt 4095 ]; then
 		echo "$2"
 	elif [ "$2" -eq 4096 ]; then
-		echo -e "4096\t(Copy from the inner VID of received frame)"
+		echo -e "4096\t(从接收帧的内部VID复制)"
 	elif [ "$2" -eq 4097 ]; then
-		echo -e "4097\t(Copy from the outer VID of received frame)"
+		echo -e "4097\t(从接收帧的外部VID复制)"
 	else
-		echo -e "$2\t(Reserved)"
+		echo -e "$2\t(保留)"
 	fi
 }
 
 treatment_tpid_dei() {
 	if [ "$2" -eq 0 ]; then
-		echo -e "0\t(TPID = Inner TPID, DEI = Inner DEI)"
+		echo -e "0\t(TPID = 内部TPID, DEI = 内部DEI)"
 	elif [ "$2" -eq 1 ]; then
-		echo -e "1\t(TPID = Outer TPID, DEI = Outer DEI)"
+		echo -e "1\t(TPID = 外部TPID, DEI = 外部DEI)"
 	elif [ "$2" -eq 2 ]; then
-		echo -e "2\t(TPID = Output TPID, DEI = Inner DEI)"
+		echo -e "2\t(TPID = 输出TPID, DEI = 内部DEI)"
 	elif [ "$2" -eq 3 ]; then
-		echo -e "3\t(TPID = Output TPID, DEI = Outer DEI)"
+		echo -e "3\t(TPID = 输出TPID, DEI = 外部DEI)"
 	elif [ "$2" -eq 4 ]; then
 		echo -e "4\t(TPID = 0x8100)"
 	elif [ "$2" -eq 6 ]; then
-		echo -e "6\t(TPID = Output TPID, DEI = 0)"
+		echo -e "6\t(TPID = 输出TPID, DEI = 0)"
 	elif [ "$2" -eq 7 ]; then
-		echo -e "7\t(TPID = Output TPID, DEI = 1)"
+		echo -e "7\t(TPID = 输出TPID, DEI = 1)"
 	else
-		echo -e "$2\t(Reserved)"
+		echo -e "$2\t(保留)"
 	fi
 }
 
 vlan_parse() {
-	filter_outer_priority=$((($1 & 0xf0000000) >> 28))
+		filter_outer_priority=$((($1 & 0xf0000000) >> 28))
 	filter_outer_vid=$((($1 & 0x0fff8000) >> 15))
 	filter_outer_tpid_dei=$((($1 & 0x00007000) >> 12))
 
@@ -203,6 +203,7 @@ vlan_parse() {
 	treatment_inner_vid=$((($4 & 0x0000fff8) >> 3))
 	treatment_inner_tpid_dei=$(($4 & 0x00000007))
 
+
 	if $TABLE; then
 		echo -ne "${filter_outer_priority}\t${filter_outer_vid}\t${filter_outer_tpid_dei}\t"
 		echo -ne "${filter_inner_priority}\t${filter_inner_vid}\t${filter_inner_tpid_dei}\t${filter_ethertype}\t${filter_extended_criteria}\t"
@@ -210,58 +211,57 @@ vlan_parse() {
 		echo -ne "${treatment_inner_priority}\t${treatment_inner_vid}\t${treatment_inner_tpid_dei}"
 		echo
 	else
-		echo -ne "Filter Outer Priority:\t\t"
+		echo -ne "过滤外部优先级：\t\t"
 		filter_priority o $filter_outer_priority
-		echo -ne "Filter Outer VID:\t\t"
+		echo -ne "过滤外部VID：\t\t\t"
 		filter_vid o $filter_outer_vid
-		echo -ne "Filter Outer TPID/DEI:\t\t"
+		echo -ne "过滤外部TPID/DEI：\t\t"
 		filter_tpid_dei o $filter_outer_tpid_dei
 
-		echo -ne "Filter Inner Priority:\t\t"
+		echo -ne "过滤内部优先级：\t\t"
 		filter_priority i $filter_inner_priority
-		echo -ne "Filter Inner VID:\t\t"
+		echo -ne "过滤内部VID：\t\t\t"
 		filter_vid i $filter_inner_vid
-		echo -ne "Filter Inner TPID/DEI:\t\t"
+		echo -ne "过滤内部TPID/DEI：\t\t"
 		filter_tpid_dei i $filter_inner_tpid_dei
 
-		echo -ne "Filter EtherType:\t\t"
+		echo -ne "过滤EtherType：\t\t\t"
 		filter_ethertype $filter_ethertype
-		echo -ne "Filter Extended Criteria:\t"
+		echo -ne "过滤扩展条件：\t\t\t"
 		filter_extended_criteria $filter_extended_criteria
 
-		echo -ne "Treatment tags to remove:\t"
+		echo -ne "处理移除的标签：\t\t"
 		treatment_remove_tags $treatment_remove_tags
-		echo -ne "Treatment outer priority:\t"
+		echo -ne "处理外部优先级：\t\t"
 		treatment_priority o $treatment_outer_priority
-		echo -ne "Treatment outer VID:\t\t"
+		echo -ne "处理外部VID：\t\t\t"
 		treatment_vid o $treatment_outer_vid
-		echo -ne "Treatment outer TPID/DEI:\t"
+		echo -ne "处理外部TPID/DEI：\t\t"
 		treatment_tpid_dei o $treatment_outer_tpid_dei
 
-		echo -ne "Treatment inner priority:\t"
+		echo -ne "处理内部优先级：\t\t"
 		treatment_priority i $treatment_inner_priority
-		echo -ne "Treatment inner VID:\t\t"
+		echo -ne "处理内部VID：\t\t\t"
 		treatment_vid i $treatment_inner_vid
-		echo -ne "Treatment inner TPID/DEI:\t"
+		echo -ne "处理内部TPID/DEI：\t\t"
 		treatment_tpid_dei i $treatment_inner_tpid_dei
 	fi
 }
 
-
 ext_vlan_tables=$(mibs 171)
 if [ -z "$ext_vlan_tables" ]; then
-	echo "No Extended VLAN Tables Detected" >&2
+	echo "未检测到扩展VLAN表" >&2
 	exit 1
 fi
 
 i=0
 for ext_vlan_table in $ext_vlan_tables; do
 	if $HEADER; then
-		echo "Extended VLAN table $ext_vlan_table"
+		echo "扩展VLAN表 $ext_vlan_table"
 		echo "------------------------"
 		if $TABLE; then
-			echo -e "Filter Outer\t\tFilter Inner\t\tFilter Other\tTreatment Outer\t\t\tTreatment Inner"
-			echo -e "Prio\tVID\tTPIDDEI\tPrio\tVID\tTPIDDEI\tEthTyp\tExtCrit\tTagRem\tPrio\tVID\tTPIDDEI\tPrio\tVID\tTPIDDEI"
+			echo -e "过滤外部\t\t过滤内部\t\t其他过滤\t处理外部\t\t\t处理内部"
+			echo -e "优先级\tVID\tTPIDDEI\t优先级\tVID\tTPIDDEI\tEth类型\t扩展条件\t标签移除\t优先级\tVID\tTPIDDEI\t优先级\tVID\tTPIDDEI"
 		fi
 	fi
 	[ "$i" -gt 0 ] && echo
