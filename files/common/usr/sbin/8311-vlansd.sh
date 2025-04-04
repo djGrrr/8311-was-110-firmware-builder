@@ -17,6 +17,7 @@ FIXES=""
 LAST_HASH=""
 
 echo "8311 VLANs daemon: start monitoring" | to_console
+sleep 5
 while true ; do
 	CMD="$FIXES"
 
@@ -25,8 +26,8 @@ while true ; do
 		if [ "$HASH" != "$LAST_HASH" ]; then
 			if VLANS=$(flock /tmp/8311-fix-vlans.lock -c "$CMD" 2>&1); then
 				LAST_HASH="$HASH"
-				echo "8311 VLANs daemon: new configuration detected, ran fix-vlans script:" | to_console
-				echo "$VLANS" | to_console
+				echo "8311 VLANs daemon: new configuration detected, ran fix-vlans script." | to_console
+
 			fi
 		fi
 	fi
