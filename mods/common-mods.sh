@@ -97,10 +97,10 @@ echo "$LIB_PON_SH_FOOT" >> "$LIB_PON_SH"
 
 
 cp -fv "8311-xgspon-bypass/8311-detect-config.sh" "8311-xgspon-bypass/8311-fix-vlans.sh" "$ROOT_DIR/usr/sbin/"
-cp -fv "8311-xgspon-bypass/8311-vlans-lib.sh" "$ROOT_DIR/lib/"
+
 ln -fsv "/usr/sbin/8311-detect-config.sh" "$ROOT_DIR/root/8311-detect-config.sh"
 ln -fsv "/usr/sbin/8311-fix-vlans.sh" "$ROOT_DIR/root/8311-fix-vlans.sh"
-ln -fsv "/lib/8311-vlans-lib.sh" "$ROOT_DIR/root/8311-vlans-lib.sh"
+
 mkdir -p "$ROOT_DIR/etc/crontabs"
 
 touch "$ROOT_DIR/etc/crontabs/root"
