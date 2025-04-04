@@ -196,7 +196,7 @@ msgid "PON"
 msgstr "PON"
 
 msgid "ISP Fixes"
-msgstr "ISP修复"
+msgstr "VLAN修复"
 
 msgid "Device"
 msgstr "设备"
