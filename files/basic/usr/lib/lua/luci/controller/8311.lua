@@ -452,9 +452,9 @@ function fwenvs_8311()
 				},{
 					id="vlan_trans_rules",
 					name=translate("VLAN转换/绑定"),
-					description=translate("将下行vlan转换/绑定为其它vlan（可填写多组vlan转换对，填写示例："2:41,3:43,4:u,5:44@5"，即可将用户侧vlan：2、3、4、5分别转换为网络侧vlan：41、43、utag、44，其中"@5"表示指定网络侧vlan优先级，优先级范围:0-7，vlan范围:1-4094）"),
+					description=translate("将下行vlan转换/绑定为其它vlan（可填写多组vlan转换对，填写示例：\"2:41,3:43,4:u,5:44@5\"，即可将用户侧vlan：2、3、4、5分别转换为网络侧vlan：41、43、utag、44，其中\"@5\"表示指定网络侧vlan优先级，优先级范围:0-7，vlan范围:1-4094）"),
 					type="text",
-					maxlength=255,
+					maxlength=15,
 					depends="iopmask"
 				},{
 					id="vlandebug",
