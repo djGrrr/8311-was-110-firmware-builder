@@ -10,7 +10,7 @@ _lib_8311() {
 lib_hexbin 2>/dev/null || . /lib/functions/hexbin.sh
 
 to_console() {
-	tee -a /dev/console | logger -t "8311" -p daemon.info
+	awk '{print "[8311] " $0}' >&1 | tee -a /dev/console  | logger -t "8311" -p daemon.info
 }
 
 strtoupper() {
