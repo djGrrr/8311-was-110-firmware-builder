@@ -3,13 +3,15 @@
 _lib_8311 2>/dev/null || . /lib/8311.sh
 
 pon_hash() {
-	/usr/sbin/8311-detect-config.sh -H
+    {
+        ip li                  # 列出所有网络接口
+        brctl show            # 显示网桥配置
+    } | sha256sum | awk '{print $1}'
 }
 
 FIX_ENABLED=$(fwenv_get_8311 "fix_vlans" "1")
 [ "$FIX_ENABLED" -eq 0 ] 2>/dev/null && exit 0
 
-HOOK="/ptconf/8311/vlan_fixes_hook.sh"
 
 FIXES=""
 [ "$FIX_ENABLED" -eq 1 ] && FIXES="/usr/sbin/8311-fix-vlans.sh"
