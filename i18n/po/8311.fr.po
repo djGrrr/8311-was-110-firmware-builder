@@ -232,7 +232,7 @@ msgid "Sync Circuit Pack Version"
 msgstr "Version de Circuit Pack Synchronisée"
 
 msgid "Modify the configured MIB file to set the Version field of any Circuit Pack MEs [6] to match the Hardware Version (if set)."
-msgstr "Modifier le fisher MIB configuré pour que la version de chaque Circuit Pack MEs corresponde à la version hardware (si définie)."
+msgstr "Modifier le fichier MIB configuré pour que la version de chaque Circuit Pack MEs corresponde à la version hardware (si définie)."
 
 msgid "Software Version A"
 msgstr "Version Logicielle A"
