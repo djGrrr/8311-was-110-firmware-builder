@@ -22,20 +22,19 @@ config_hash() {
 	} | sha256sum | awk '{print $1}'
 }
 
-FIX_ENABLED=$(fwenv_get_8311 "fix_vlans" "1")
+FIX_ENABLED=$(fwenv_get_8311 "vlan_svc" "1")
 [ "$FIX_ENABLED" -eq 0 ] 2>/dev/null && exit 0
 
 
 FIXES=""
 [ "$FIX_ENABLED" -eq 1 ] && FIXES="/usr/sbin/8311-fix-vlans.sh"
-HOOKCMD=". /lib/8311-vlans-lib.sh && . $HOOK"
 
 LAST_HASH=""
 LAST_CFG_HASH=""
 
 echo "8311 VLANs daemon: start monitoring" | to_console
 while true ; do
-	[ -f "$HOOK" ] && { [ -n "$FIXES" ] && CMD="$FIXES && $HOOKCMD" || CMD="$HOOKCMD"; } || CMD="$FIXES"
+	CMD="$FIXES"
 
 	if [ -n "$CMD" ] && [ -d "/sys/devices/virtual/net/gem-omci" ]; then
 		HASH=$(pon_hash)
