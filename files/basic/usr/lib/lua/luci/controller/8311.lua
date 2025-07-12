@@ -37,6 +37,7 @@ function index()
 	entry({"admin", "8311", "support", "support.tar.gz"}, call("action_support_download"))
 
 	entry({"admin", "8311", "firmware"}, call("action_firmware"), translate("Firmware"), 6);
+	entry({"8311", "metrics"}, call("action_metrics"))
 end
 
 function pontop_page_details()
@@ -720,27 +721,37 @@ function pon_state(state)
 	return translate(states[state] or "N/A")
 end
 
+function action_metrics()
+	local metrics = tools.metrics()
+	luci.http.prepare_content("application/json")
+--	luci.http.write_json(metrics)
+	luci.http.write("{\n")
+
+	for i, metric in pairs(tools.sorted_keys(metrics)) do
+		if i > 1 then
+			luci.http.write(",\n")
+		end
+		local value = metrics[metric]
+		local dec = 2
+		if metric == "ploam_state" then
+			dec = 0
+		end
+
+		value = string.format("%." .. dec .. "f", value)
+		luci.http.write('  "' .. metric .. '": ' .. value)
+	end
+	luci.http.write("\n}\n")
+end
+
 function temperature(t)
 	return string.format(translate("%.2f °C (%.1f °F)"), t, (t * 1.8 + 32))
 end
 
-function dBm(mw)
-	return string.format(translate("%.2f dBm"), 10 * math.log10(mw))
-end
-
 function action_gpon_status()
-	local _, _, ploam_status = string.find(util.exec("pon psg"):trim(), " current=(%d+) ")
-	local cpu0_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone0/temp") or ""):trim()) or 0) / 1000
-	local cpu1_temp = (tonumber((fs.readfile("/sys/class/thermal/thermal_zone1/temp") or ""):trim()) or 0) / 1000
+	local metrics = tools.metrics()
 
 	local eep50 = fs.readfile("/sys/class/pon_mbox/pon_mbox0/device/eeprom50", 256)
-	local eep51 = fs.readfile("/sys/class/pon_mbox/pon_mbox0/device/eeprom51", 256)
 
-	local optic_temp = eep51:byte(97) + eep51:byte(98) / 256
-	local voltage = (bit.lshift(eep51:byte(99), 8) + eep51:byte(100)) / 10000
-	local tx_bias = (bit.lshift(eep51:byte(101), 8) + eep51:byte(102)) / 500
-	local tx_mw = (bit.lshift(eep51:byte(103), 8) + eep51:byte(104)) / 10000
-	local rx_mw = (bit.lshift(eep51:byte(105), 8) + eep51:byte(106)) / 10000
 	local eth_speed = tonumber((fs.readfile("/sys/class/net/eth0_0/speed") or ""):trim())
 	local vendor_name = eep50:sub(21, 36):trim()
 	local vendor_pn = eep50:sub(41, 56):trim()
@@ -750,10 +761,10 @@ function action_gpon_status()
 	local active_bank = util.exec(". /lib/8311.sh && active_fwbank"):trim() or "A"
 
 	local rv = {
-		status = pon_state(tonumber(ploam_status) or 0),
-		power = string.format(translate("%s / %s / %.2f mA"), dBm(rx_mw), dBm(tx_mw), tx_bias),
-		temperature = string.format("%s / %s / %s", temperature(cpu0_temp), temperature(cpu1_temp), temperature(optic_temp)),
-		voltage = string.format(translate("%.2f V"), voltage),
+		status = pon_state(metrics.ploam_state),
+		power = string.format(translate("%.2f dBm / %.2f dBm / %.2f mA"), metrics.rx_power_dBm, metrics.tx_power_dBm, metrics.tx_bias_mA),
+		temperature = string.format("%s / %s / %s", temperature(metrics.cpu1_tempC), temperature(metrics.cpu2_tempC), temperature(metrics.optic_tempC)),
+		voltage = string.format(translate("%.2f V"), metrics.module_voltage),
 		pon_mode = pon_mode:upper():gsub("PON$", "-PON"),
 		module_info = string.format("%s %s %s (%s)", vendor_name, vendor_pn, vendor_rev, module_type),
 		eth_speed = (eth_speed and string.format(translate("%s Mbps"), eth_speed) or translate("N/A")),
