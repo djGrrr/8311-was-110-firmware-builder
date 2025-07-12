@@ -394,41 +394,72 @@ function fwenvs_8311()
 			id="isp",
 			category=translate("ISP Fixes"),
 			items={	{
-					id="fix_vlans",
-					name=translate("Fix VLANs"),
-					description=translate("Apply automatic fixes to the VLAN configuration from the OLT."),
-					type="select_named",
-					default="1",
-					options={
-						{
-							name=translate("Disabled"),
-							value="0"
-						},
-						{
-							name=translate("Enabled"),
-							value="1"
-						},
-						{
-							name=translate("Hook script only"),
-							value="2"
-						}
-					}
+					id="vlan_svc",
+					name=translate("Enable VLAN Tagging Service"),
+					description=translate("Allows for customization of the VLAN Tagging Operations between the downstream (ONT) and upstream (OLT). These features should be considered minimally tested and EXPERIMENTAL."),
+					type="checkbox",
+					default=false
 				},{
-					id="internet_vlan",
-					name=translate("Internet VLAN"),
-					description=translate("Set the local VLAN ID to use for the Internet or 0 to make the Internet untagged (and also remove VLAN 0) (0 to 4095). Defaults to 0 (untagged)."),
-					type="number",
+					id="us_vlan_id",
+					name=translate("Upstream VLAN ID"),
+					description=translate("Specifies the default upstream VLAN ID for the tagging operation, enter 'u' to use untagged mode (VLAN range: 1-4094, or 'u')."),
+					type="text",
+					maxlength=4,
 					min=0,
-					max=4095,
-					default="0"
+					max=4094
 				},{
-					id="services_vlan",
-					name=translate("Services VLAN"),
-					description=translate("Set the local VLAN ID to use for Services (ie TV/Home Phone) (1 to 4095). This fixes multi-service on Bell."),
+					id="force_us_vlan_id",
+					name=translate("Force Upstream VLAN ID"),
+					description=translate("Try enabling this if the Upstream VLAN ID setting isn't taking effect."),
+					type="checkbox",
+					default=false
+				},{
+					id="force_me_create",
+					name=translate("Force MEs 47 and 171"),
+					description=translate("Force creation of 'MAC bridge port configuration data' and 'Extended VLAN tagging operation configuration data' managed entities. Try enabling this if O5 status still isn't being obtained."),
+					type="checkbox",
+					default=false
+				},{
+					id="us_mc_vlan_id",
+					name=translate("Upstream Multicast VLAN ID"),
+					description=translate("Specifies the VLAN carrying the multicast group downstream (range: 1-4094)."),
 					type="number",
 					min=1,
-					max=4095,
-					default="34|36"
+					max=4094
+				},{
+					id="ds_mc_tci",
+					name=translate("Downstream Multicast TCI"),
+					description=translate("Specify downstream multicast TCI in the form 'A[@B]' where 'A' is a VLAN and 'B' is a priority. Controls the downstream tagging of both the IGMP/MLD and multicast frames (Priority range: 0-7, VLAN range: 1-4094)."),
+					type="text",
+					maxlength=10
+				},{
+					id="vlan_tag_ops",
+					name=translate("VLAN Tagging Operations"),
+					description=translate("Specify VLAN tagging operations in the form 'A[@B]:C[@D]' where 'A' and 'C' is a VLAN and 'B' and 'D' is a priority. Multiple comma-separated pairs can be entered. For example, '2:41,3:43,4:u,5:44@5' would bridge downstream VLANs: 2,3,4,5 to upstream VLANs: 41,43,untagged,44 respectively, where '@5' specifies VLAN priority. (Priority range: 0-7, VLAN range: 1-4094 and on the right side, 'u' )"),
+					type="text",
+					maxlength=255
+				},{
+					id="vlan_svc_log",
+					name=translate("VLAN Service Logging"),
+					description=translate("Enable VLAN script debug logging"),
+					type="checkbox",
+					default=false
+				},{
+					id="igmp_version",
+					name=translate("IGMP Version"),
+					description=translate("Configure the IGMP version reported in 'multicast operations profile' managed entity. Try enabling this if IPoE-based multicast IPTV isn't working correctly."),
+					type="select",
+					default="3",
+					options={
+						"2",
+						"3"
+					}
+				},{
+					id="force_me309_create",
+					name=translate("Force ME 309 creation"),
+					description=translate("Force creation of 'multicast operations profile' managed entity. Try enabling this if IPoE-based multicast IPTV isn't working correctly."),
+					type="checkbox",
+					default=false
 				}
 			}
 		},{
