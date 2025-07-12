@@ -79,14 +79,17 @@ start() {
 }
 
 boot() {
+	TX_EN_MODE=$(get_8311_tx_en_mode)
 	MODULE_TYPE=$(get_8311_module_type)
-	if [ "$MODULE_TYPE" = "potron" ] || [ "$MODULE_TYPE" = "fullvision" ]; then
-		echo "Potrontec or Full Vision module detected, setting optic.common.tx_en_mode to 3" | to_console
-		uci set "optic.common.tx_en_mode"="3"
+	if [ -n "$TX_EN_MODE" ]; then
+		echo "TX enable mode override set: $TX_EN_MODE"
+	elif [ "$MODULE_TYPE" = "potron" ] || [ "$MODULE_TYPE" = "fullvision" ]; then
+		echo "Potrontec or Full Vision module detected" | to_console
+		TX_EN_MODE=3
 	else
-		uci set "optic.common.tx_en_mode"="0"
+		TX_EN_MODE=0
 	fi
-	uci commit "optic"
+	set_8311_tx_en_mode "$TX_EN_MODE"
 
 	# Active fw bank is always valid
 	ACTIVE=$(active_fwbank)
