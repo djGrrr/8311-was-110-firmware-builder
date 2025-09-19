@@ -106,6 +106,8 @@ mkdir -p "$ROOT_DIR/etc/crontabs"
 touch "$ROOT_DIR/etc/crontabs/root"
 
 sed -r 's#^(\s+)(start.+)$#\1\# 8311 MOD: Do not auto start omcid\n\1\# \2#g' -i "$ROOT_DIR/etc/init.d/omcid.sh"
+sed -r 's/(stdout|stderr)=2/\1=1/g' -i "$ROOT_DIR/etc/init.d/omcid.sh"
+
 
 CONFIG_OPTIC="$ROOT_DIR/etc/config/optic"
 sed -r "s#(option 'tx_en_mode' ').*(')#\10\2#" -i "$CONFIG_OPTIC"
