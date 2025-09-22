@@ -486,11 +486,18 @@ set_8311_tx_en_mode() {
 
 get_8311_base_mac() {
 	if [ ! -f "/tmp/8311-base-mac" ]; then
+		local type=$(get_8311_module_type)
+		# for readability use colons
+		local prefix=$({ [ "$type" = "potron" ] && echo "80:A5:79:5" || echo "10:B3:6F"; } | tr -dc [:xdigit:])
 		local serial=$(dd if=/sys/class/pon_mbox/pon_mbox0/device/eeprom50 bs=1 skip=68 count=12 2>/dev/null)
-		local suffix=$(echo "$serial" | tail -c 7 | filterhex)
-		[ -z "$suffix" ] && suffix=$(echo -n "$serial" | sha256sum | head -c 6 | strtoupper)
+		local length=$((${#serial} - ${#prefix}))
+		local suffix=$(echo -n "$serial" | tail -c "$length" | tr -dc [:xdigit:])
 
-		{ echo -n "10:B3:6F"; echo "$suffix" | sed -r 's/(..)/:\1/g'; } > "/tmp/8311-base-mac"
+		if [ -z "$suffix" ] || [ "$length" -ne "${#suffix}" ]; then
+			suffix=$(echo -n "$serial" | sha256sum | head -c "$length")
+		fi
+
+		echo "${prefix}${suffix}" | strtoupper | sed -r 's/(..)/\1:/g; s/:$//' > "/tmp/8311-base-mac"
 	fi
 
 	cat "/tmp/8311-base-mac"
