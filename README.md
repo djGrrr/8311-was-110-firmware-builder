@@ -55,6 +55,18 @@ Set the management gateway. Defaults to the IP address (ie. no default gateway)
 `8311_ping_ip` - **Ping IP**  
 Sets an IP address to ping every 5 seconds, this can helps with reaching the stick. Defaults to the 2nd ip address in the configured management network (ie. 192.168.11.2).  
 
+`8311_snmp` - **SNMP Daemon**  
+Set to `1` to enable a read-only SNMP (v1/v2c) daemon on UDP port 161. Standard system and interface information (MIB-II/IF-MIB) is exposed, along with transceiver and CPU sensors through the standard ENTITY-MIB/ENTITY-SENSOR-MIB (RFC 3433), and PON specific values (PLOAM state, RX/TX power in dBm, active bank, PON mode, firmware version) through the NET-SNMP-EXTEND-MIB. The MIB files needed to resolve all exposed OIDs can be downloaded from `http://<device-ip>/8311/mibs/`. Defaults to `0` (disabled).  
+
+`8311_snmp_community` - **SNMP Community**  
+SNMP read-only community name. Defaults to `public`.  
+
+`8311_snmp_contact` - **SNMP Contact**  
+Contact information reported by SNMP (sysContact).  
+
+`8311_snmp_location` - **SNMP Location**  
+Device location reported by SNMP (sysLocation).  
+
 
 ### Device fwenvs
 `8311_console_en` - **Serial console**  

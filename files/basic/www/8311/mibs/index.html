@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>8311 SNMP MIB files</title>
+</head>
+<body>
+<h1>8311 SNMP MIB files</h1>
+<p>The SNMP daemon on this device (enabled with the <code>8311_snmp</code> fwenv) only
+exposes standard OIDs. These are the MIB definitions needed to resolve everything it
+serves, for use with <code>snmpwalk -m</code> or for import into an NMS. Most SNMP
+tools already ship all of these.</p>
+<ul>
+<li><a href="ENTITY-MIB.txt">ENTITY-MIB</a> &mdash; physical inventory (entPhysicalTable): module vendor, model, hardware revision, serial number</li>
+<li><a href="ENTITY-SENSOR-MIB.txt">ENTITY-SENSOR-MIB</a> (RFC 3433) &mdash; hardware sensors (entPhySensorTable): transceiver and CPU temperatures, supply voltage, TX bias current, TX/RX optical power</li>
+<li><a href="NET-SNMP-EXTEND-MIB.txt">NET-SNMP-EXTEND-MIB</a> &mdash; PON specific values (nsExtendOutput1Line): ploam-state, rx-power-dbm, tx-power-dbm, active-bank, pon-mode, module-type, fw-version</li>
+<li><a href="NET-SNMP-MIB.txt">NET-SNMP-MIB</a> &mdash; base definitions required by NET-SNMP-EXTEND-MIB</li>
+</ul>
+<p>Standard MIB-II subtrees (system, interfaces/IF-MIB, ip, etc.) are served natively
+by the agent. Example:</p>
+<pre>snmpwalk -v2c -c public &lt;device-ip&gt; entPhySensorValue
+snmpwalk -v2c -c public &lt;device-ip&gt; 'NET-SNMP-EXTEND-MIB::nsExtendOutput1Line'</pre>
+</body>
+</html>
