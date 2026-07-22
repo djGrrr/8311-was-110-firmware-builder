@@ -145,3 +145,35 @@ ln -fsv "/ptconf/8311/.ssh" "$ROOT_DIR/root/.ssh"
 ln -fsv "/ptconf/8311/dropbear" "$ROOT_DIR/etc/dropbear"
 
 ln -fsv "../init.d/sysntpd" "$ROOT_DIR/etc/rc.d/S98sysntpd"
+
+# The snmpd package's UCI based init script is not used (snmpd is managed by
+# /etc/init.d/_8311-snmpd.sh based on the 8311_snmp fwenvs), remove it so it
+# can't accidentally start a second instance with the default communities
+rm -fv "$ROOT_DIR/etc/init.d/snmpd" "$ROOT_DIR/etc/config/snmpd"
+
+# Allow SNMP (UDP 161) from the management network when snmpd is installed
+UCI_FW_RULES="$ROOT_DIR/etc/uci-defaults/26-firewall-rules"
+if [ -f "$UCI_FW_RULES" ] && grep -q '/usr/sbin/ptp4l' "$UCI_FW_RULES"; then
+	echo "Patching '$UCI_FW_RULES'..."
+
+	UCI_FW_RULES_HEAD=$(grep -B99999999 '/usr/sbin/ptp4l' "$UCI_FW_RULES" | head -n -1)
+	UCI_FW_RULES_FOOT=$(grep -A99999999 '/usr/sbin/ptp4l' "$UCI_FW_RULES")
+
+	echo "$UCI_FW_RULES_HEAD" > "$UCI_FW_RULES"
+
+	cat >> "$UCI_FW_RULES" <<'SNMP_RULES'
+
+if [ -f /usr/sbin/snmpd ]; then
+	uci batch << EOF
+		add firewall rule
+		set firewall.@rule[-1].name='Allow-SNMP'
+		set firewall.@rule[-1].src='lan'
+		set firewall.@rule[-1].proto='tcp udp'
+		set firewall.@rule[-1].dest_port='161'
+		set firewall.@rule[-1].target='ACCEPT'
+EOF
+fi
+
+SNMP_RULES
+	echo "$UCI_FW_RULES_FOOT" >> "$UCI_FW_RULES"
+fi

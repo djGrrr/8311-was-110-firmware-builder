@@ -657,6 +657,33 @@ function fwenvs_8311()
 					description=translate("Automatically redirect requests to the WebUI over HTTP to HTTPs. Defaults to on."),
 					type="checkbox",
 					default=true
+				},{
+					id="snmp",
+					name=translate("SNMP Daemon"),
+					description=translate("Enables a read-only SNMP (v1/v2c) daemon on UDP port 161, exposing standard system, interface, and hardware sensor information. Defaults to off." ..
+						" The MIB files needed to resolve all exposed OIDs can be downloaded from /8311/mibs/ on this device."),
+					type="checkbox",
+					default=false
+				},{
+					id="snmp_community",
+					name=translate("SNMP Community"),
+					description=translate("SNMP read-only community name. Defaults to public."),
+					maxlength=32,
+					pattern='^[A-Za-z0-9._-]+$',
+					type="text",
+					default="public"
+				},{
+					id="snmp_location",
+					name=translate("SNMP Location"),
+					description=translate("Device location reported by SNMP (sysLocation)."),
+					maxlength=128,
+					type="text"
+				},{
+					id="snmp_contact",
+					name=translate("SNMP Contact"),
+					description=translate("Contact information reported by SNMP (sysContact)."),
+					maxlength=128,
+					type="text"
 				}
 			}
 		}
@@ -845,6 +872,7 @@ end
 
 function action_save()
 	local value = nil
+	local snmp_changed = false
 	if http.getenv('REQUEST_METHOD') == 'POST' then
 		local fwenvs = populate_8311_fwenvs()
 
@@ -870,6 +898,10 @@ function action_save()
 				end
 
 				if item.value ~= value then
+					if item.id == 'snmp' or item.id:find('^snmp_') then
+						snmp_changed = true
+					end
+
 					if item.change then
 						item.change(value)
 					end
@@ -886,6 +918,12 @@ function action_save()
 				end
 			end
 		end
+	end
+
+	-- Apply SNMP daemon state immediately when its settings change, so
+	-- enabling/disabling from the WebUI takes effect without a reboot
+	if snmp_changed then
+		sys.call("/etc/init.d/_8311-snmpd.sh restart >/dev/null 2>&1")
 	end
 
 	http.redirect(dispatcher.build_url("admin/8311/config"))
