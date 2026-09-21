@@ -1,0 +1,2 @@
+# Unified-diff context contains a required leading space before source tabs.
+tools/uhttpd/patches/*.patch -whitespace
